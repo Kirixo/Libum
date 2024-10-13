@@ -1,0 +1,64 @@
+# Ignore build directories
+build*/
+debug*/
+release*/
+
+# Ignore Qt Creator specific files
+*.pro.user
+*.qmake.stash
+*.pro.user.*
+
+# Ignore Qt build artifacts
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+
+# Ignore moc, rcc, and uic generated files
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+
+# Ignore CMake-generated files (if using CMake with Qt)
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Ignore qmake generated files
+*.moc
+*.qrc
+*.qrc.depends
+*.prl
+*.pc
+
+# Ignore backup or temporary files
+*.bak
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+
+# Ignore QtCreator backups
+*.autosave
+
+# Ignore version control history
+.hg/
+.svn/
+
+# Ignore package manager specific folders (optional, if you use vcpkg, conan, etc.)
+.vcpkg/
+.conan/
+
+# Ignore logs and crash dumps
+*.log
+*.dmp
+
+# Ignore IDE-specific directories (if using CLion or VSCode with Qt)
+.idea/
+.vscode/
