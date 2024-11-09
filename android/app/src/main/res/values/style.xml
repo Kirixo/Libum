@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:width">62dp</item>
+        <item name="android:height">36dp</item>
+        <item name="android:color">@color/gray_blue_200</item>
+        <item name="android:translationY">28dp</item>
+        <item name="shapeAppearance">@style/App.Custom.IndicatorShape</item>
+    </style>
+
+    <style name="App.Custom.IndicatorShape" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">22dp</item>
+    </style>
+</resources>
