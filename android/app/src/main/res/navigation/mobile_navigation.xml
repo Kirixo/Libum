@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.project.libum.ui.home.HomeFragment"
+        android:name="com.project.libum.presentation.view.fragment.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.project.libum.ui.dashboard.DashboardFragment"
+        android:name="com.project.libum.presentation.view.fragment.DashboardFragment"
         android:label="@string/title_search"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.project.libum.ui.notifications.NotificationsFragment"
+        android:name="com.project.libum.presentation.view.fragment.NotificationsFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

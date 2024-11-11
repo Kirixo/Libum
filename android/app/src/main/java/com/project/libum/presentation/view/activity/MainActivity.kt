@@ -1,4 +1,4 @@
-package com.project.libum
+package com.project.libum.presentation.view.activity
 
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -7,6 +7,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.project.libum.R
 import com.project.libum.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.project.libum.ui.dashboard
+package com.project.libum.presentation.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.project.libum.databinding.FragmentDashboardBinding
+import com.project.libum.data.model.DashboardViewModel
 
 class DashboardFragment : Fragment() {
 
