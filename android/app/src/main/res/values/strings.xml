@@ -3,4 +3,10 @@
     <string name="title_home">Catalog</string>
     <string name="title_search">Search</string>
     <string name="title_profile">Profile</string>
+    <string name="email_hint">example@mail.com</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="password_hint">Your password</string>
+    <string name="don_t_have_an_account">Don`t have an account?</string>
+    <string name="sign_in">Sign In</string>
 </resources>
