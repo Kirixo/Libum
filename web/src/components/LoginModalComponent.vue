@@ -62,6 +62,23 @@ export default {
     },
   },
   methods: {
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.email) {
+        this.emailError = 'Email є обов\'язковим полем';
+      } else if (!emailPattern.test(this.email)) {
+        this.emailError = 'Некорректний формат Email';
+      } else {
+        this.emailError = null;
+      }
+    },
+    validatePassword() {
+      if (!this.password) {
+        this.passwordError = 'Пароль є обов\'язковим полем';
+      } else {
+        this.passwordError = null;
+      }
+    },
     submitForm() {
       this.validateEmail();
       this.validatePassword();
