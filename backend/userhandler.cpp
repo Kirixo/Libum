@@ -35,8 +35,35 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
 
 QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
 {
+    QJsonParseError err;
+    const auto json = QJsonDocument::fromJson(request.body(), &err).object();
 
+    if (err.error != QJsonParseError::NoError) {
+        return QHttpServerResponse("Invalid JSON format.", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    if (!json.contains("email") || !json.contains("password")) {
+        return QHttpServerResponse("Missing email or password.", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    User user;
+    user.authorize(json.value("email").toString(), json.value("password").toString());
+
+    if (user.id() != -1) {
+        QJsonObject userData;
+        userData["id"] = user.id();
+        userData["email"] = user.email();
+        userData["login"] = user.login();
+
+        QJsonDocument responseDoc(userData);
+        QByteArray responseData = responseDoc.toJson();
+
+        return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
+
+    return QHttpServerResponse("Invalid email or password.", QHttpServerResponse::StatusCode::Unauthorized);
 }
+
 
 QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
 {

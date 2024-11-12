@@ -2,6 +2,7 @@
 #define USERHANDLER_H
 #include "dbcontroller.h"
 #include <QtHttpServer/QHttpServer>
+#include <QtHttpServer/QHttpServerResponse>
 
 class UserHandler
 {

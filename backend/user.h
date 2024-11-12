@@ -7,12 +7,25 @@ class User
 {
 public:
     // User(int id, const std::string& email, const std::string& login, const std::string& password);
+    User();
     User(const QString& email, const QString& login, const QString& password);
     User(const User& user);
     User(User&& user);
 
     bool saveInDB();
+    void authorize(const QString& email, const QString& password);
 
+
+    void setId(qint64 newId);
+    void setEmail(const QString &newEmail);
+    void setLogin(const QString &newLogin);
+    void setPassword(const QString &newPassword);
+
+    qint64 id() const;
+
+    QString email() const;
+
+    QString login() const;
 
 private:
     qint64 id_;
