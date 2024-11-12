@@ -1,5 +1,6 @@
 [versions]
-agp = "8.6.0"
+agp = "8.6.1"
+appcompatVersion = "1.6.1"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -10,13 +11,16 @@ material = "1.12.0"
 constraintlayout = "2.2.0"
 lifecycleLivedataKtx = "2.8.7"
 lifecycleViewmodelKtx = "2.8.7"
-materialVersion = "1.11.0"
+materialVersion = "1.12.0"
 navigationFragmentKtx = "2.8.3"
 navigationUiKtx = "2.8.3"
-activity = "1.9.2"
+activity = "1.9.3"
+recaptchaVersion = "18.7.0-beta01"
 
 [libraries]
+androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+google-recaptcha = { module = "com.google.android.recaptcha:recaptcha", version.ref = "recaptchaVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
