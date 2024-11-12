@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import md5 from 'md5'; // Для хеширования пароля
+
 export default {
   props: {
     isVisible: {
@@ -79,14 +81,16 @@ export default {
         this.passwordError = null;
       }
     },
-    submitForm() {
-      this.validateEmail();
-      this.validatePassword();
-
-      if (this.isFormValid) {
-        console.log('Email:', this.email, 'Пароль:', this.password);
-        this.$emit('login', { email: this.email, password: this.password });
-        this.closeModal();
+    async submitForm() {
+      try {
+        const hashedPassword = md5(this.password);
+        await this.$store.dispatch('postUserInfo', {
+          email: this.email,
+          password: hashedPassword,
+        });
+      } catch (error) {
+        this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
+        this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
       }
     },
     signInWithGoogle() {

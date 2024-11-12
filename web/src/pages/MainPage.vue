@@ -25,6 +25,11 @@ export default {
     Footer,
     Book,
   },
+  // computed: {
+  //   userInfo() {
+  //     return this.$store.state.userInfo;
+  //   },
+  // },
 };
 </script>
 
