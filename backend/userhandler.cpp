@@ -21,16 +21,6 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
     }
 
     return QHttpServerResponse(QHttpServerResponder::StatusCode::InternalServerError);
-    // QString filePath = "C:/Users/Kirixo/Pictures/ARTS/Arts/BlueArchive/GSJX8OwaUAIB7FU.jpg";
-    // QFile file(filePath);
-
-    // if (file.open(QIODevice::ReadOnly)) {
-    //     QByteArray imageData = file.readAll();
-    //     file.close();
-    //     return QHttpServerResponse("image/jpeg", imageData);
-    // } else {
-    //     return QHttpServerResponse("Avatar not found", QHttpServerResponse::StatusCode::NotFound);
-    // }
 }
 
 QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
@@ -49,7 +39,7 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
     User user;
     user.authorize(json.value("email").toString(), json.value("password").toString());
 
-    if (user.id() != -1) {
+    if (user.exists()) {
         QJsonObject userData;
         userData["id"] = user.id();
         userData["email"] = user.email();
@@ -67,20 +57,39 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
 
 QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
 {
-    auto userId = request.query().queryItemValue("id");
-    qDebug() << "Method: Get; getUser; userId = " << userId;
-    qDebug() << request.body();
+    bool ok;
+    int userId = request.query().queryItemValue("id").toInt(&ok);
 
+    if (!ok) {
+        return QHttpServerResponse("Invalid user ID.", QHttpServerResponse::StatusCode::BadRequest);
+    }
 
-    return QHttpServerResponse(QHttpServerResponder::StatusCode::Ok);
+    User user(userId);
+
+    if (user.exists()) {
+        QJsonObject userData;
+        userData["id"] = user.id();
+        userData["email"] = user.email();
+        userData["login"] = user.login();
+
+        QJsonDocument responseDoc(userData);
+        QByteArray responseData = responseDoc.toJson();
+
+        return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
+
+    return QHttpServerResponse("User not found.", QHttpServerResponse::StatusCode::NotFound);
 }
+
 
 QHttpServerResponse UserHandler::getUserList(const QHttpServerRequest &request)
 {
-
+    // TODO:
+    return nullptr;
 }
 
 QHttpServerResponse UserHandler::updateUser(const QHttpServerRequest &request)
 {
-
+    // TODO:
+    return nullptr;
 }

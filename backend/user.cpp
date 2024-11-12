@@ -5,6 +5,11 @@ User::User()
 {
 }
 
+User::User(quint64 id)
+{
+    initializeByID(id);
+}
+
 User::User(const QString &email, const QString &login, const QString &password)
     : id_(-1), email_(email), login_(login), password_(password)
 {
@@ -29,7 +34,7 @@ bool User::saveInDB()
 
     QString queryString = "INSERT INTO users (email, login, password)"
                           "VALUES (:email, :login, :password)";
-    QSqlQuery query;
+    QSqlQuery query(db);
     query.prepare(queryString);
     query.bindValue(":email", email_);
     query.bindValue(":login", login_);
@@ -60,8 +65,32 @@ void User::authorize(const QString &email, const QString &password)
         id_ = query.value("id").toInt();
         email_ = query.value("email").toString();
         login_ = query.value("login").toString();
+    }
+}
+
+void User::initializeByID(quint64 id)
+{
+    QSqlDatabase db = DBController::getDatabase();
+
+    QString queryString = "SELECT id, email, login FROM users "
+                          "WHERE users.id = :id;";
+    QSqlQuery query(db);
+    query.prepare(queryString);
+    query.bindValue(":id", id);
+
+    if (query.exec() && query.next()) {
+        id_ = query.value("id").toInt();
+        email_ = query.value("email").toString();
+        login_ = query.value("login").toString();
         return;
     }
+
+    id_ = -1;
+}
+
+bool User::exists()
+{
+    return id_ != -1;
 }
 
 qint64 User::id() const
