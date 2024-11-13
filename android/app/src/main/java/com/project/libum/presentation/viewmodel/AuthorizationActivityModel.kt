@@ -6,10 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.model.LoginResponse
-import com.project.libum.data.repository.AuthRepository
+import com.project.libum.domain.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthorizationActivityModel(private val authRepository: AuthRepository): ViewModel() {
+@HiltViewModel
+class AuthorizationActivityModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _loginResult = MutableLiveData<Result<LoginResponse>>()
     val loginResult: LiveData<Result<LoginResponse>> = _loginResult
@@ -19,5 +24,4 @@ class AuthorizationActivityModel(private val authRepository: AuthRepository): Vi
             _loginResult.value = authRepository.login(request)
         }
     }
-
 }

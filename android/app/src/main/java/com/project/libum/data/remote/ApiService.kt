@@ -4,9 +4,12 @@ import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.model.LoginResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface ApiService {
-    @POST("login")
+
+    @POST("/api/users/login")
+    @Headers("Content-Type: application/json")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 }

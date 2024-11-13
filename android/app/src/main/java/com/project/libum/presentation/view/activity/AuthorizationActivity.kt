@@ -22,14 +22,18 @@ import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
 import com.project.libum.domain.validation.EmailValidation
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class AuthorizationActivity : AppCompatActivity() {
 
     private lateinit var recaptchaClient: RecaptchaClient
     private lateinit var binding: ActivityAuthorizationBinding
-    private val authViewModel: AuthorizationActivityModel by viewModels()
 
+    private val authViewModel: AuthorizationActivityModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +42,9 @@ class AuthorizationActivity : AppCompatActivity() {
 
         authViewModel.loginResult.observe(this){ result ->
             result.onFailure {
-
+                Log.d("Auth", "Auth ${result}")
             }.onSuccess {
-
+                Log.d("Auth", "Auth ${result}")
             }
         }
 
@@ -57,13 +61,15 @@ class AuthorizationActivity : AppCompatActivity() {
         }
     }
 
+    // TODO() Validate email and all fields filled in
     private fun clickAuthorizationButton(){
         Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
         if (::recaptchaClient.isInitialized) {
             executeLoginAction(actionOnCorrectCaptcha = {
                 authViewModel.login(LoginRequest(
                     binding.emailFiled.emailFiled.toString(),
-                    binding.passwordFiled.passwordFiled.toString()))
+                    binding.passwordFiled.passwordFiled.toString()
+                ))
             })
         } else {
             Log.d("AuthorizationActivity", "Problem with captcha init")
@@ -105,16 +111,15 @@ class AuthorizationActivity : AppCompatActivity() {
 
     }
 
-    private fun transactionToAuthorize(){
-        val intent = Intent(this, AuthorizationActivity::class.java)
+    // TODO() make it with pop this activity
+    private fun transactionToMain(){
+        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
     private fun initializeActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
-
         supportActionBar?.hide();
-
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
