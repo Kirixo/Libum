@@ -3,6 +3,7 @@
 #include <QtHttpServer/QHttpServer>
 #include "dbcontroller.h"
 #include "userhandler.h"
+#include "bookhandler.h"
 
 
 class RouteFactory
@@ -10,9 +11,7 @@ class RouteFactory
 public:
     explicit RouteFactory(std::shared_ptr<QHttpServer> server, std::shared_ptr<DBController> dbcontroller);
 
-    void registerAllRoutes() {
-        setupUserRoutes();
-    }
+    void registerAllRoutes();
 
 private:
     std::shared_ptr<DBController> dbcontroller_;
@@ -24,6 +23,10 @@ private:
         server_->route("/api/users/register", QHttpServerRequest::Method::Post, UserHandler::registerUser);
         server_->route("/api/users/login", QHttpServerRequest::Method::Post, UserHandler::loginUser);
         server_->route("/api/users/list", QHttpServerRequest::Method::Get, UserHandler::getUserList);
+    }
+
+    void setupBookRoutes() {
+        server_->route("api/books", QHttpServerRequest::Method::Get, BookHandler::getBookList);
     }
 };
 

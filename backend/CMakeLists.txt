@@ -23,6 +23,9 @@ add_executable(Libum
   routefactory.h routefactory.cpp
   userhandler.h userhandler.cpp
   responsegenerator.h responsegenerator.cpp
+  book.h book.cpp
+  bookhandler.h bookhandler.cpp
+  jsonable.h
 )
 target_link_libraries(Libum Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::HttpServer)
 

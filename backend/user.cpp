@@ -25,6 +25,20 @@ User::User(User &&user)
 {
 }
 
+User::~User()
+{
+
+}
+
+QJsonObject User::toJson() const
+{
+    QJsonObject json;
+    json["id"] = id_;
+    json["email"] = email_;
+    json["login"] = login_;
+    return json;
+}
+
 bool User::saveInDB()
 {
     if(email_.isNull() || login_.isNull() || password_.isNull()) {

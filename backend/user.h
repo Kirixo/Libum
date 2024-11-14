@@ -2,8 +2,9 @@
 #define USER_H
 #include "dbcontroller.h"
 #include <QtSql/QSqlQuery>
+#include "jsonable.h"
 
-class User
+class User : Jsonable
 {
 public:
     // User(int id, const std::string& email, const std::string& login, const std::string& password);
@@ -12,6 +13,9 @@ public:
     User(const QString& email, const QString& login, const QString& password);
     User(const User& user);
     User(User&& user);
+    ~User();
+
+    QJsonObject toJson() const override;
 
     bool saveInDB();
     void authorize(const QString& email, const QString& password);
@@ -27,6 +31,8 @@ public:
     qint64 id() const;
     QString email() const;
     QString login() const;
+
+
 
 private:
     qint64 id_;

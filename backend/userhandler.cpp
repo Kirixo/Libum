@@ -40,13 +40,7 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
     user.authorize(json.value("email").toString(), json.value("password").toString());
 
     if (user.exists()) {
-        QJsonObject userData;
-        userData["id"] = user.id();
-        userData["email"] = user.email();
-        userData["login"] = user.login();
-
-        QJsonDocument responseDoc(userData);
-        QByteArray responseData = responseDoc.toJson();
+        QByteArray responseData = QJsonDocument(user.toJson()).toJson(QJsonDocument::Compact);
 
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
@@ -57,8 +51,11 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
 
 QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
 {
+
     bool ok;
     int userId = request.query().queryItemValue("id").toInt(&ok);
+
+    qDebug() << "[getUser request]: id = " << userId;
 
     if (!ok) {
         return QHttpServerResponse("Invalid user ID.", QHttpServerResponse::StatusCode::BadRequest);
@@ -67,13 +64,7 @@ QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
     User user(userId);
 
     if (user.exists()) {
-        QJsonObject userData;
-        userData["id"] = user.id();
-        userData["email"] = user.email();
-        userData["login"] = user.login();
-
-        QJsonDocument responseDoc(userData);
-        QByteArray responseData = responseDoc.toJson();
+        QByteArray responseData = QJsonDocument(user.toJson()).toJson(QJsonDocument::Compact);
 
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
