@@ -100,12 +100,41 @@ export default {
   },
   methods: {
     validateUsername() {
+      if (!this.username) {
+        this.usernameError = 'Логін є обов\'язковим полем';
+      } else if (this.username.length < 3) {
+        this.usernameError = 'Логін повинен бути не менше ніж 3 символи';
+      } else {
+        this.usernameError = null;
+      }
     },
     validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.email) {
+        this.emailError = 'Email є обов\'язковим полем';
+      } else if (!emailPattern.test(this.email)) {
+        this.emailError = 'Некоректний формат Email';
+      } else {
+        this.emailError = null;
+      }
     },
     validatePassword() {
+      if (!this.password) {
+        this.passwordError = 'Пароль є обов\'язковим полем';
+      } else if (this.password.length < 6) {
+        this.passwordError = 'Пароль повинен бути не менше ніж 6 символів';
+      } else {
+        this.passwordError = null;
+      }
     },
     validateConfirmPassword() {
+      if (!this.confirmPassword) {
+        this.confirmPasswordError = 'Підтвердження пароля є обов\'язковим полем';
+      } else if (this.confirmPassword !== this.password) {
+        this.confirmPasswordError = 'Паролі не співпадають';
+      } else {
+        this.confirmPasswordError = null;
+      }
     },
     async submitForm() {
     },
