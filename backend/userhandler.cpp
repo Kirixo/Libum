@@ -51,7 +51,6 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
 
 QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
 {
-
     bool ok;
     int userId = request.query().queryItemValue("id").toInt(&ok);
 

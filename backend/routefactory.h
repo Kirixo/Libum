@@ -26,7 +26,8 @@ private:
     }
 
     void setupBookRoutes() {
-        server_->route("api/books", QHttpServerRequest::Method::Get, BookHandler::getBookList);
+        server_->route("/api/books", QHttpServerRequest::Method::Get, BookHandler::getBook);
+        server_->route("/api/books/list", QHttpServerRequest::Method::Get, BookHandler::getBookList);
     }
 };
 

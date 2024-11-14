@@ -2,12 +2,14 @@
 #define BOOKHANDLER_H
 #include "dbcontroller.h"
 #include <QtHttpServer/QHttpServer>
+#include "book.h"
 
 class BookHandler
 {
 public:
     BookHandler();
 
+    static QHttpServerResponse getBook(const QHttpServerRequest &request);
     static QHttpServerResponse getBookList(const QHttpServerRequest &request);
 
 };

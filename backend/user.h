@@ -7,7 +7,6 @@
 class User : Jsonable
 {
 public:
-    // User(int id, const std::string& email, const std::string& login, const std::string& password);
     User();
     User(quint64 id);
     User(const QString& email, const QString& login, const QString& password);
