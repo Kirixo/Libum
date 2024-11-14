@@ -65,6 +65,8 @@
 </template>
 
 <script>
+import md5 from 'md5'; // Для хеширования пароля
+
 export default {
   props: {
     isVisible: {
@@ -137,6 +139,18 @@ export default {
       }
     },
     async submitForm() {
+      try {
+        const hashedPassword = md5(this.password);
+        await this.$store.dispatch('postRegisterUser', {
+          login: this.username,
+          email: this.email,
+          password: hashedPassword,
+        });
+      } catch (error) {
+        this.usernameError = 'Ошибка авторизации. Проверьте введенные данные.';
+        this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
+        this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
+      }
     },
     signInWithGoogle() {
       // todo

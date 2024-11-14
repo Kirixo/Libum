@@ -1,31 +1,48 @@
 <template>
   <div>
-    <button @click="showModal">Открыть окно авторизации</button>
-    <LoginModal v-if="isModalVisible" :isVisible="isModalVisible"
-      @close="isModalVisible = false"
+    <button @click="showLoginModal">Открыть окно авторизации</button>
+    <LoginModal v-if="isLoginModalVisible" :isVisible="isLoginModalVisible"
+     @close="isLoginModalVisible = false"
       @login="handleLogin" />
+  </div>
+  <div>
+    <button @click="showSignupModal">Открыть окно регерстрации</button>
+    <Signup v-if="isSignupModalVisible" :isVisible="isSignupModalVisible"
+     @close="isSignupModalVisible = false"
+     @signup="handleSignup" />
   </div>
 </template>
 
 <script>
 // import LoginModal from './components/LoginModal.vue';
 import LoginModal from '../components/LoginModalComponent.vue';
+import Signup from '../components/SignupModalComponent.vue';
 
 export default {
-  components: { LoginModal },
+  components: {
+    LoginModal,
+    Signup,
+  },
   data() {
     return {
-      isModalVisible: false,
+      isLoginModalVisible: false,
+      isSignupModalVisible: false,
     };
   },
   methods: {
-    showModal() {
-      this.isModalVisible = true;
+    showLoginModal() {
+      this.isLoginModalVisible = true;
+    },
+    showSignupModal() {
+      this.isSignupModalVisible = true;
     },
     handleLogin(credentials) {
       console.log('Вход выполнен с данными:', credentials);
-      // Здесь можно добавить логику для обработки входа, например, отправку данных на сервер
-      this.isModalVisible = false;
+      this.isLoginModalVisible = false;
+    },
+    handleSignup(credentials) {
+      console.log('Вход выполнен с данными:', credentials);
+      this.isSignupModalVisible = false;
     },
   },
 };

@@ -16,6 +16,17 @@ export default createStore({
         email,
         password,
       })
+      // }, Headers {"authorization: $token"})
+        .then((result) => commit('updateUserInfo', result.data))
+        .catch(console.error);
+      // todo: if 401 (unauthorized) -> redirect to login page
+    },
+    postRegisterUser({ commit }, { login, email, password }) {
+      axios.post('/path/users/register', {
+        login,
+        email,
+        password,
+      })
         .then((result) => commit('updateUserInfo', result.data))
         .catch(console.error);
     },
