@@ -88,6 +88,9 @@ export default {
           email: this.email,
           password: hashedPassword,
         });
+        if (this.$store.state.userInfo) {
+          this.$router.push({ name: 'MainPage' });
+        }
       } catch (error) {
         this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
         this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
