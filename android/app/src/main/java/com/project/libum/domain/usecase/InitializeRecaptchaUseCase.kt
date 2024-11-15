@@ -1,4 +1,6 @@
-package com.project.libum.domain.recaptcha
+package com.project.libum.domain.usecase
+
+import com.project.libum.domain.recaptcha.RecaptchaService
 
 class InitializeRecaptchaUseCase(
     private val recaptchaService: RecaptchaService

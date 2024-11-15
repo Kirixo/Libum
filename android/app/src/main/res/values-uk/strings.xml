@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="app_name">Libum</string>
     <string name="title_home">Catalog</string>
     <string name="title_search">Search</string>
     <string name="title_profile">Profile</string>
@@ -11,5 +11,7 @@
     <string name="don_t_have_an_account">Don`t have an account?</string>
     <string name="sign_in">Sign In</string>
     <string name="unknow_error">Try later</string>
+    <string name="incorrect_email">Incorrect email</string>
+    <string name="incorrect_password">Incorrect password</string>
 
 </resources>

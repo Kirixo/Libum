@@ -9,10 +9,15 @@
 
 
     <color name="blue_200">#8FACE9</color>
-    <color name="blue_500">#6E85B7</color>
-    <color name="blue_700">#657596</color>
+    <color name="blue_500">#5884C9</color>
+    <color name="blue_700">#3F5C8A</color>
 
     <color name="gray_blue_200">#B3C7F0</color>
     <color name="gray_blue_500">#96A4C2</color>
     <color name="gray_blue_700">#737E95</color>
+
+    -- Additional colors --
+
+    <color name="blue_100">#17202C</color>
+
 </resources>

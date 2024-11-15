@@ -11,4 +11,6 @@
     <string name="sign_in">Sign In</string>
     <string name="unknow_error">Try later</string>
     <string name="incorrect_email">Incorrect email</string>
+    <string name="incorrect_password">Incorrect password</string>
+
 </resources>

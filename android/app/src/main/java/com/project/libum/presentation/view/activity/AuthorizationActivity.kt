@@ -41,10 +41,14 @@ class AuthorizationActivity : AppCompatActivity() {
         binding.emailFiled.emailField.setText(savedInstanceState?.getString(EMAIL_FILED, ""))
         binding.passwordFiled.passwordFiled.setText(savedInstanceState?.getString(PASSWORD_FIELD, ""))
 
+        setClickableAuthButton()
         authViewModel.initializeCaptcha()
+
         authViewModel.loginResult.observe(this) { result ->
             result.onFailure {
-
+                authViewModel.processLoginError(result, actionOnIncorrectPassword = {
+                    onIncorrectPasswordAction()
+                })
             }.onSuccess {
                 transactionToMain()
             }
@@ -65,6 +69,10 @@ class AuthorizationActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putString(EMAIL_FILED, binding.emailFiled.emailField.text.toString())
         outState.putString(PASSWORD_FIELD, binding.passwordFiled.passwordFiled.text.toString())
+    }
+
+    private fun onIncorrectPasswordAction(){
+        Toast.makeText(this, getString(R.string.incorrect_password), Toast.LENGTH_SHORT).show()
     }
 
     private fun clickAuthorizationButton(){
@@ -111,7 +119,7 @@ class AuthorizationActivity : AppCompatActivity() {
 
     private fun initializeActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
-        supportActionBar?.hide();
+        supportActionBar?.hide()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

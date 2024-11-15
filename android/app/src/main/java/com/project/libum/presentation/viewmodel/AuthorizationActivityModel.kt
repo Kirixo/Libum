@@ -6,10 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.recaptcha.RecaptchaAction
+import com.project.libum.core.exeption.IncorrectPasswordException
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.model.LoginResponse
-import com.project.libum.domain.recaptcha.ExecuteRecaptchaUseCase
-import com.project.libum.domain.recaptcha.InitializeRecaptchaUseCase
+import com.project.libum.domain.usecase.ExecuteRecaptchaUseCase
+import com.project.libum.domain.usecase.InitializeRecaptchaUseCase
 import com.project.libum.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -50,4 +51,18 @@ class AuthorizationActivityModel @Inject constructor(
             }
         }
     }
+
+    fun processLoginError(response: Result<LoginResponse>, actionOnIncorrectPassword: () -> Unit) {
+        response.onFailure { exception ->
+            when (exception) {
+                is IncorrectPasswordException -> {
+                    actionOnIncorrectPassword()
+                }
+                else -> {
+                    Log.e("Login Error", "Error: ${exception.message}")
+                }
+            }
+        }
+    }
+
 }
