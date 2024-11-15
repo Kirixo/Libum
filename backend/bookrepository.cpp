@@ -1,4 +1,6 @@
 #include "bookrepository.h"
+#include "logger.h"
+#include <qsqlerror.h>
 
 BookRepository::BookRepository() {}
 
@@ -6,7 +8,7 @@ std::optional<Book> BookRepository::fetchBookById(int id)
 {
     QSqlDatabase db = DBController::getDatabase();
     if (!db.isOpen()) {
-        qWarning() << "Database not open!";
+        Logger::instance().log(QString("[fetchBookById] Database not open!"), Logger::LogLevel::Warning);
         return std::nullopt;
     }
 
@@ -22,6 +24,8 @@ std::optional<Book> BookRepository::fetchBookById(int id)
     query.bindValue(":id", id);
 
     if (!query.exec() || !query.next()) {
+        Logger::instance().log(QString("[fetchBookById] Database query error!")
+                                   .append(query.lastError().text()), Logger::LogLevel::Warning);
         return std::nullopt;
     }
 
@@ -43,7 +47,7 @@ QList<Book> BookRepository::fetchBooks(int limit, int page)
 {
     QSqlDatabase db = DBController::getDatabase();
     if (!db.isOpen()) {
-        qWarning() << "Database not open!";
+        Logger::instance().log(QString("[fetchBooks] Database not open!"), Logger::LogLevel::Warning);
         return {};
     }
 
@@ -73,6 +77,9 @@ QList<Book> BookRepository::fetchBooks(int limit, int page)
             book.setGenres(fetchGenresForBook(book.id()));
             books.append(std::move(book));
         }
+    } else {
+        Logger::instance().log(QString("[fetchBooks] Database query error!")
+                                   .append(query.lastError().text()), Logger::LogLevel::Warning);
     }
 
     return books;

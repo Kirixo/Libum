@@ -1,4 +1,5 @@
 #include "userhandler.h"
+#include "logger.h"
 #include "user.h"
 #include "qjsondocument.h"
 #include "qjsonobject.h"
@@ -14,13 +15,21 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
     if (!json.contains("email") || !json.contains("password") || !json.contains("login"))
         return QHttpServerResponse(QHttpServerResponder::StatusCode::BadRequest);
 
-    qDebug() << "[reqisterUser request]: email = " << json.value("email").toString() << ", password = " << json.value("password").toString();
+    QString email = json.value("email").toString();
+    QString login = json.value("login").toString();
+    QString password = json.value("password").toString();
 
-    User user = User(json.value("email").toString(), json.value("login").toString(), json.value("password").toString());
+    Logger::instance().log(QString("[registerUser request] email = %1, login = %2, password = %3")
+                               .arg(email).arg(login).arg(password), Logger::LogLevel::Info);
+
+    User user = User(email, login, password);
 
     if(user.saveInDB()){
         return QHttpServerResponse(QHttpServerResponder::StatusCode::Ok);
     }
+
+    Logger::instance().log(QString("[registerUser request] email = %1, login = %2, password = %3")
+                               .arg(email).arg(login).arg(password), Logger::LogLevel::Error);
 
     return QHttpServerResponse(QHttpServerResponder::StatusCode::InternalServerError);
 }
@@ -38,16 +47,23 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
         return QHttpServerResponse("Missing email or password.", QHttpServerResponse::StatusCode::BadRequest);
     }
 
-    qDebug() << "[loginUser request]: email = " << json.value("email").toString() << ", password = " << json.value("password").toString();
+    QString email = json.value("email").toString();
+    QString password = json.value("password").toString();
+
+    Logger::instance().log(QString("[loginUser request] email = %1, password = %2")
+                               .arg(email).arg(password), Logger::LogLevel::Info);
 
     User user;
-    user.authorize(json.value("email").toString(), json.value("password").toString());
+    user.authorize(email, password);
 
     if (user.exists()) {
         QByteArray responseData = QJsonDocument(user.toJson()).toJson(QJsonDocument::Compact);
 
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
+
+    Logger::instance().log(QString("[loginUser request] User hasn't been authorized email = %1, password = %2")
+                               .arg(email).arg(password), Logger::LogLevel::Info);
 
     return QHttpServerResponse("Invalid email or password.", QHttpServerResponse::StatusCode::Unauthorized);
 }
@@ -58,7 +74,7 @@ QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
     bool ok;
     int userId = request.query().queryItemValue("id").toInt(&ok);
 
-    qDebug() << "[getUser request]: id = " << userId;
+    Logger::instance().log(QString("[getUser request] id = %1").arg(userId), Logger::LogLevel::Info);
 
     if (!ok) {
         return QHttpServerResponse("Invalid user ID.", QHttpServerResponse::StatusCode::BadRequest);
@@ -71,6 +87,9 @@ QHttpServerResponse UserHandler::getUser(const QHttpServerRequest &request)
 
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
+
+    Logger::instance().log(QString("[loginUser request] user not found id = %1")
+                               .arg(userId), Logger::LogLevel::Warning);
 
     return QHttpServerResponse("User not found.", QHttpServerResponse::StatusCode::NotFound);
 }

@@ -1,4 +1,6 @@
 #include "user.h"
+#include "logger.h"
+#include <qsqlerror.h>
 
 User::User()
     : id_(-1), email_(QString()), login_(QString()), password_(QString())
@@ -42,12 +44,17 @@ QJsonObject User::toJson() const
 bool User::saveInDB()
 {
     if(email_.isNull() || login_.isNull() || password_.isNull()) {
+        Logger::instance().log(QString("[saveInDB] email, login or password is NULL!"), Logger::LogLevel::Warning);
         return false;
     }
+
     QSqlDatabase db = DBController::getDatabase();
 
-    QString queryString = "INSERT INTO users (email, login, password)"
-                          "VALUES (:email, :login, :password)";
+    QString queryString = R"(
+        INSERT INTO users (email, login, password)
+        VALUES (:email, :login, :password)
+    )";
+
     QSqlQuery query(db);
     query.prepare(queryString);
     query.bindValue(":email", email_);
@@ -56,20 +63,25 @@ bool User::saveInDB()
     if(query.exec()) {
         return true;
     }
-
+    Logger::instance().log(QString("[saveInDB] Database query error!")
+                               .append(query.lastError().text()), Logger::LogLevel::Warning);
     return false;
 }
 
 void User::authorize(const QString &email, const QString &password)
 {
     if(email.isNull() || password.isNull()) {
+        Logger::instance().log(QString("[authorize] email or password is NULL!"), Logger::LogLevel::Warning);
         return;
     }
 
     QSqlDatabase db = DBController::getDatabase();
 
-    QString queryString = "SELECT id, email, login FROM users "
-                          "WHERE users.email = :email AND users.password = :password;";
+    QString queryString = R"(
+        SELECT id, email, login FROM users
+        WHERE users.email = :email AND users.password = :password;
+    )";
+
     QSqlQuery query(db);
     query.prepare(queryString);
     query.bindValue(":email", email);
@@ -79,6 +91,9 @@ void User::authorize(const QString &email, const QString &password)
         id_ = query.value("id").toInt();
         email_ = query.value("email").toString();
         login_ = query.value("login").toString();
+    } else {
+        Logger::instance().log(QString("[authorize] Possible query error!")
+                                   .append(query.lastError().text()), Logger::LogLevel::Warning);
     }
 }
 

@@ -12,7 +12,6 @@ QJsonObject Book::toJson() const
     json["id"] = id_;
     json["title"] = title_;
     json["cover"] = cover_;
-    json["mean_score"] = meanScore_;
     json["description"] = description_;
 
     QJsonArray genreArray;
@@ -23,7 +22,8 @@ QJsonObject Book::toJson() const
 
     json["language"] = language_;
     json["author"] = author_;
-    json["price"] = price_;
+    json["mean_score"] = (int)(meanScore_ * 100) / 100.F;
+    json["price"] = (int)(price_ * 100) / 100.F;
 
     return json;
 }

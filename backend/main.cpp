@@ -5,10 +5,15 @@
 #include "dbcontroller.h"
 #include "routefactory.h"
 #include <QtSql/QSqlError>
+#include "logger.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    Logger::instance().setLogFile("Libum.log");
+    Logger::instance().enableConsoleOutput(true);
+    Logger::instance().setLogLevel(Logger::LogLevel::Debug);
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -26,9 +31,10 @@ int main(int argc, char *argv[])
     std::shared_ptr<DBController> dbController = std::make_shared<DBController>();
 
     if(dbController->connect("localhost", "kirixo", "1111", "test", 5433)) {
-        qDebug() << "Libum db opened from main.cpp";
+        Logger::instance().log("Libum db opened from main.cpp", Logger::LogLevel::Info);
     } else {
-        qDebug() << "Libum db opening error in main.cpp" << dbController->getDatabase().lastError();
+        Logger::instance().log("Libum db opening error in main.cpp" +
+                                   dbController->getDatabase().lastError().text(), Logger::LogLevel::Error);
     }
 
 
@@ -36,23 +42,9 @@ int main(int argc, char *argv[])
     routefactory.registerAllRoutes();
 
     if (!server->listen(QHostAddress::Any, ServerController::port())) {
-        qCritical() << "Could not start server";
+        Logger::instance().log("[CRITICAL] Could not start server", Logger::LogLevel::Error);
         return 1;
     }
-
-
-
-
-    // Set up code that uses the Qt event loop here.
-    // Call a.quit() or a.exit() to quit the application.
-    // A not very useful example would be including
-    // #include <QTimer>
-    // near the top of the file and calling
-    // QTimer::singleShot(5000, &a, &QCoreApplication::quit);
-    // which quits the application after 5 seconds.
-
-    // If you do not need a running Qt event loop, remove the call
-    // to a.exec() or use the Non-Qt Plain C++ Application template.
 
     return a.exec();
 }

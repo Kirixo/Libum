@@ -27,6 +27,7 @@ add_executable(Libum
   bookhandler.h bookhandler.cpp
   jsonable.h
   bookrepository.h bookrepository.cpp
+  logger.h logger.cpp
 )
 target_link_libraries(Libum Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::HttpServer)
 

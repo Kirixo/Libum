@@ -1,5 +1,6 @@
 #include "bookhandler.h"
 #include <qjsondocument.h>
+#include "logger.h"
 
 BookHandler::BookHandler() {}
 
@@ -8,14 +9,14 @@ QHttpServerResponse BookHandler::getBook(const QHttpServerRequest &request)
     bool ok;
     int bookId = request.query().queryItemValue("id").toInt(&ok);
 
-    qDebug() << "[getBook request]: id = " << bookId;
+    Logger::instance().log(QString("[getBook request]: id = %1").arg(bookId), Logger::LogLevel::Info);
 
     if (!ok) {
         return QHttpServerResponse("Invalid book ID.", QHttpServerResponse::StatusCode::BadRequest);
     }
 
     BookRepository bookRepository;
-    std::optional<Book> book = bookRepository.fetchBookById(bookId).value();
+    std::optional<Book> book = bookRepository.fetchBookById(bookId);
 
     if (book) {
         QByteArray responseData = QJsonDocument(book->toJson()).toJson(QJsonDocument::Compact);
@@ -40,9 +41,10 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
 
     qDebug() << "[getBookList request]: limit = " << limit << ", page = " << page;
 
+    Logger::instance().log(QString("[getBookList request]: limit =  %1, page = %2").arg(limit)
+                               .arg(page), Logger::LogLevel::Info);
 
     BookRepository bookRepository;
-
     QList<Book> books = bookRepository.fetchBooks(limit, page);
 
     if (!books.isEmpty()) {
@@ -59,6 +61,9 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
 
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
+
+    Logger::instance().log(QString("[getBookList request] Not Found: limit =  %1, page = %2").arg(limit)
+                               .arg(page), Logger::LogLevel::Warning);
 
     return QHttpServerResponse("Books not found.", QHttpServerResponse::StatusCode::NotFound);
 }
