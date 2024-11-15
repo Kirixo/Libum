@@ -17,7 +17,7 @@ class ApiServiceIntegrationTest {
     @Before
     fun setUp() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.API_BASE_URL)  // Ваш URL
+            .baseUrl(BuildConfig.API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

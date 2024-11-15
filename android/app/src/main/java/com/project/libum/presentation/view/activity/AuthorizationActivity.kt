@@ -30,7 +30,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AuthorizationActivity : AppCompatActivity() {
 
-    private lateinit var recaptchaClient: RecaptchaClient
     private lateinit var binding: ActivityAuthorizationBinding
 
     private val authViewModel: AuthorizationActivityModel by viewModels()
@@ -38,80 +37,73 @@ class AuthorizationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeActivity()
-        initializeRecaptchaClient()
 
-        authViewModel.loginResult.observe(this){ result ->
+        binding.emailFiled.emailField.setText(savedInstanceState?.getString(EMAIL_FILED, ""))
+        binding.passwordFiled.passwordFiled.setText(savedInstanceState?.getString(PASSWORD_FIELD, ""))
+
+        authViewModel.initializeCaptcha()
+        authViewModel.loginResult.observe(this) { result ->
             result.onFailure {
-                Log.d("Auth", "Auth ${result}")
+
             }.onSuccess {
-                Log.d("Auth", "Auth ${result}")
+                transactionToMain()
             }
+            Log.d("Login Result", "$result")
         }
 
         binding.authorizationButton.setOnClickListener {
             clickAuthorizationButton()
         }
 
-        binding.emailFiled.emailFiled.addTextChangedListener { email ->
-            if (EmailValidation.validate(email.toString())){
-                showEmailError()
-            }else{
-                hideEmailError()
-            }
+        binding.emailFiled.emailField.addTextChangedListener {
+            setAuthFieldError()
+            setClickableAuthButton()
         }
     }
 
-    // TODO() Validate email and all fields filled in
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(EMAIL_FILED, binding.emailFiled.emailField.text.toString())
+        outState.putString(PASSWORD_FIELD, binding.passwordFiled.passwordFiled.text.toString())
+    }
+
     private fun clickAuthorizationButton(){
         Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
-        if (::recaptchaClient.isInitialized) {
-            executeLoginAction(actionOnCorrectCaptcha = {
+        authViewModel.executeCaptchaAndLogin (actionOnCorrectCaptcha  = {
+            if(validateAuthFormData()){
                 authViewModel.login(LoginRequest(
-                    binding.emailFiled.emailFiled.toString(),
-                    binding.passwordFiled.passwordFiled.toString()
+                    binding.emailFiled.emailField.text.toString(),
+                    binding.passwordFiled.passwordFiled.text.toString()
                 ))
-            })
-        } else {
-            Log.d("AuthorizationActivity", "Problem with captcha init")
+            }
+        })
+    }
+
+    private fun setClickableAuthButton(){
+        binding.authorizationButton.isClickable = validateAuthFormData()
+    }
+
+    private fun setAuthFieldError(){
+        if (validateAuthFormData()){
+            hideEmailError()
+        }else{
+            showEmailError()
         }
     }
+
+    private fun validateAuthFormData(): Boolean = EmailValidation.validate(binding.emailFiled.emailField.text.toString())
 
     private fun showEmailError(){
         binding.emailFiled.error.visibility = View.VISIBLE
-        binding.emailFiled.emailFiled.error = "Incorrect email"
+        binding.emailFiled.error.text = getString(R.string.incorrect_email)
+        binding.emailFiled.emailField.error = null
     }
 
     private fun hideEmailError(){
         binding.emailFiled.error.visibility = View.INVISIBLE
+        binding.emailFiled.emailField.error = null
     }
 
-    private fun executeLoginAction(actionOnCorrectCaptcha: () -> Unit) {
-        lifecycleScope.launch {
-            recaptchaClient
-                .execute(RecaptchaAction.LOGIN)
-                .onSuccess { _ ->
-                    actionOnCorrectCaptcha.invoke()
-                    Toast.makeText(applicationContext, "Captcha is correct", Toast.LENGTH_SHORT).show()
-                }
-                .onFailure { exception ->
-                    Log.e("AuthorizationActivity", "Problem with captcha init: ${exception.toString()}" )
-                }
-        }
-    }
-
-    private fun initializeRecaptchaClient() {
-        lifecycleScope.launch {
-            try {
-                recaptchaClient = Recaptcha.fetchClient(application, BuildConfig.CAPTCHA_API_KEY)
-                Log.d("AuthorizationActivity", "Captcha init success")
-            } catch (e: RecaptchaException) {
-                Log.e("AuthorizationActivity", e.toString())
-            }
-        }
-
-    }
-
-    // TODO() make it with pop this activity
     private fun transactionToMain(){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
@@ -127,5 +119,10 @@ class AuthorizationActivity : AppCompatActivity() {
         }
 
         setContentView(binding.root)
+    }
+
+    companion object{
+        const val EMAIL_FILED = "EMAIL_FIELD"
+        const val PASSWORD_FIELD = "PASSWORD_FIELD"
     }
 }
