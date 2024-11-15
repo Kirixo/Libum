@@ -14,12 +14,11 @@ QHttpServerResponse BookHandler::getBook(const QHttpServerRequest &request)
         return QHttpServerResponse("Invalid book ID.", QHttpServerResponse::StatusCode::BadRequest);
     }
 
-    Book book;
-    book.fetch(bookId);
+    BookRepository bookRepository;
+    std::optional<Book> book = bookRepository.fetchBookById(bookId).value();
 
-    if (book.exists()) {
-        QByteArray responseData = QJsonDocument(book.toJson()).toJson(QJsonDocument::Compact);
-
+    if (book) {
+        QByteArray responseData = QJsonDocument(book->toJson()).toJson(QJsonDocument::Compact);
         return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
     }
 
@@ -42,15 +41,24 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
     qDebug() << "[getBookList request]: limit = " << limit << ", page = " << page;
 
 
+    BookRepository bookRepository;
 
-    // Book book;
-    // book.fetch(bookId);
+    QList<Book> books = bookRepository.fetchBooks(limit, page);
 
-    // if (book.exists()) {
-    //     QByteArray responseData = QJsonDocument(book.toJson()).toJson(QJsonDocument::Compact);
+    if (!books.isEmpty()) {
+        QJsonArray bookArray;
+        for (const Book &book : books) {
+            bookArray.append(book.toJson());
+        }
 
-    //     return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
-    // }
+        QJsonObject responseJson;
+        responseJson["total_count"] = bookRepository.getBooksCount();
+        responseJson["books"] = bookArray;
+
+        QByteArray responseData = QJsonDocument(responseJson).toJson(QJsonDocument::Compact);
+
+        return QHttpServerResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
 
     return QHttpServerResponse("Books not found.", QHttpServerResponse::StatusCode::NotFound);
 }

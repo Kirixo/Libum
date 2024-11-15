@@ -2,7 +2,7 @@
 #define BOOKHANDLER_H
 #include "dbcontroller.h"
 #include <QtHttpServer/QHttpServer>
-#include "book.h"
+#include "bookrepository.h"
 
 class BookHandler
 {

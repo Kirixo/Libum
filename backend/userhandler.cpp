@@ -14,6 +14,8 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
     if (!json.contains("email") || !json.contains("password") || !json.contains("login"))
         return QHttpServerResponse(QHttpServerResponder::StatusCode::BadRequest);
 
+    qDebug() << "[reqisterUser request]: email = " << json.value("email").toString() << ", password = " << json.value("password").toString();
+
     User user = User(json.value("email").toString(), json.value("login").toString(), json.value("password").toString());
 
     if(user.saveInDB()){
@@ -35,6 +37,8 @@ QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)
     if (!json.contains("email") || !json.contains("password")) {
         return QHttpServerResponse("Missing email or password.", QHttpServerResponse::StatusCode::BadRequest);
     }
+
+    qDebug() << "[loginUser request]: email = " << json.value("email").toString() << ", password = " << json.value("password").toString();
 
     User user;
     user.authorize(json.value("email").toString(), json.value("password").toString());

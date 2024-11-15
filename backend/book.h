@@ -12,9 +12,30 @@ public:
     ~Book();
 
     QJsonObject toJson() const override;
-    void fetch(quint64 id);
 
     bool exists();
+
+    void setId(qint64 newId);
+    void setTitle(const QString &newTitle);
+    void setCover(const QString &newCover);
+    void setMeanScore(float newMeanScore);
+    void setDescription(const QString &newDescription);
+    void setGenres(const QList<QString> &newGenres);
+    void setLanguage(const QString &newLanguage);
+    void setYear(qint16 newYear);
+    void setAuthor(const QString &newAuthor);
+    void setPrice(float newPrice);
+
+    qint64 id() const;
+    const QString& title() const;
+    const QString& cover() const;
+    float meanScore() const;
+    const QString& description() const;
+    const QList<QString>& genres() const;
+    const QString& language() const;
+    qint16 year() const;
+    const QString& author() const;
+    float price() const;
 
 private:
     qint64 id_;
