@@ -20,6 +20,9 @@
     -- Additional colors --
 
     <color name="blue_100">#DDE4F0</color>
+    <color name="gray_200">#D9D9D9</color>
+    <color name="background">@color/white</color>
+
 
 </resources>
 

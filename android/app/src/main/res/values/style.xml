@@ -12,6 +12,14 @@
         <item name="cornerSize">22dp</item>
     </style>
 
+    <style name="roundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+
+    <style name="roundedImageView.BookView" parent="">
+        <item name="cornerSize">4dp</item>
+    </style>
 
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">wrap_content</item>

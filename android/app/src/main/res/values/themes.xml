@@ -9,7 +9,7 @@
         <item name="colorSecondaryVariant">@color/gray_blue_700</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:statusBarColor">@color/blue_100</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowBackground">@color/white</item>
 

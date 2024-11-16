@@ -19,5 +19,6 @@
     -- Additional colors --
 
     <color name="blue_100">#17202C</color>
+    <color name="background">@color/black</color>
 
 </resources>
