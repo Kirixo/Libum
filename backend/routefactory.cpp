@@ -5,6 +5,7 @@ RouteFactory::RouteFactory(std::shared_ptr<QHttpServer> server, std::shared_ptr<
 
 void RouteFactory::registerAllRoutes()
 {
+    handleOptionsRequest();
     setupUserRoutes();
     setupBookRoutes();
 }

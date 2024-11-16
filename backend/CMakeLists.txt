@@ -22,7 +22,7 @@ add_executable(Libum
   user.h user.cpp
   routefactory.h routefactory.cpp
   userhandler.h userhandler.cpp
-  responsegenerator.h responsegenerator.cpp
+  responsefactory.h responsefactory.cpp
   book.h book.cpp
   bookhandler.h bookhandler.cpp
   jsonable.h
