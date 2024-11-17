@@ -44,13 +44,18 @@ class AuthorizationActivity : AppCompatActivity() {
         setClickableAuthButton()
         authViewModel.initializeCaptcha()
 
+
         authViewModel.loginResult.observe(this) { result ->
-            result.onFailure {
-                authViewModel.processLoginError(result, actionOnIncorrectPassword = {
-                    onIncorrectPasswordAction()
-                })
-            }.onSuccess {
+            if(BuildConfig.IS_DEV_MODE){
                 transactionToMain()
+            }else{
+                result.onFailure {
+                    authViewModel.processLoginError(result, actionOnIncorrectPassword = {
+                        onIncorrectPasswordAction()
+                    })
+                }.onSuccess {
+                    transactionToMain()
+                }
             }
             Log.d("Login Result", "$result")
         }

@@ -56,11 +56,6 @@ class BookView: ConstraintLayout {
     private fun createPopUpMenu(){
         val popupMenu = PopupMenu(context, moreButton)
         popupMenu.inflate(R.menu.bottom_nav_menu)
-//        popupMenu.setOnMenuItemClickListener { menuItem ->
-//            when(menuItem){
-//                else -> null
-//            }
-//        }
     }
 
     private fun updateLayout() {
@@ -85,7 +80,8 @@ class BookView: ConstraintLayout {
 
     }
 
-    enum class BookDisplayStyle{
-        WIDE, SLIM
+    enum class BookDisplayStyle(val id: Int) {
+        WIDE(0),
+        SLIM(1),
     }
 }

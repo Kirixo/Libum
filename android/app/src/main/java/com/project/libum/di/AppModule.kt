@@ -8,6 +8,8 @@ import com.project.libum.domain.recaptcha.RecaptchaService
 import com.project.libum.domain.recaptcha.RecaptchaServiceImpl
 import com.project.libum.domain.repository.AuthRepository
 import com.project.libum.domain.repository.AuthRepositoryImpl
+import com.project.libum.domain.repository.BooksListRepository
+import com.project.libum.domain.repository.BooksListRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +24,12 @@ object AppModule{
     @Singleton
     fun provideAuthRepository(): AuthRepository {
         return AuthRepositoryImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookListRepository(): BooksListRepository{
+        return BooksListRepositoryImpl()
     }
 
     @Provides

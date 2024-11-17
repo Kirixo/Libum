@@ -5,3 +5,7 @@ data class LoginResponse(
     val id: Int,
     val login: String
 )
+
+data class BookListResponse(
+    val id: Int
+)

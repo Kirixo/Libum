@@ -34,12 +34,14 @@ android {
             buildConfigField("String", "CAPTCHA_API_KEY", "\"${project.findProperty("CAPTCHA_API_KEY")}\"")
             buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("API_BASE_URL")}\"")
             buildConfigField("String", "REGISTER_URL", "\"${project.findProperty("REGISTER_URL")}\"")
+            buildConfigField("Boolean", "IS_DEV_MODE", "false")
         }
 
         debug {
             buildConfigField("String", "CAPTCHA_API_KEY", "\"${project.findProperty("CAPTCHA_API_KEY")}\"")
             buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("API_BASE_URL")}\"")
             buildConfigField("String", "REGISTER_URL", "\"${project.findProperty("REGISTER_URL")}\"")
+            buildConfigField("Boolean", "IS_DEV_MODE", "true")
         }
     }
     compileOptions {

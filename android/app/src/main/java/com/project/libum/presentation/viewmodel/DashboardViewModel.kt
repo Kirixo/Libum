@@ -1,4 +1,4 @@
-package com.project.libum.data.model
+package com.project.libum.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

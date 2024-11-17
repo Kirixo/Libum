@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.project.libum.databinding.FragmentProfileBinding
-import com.project.libum.data.model.DashboardViewModel
+import com.project.libum.presentation.viewmodel.DashboardViewModel
 
 class ProfileFragment : Fragment() {
 

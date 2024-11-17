@@ -2,6 +2,7 @@ package com.project.libum
 
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.remote.ApiService
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.runBlocking
@@ -30,6 +31,13 @@ class ApiServiceIntegrationTest {
         val response = apiService.login(request)
         assertTrue(response.isSuccessful)
         assertNotNull(response.body())
+    }
+
+    @Test
+    fun testLoginFailRequest() = runBlocking {
+        val request = LoginRequest("allah", "81dc9bdb52d04dc20036dbd8313ed055")
+        val response = apiService.login(request)
+        assertTrue(response.code() == 401)
     }
 
 }
