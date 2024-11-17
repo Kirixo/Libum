@@ -14,11 +14,10 @@ public:
     User(User&& user);
     ~User();
 
-    QJsonObject toJson() const override;
-
     bool saveInDB();
     void authorize(const QString& email, const QString& password);
     void initializeByID(quint64 id);
+    static bool checkExistanceInDB(const QString& email);
     bool exists();
 
 
@@ -39,7 +38,9 @@ private:
     QString login_;
     QString password_;
 
-
+    // Jsonable interface
+public:
+    QJsonObject toJson() const override;
 };
 
 #endif // USER_H

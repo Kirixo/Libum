@@ -117,6 +117,24 @@ void User::initializeByID(quint64 id)
     id_ = -1;
 }
 
+bool User::checkExistanceInDB(const QString &email)
+{
+    QString queryString = R"(
+        SELECT 1 FROM users
+        WHERE users.email = :email;
+    )";
+
+    QSqlQuery query(DBController::getDatabase());
+    query.prepare(queryString);
+    query.bindValue(":email", email);
+
+    if (query.exec() && query.next()) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 bool User::exists()
 {
     return id_ != -1;

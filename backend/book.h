@@ -2,7 +2,7 @@
 #define BOOK_H
 #include <QObject>
 #include <qurl.h>
-#include "dbcontroller.h"
+#include "genre.h"
 #include "jsonable.h"
 
 class Book : Jsonable
@@ -11,8 +11,6 @@ public:
     Book();
     ~Book();
 
-    QJsonObject toJson() const override;
-
     bool exists();
 
     void setId(qint64 newId);
@@ -20,7 +18,7 @@ public:
     void setCover(const QString &newCover);
     void setMeanScore(float newMeanScore);
     void setDescription(const QString &newDescription);
-    void setGenres(const QList<QString> &newGenres);
+    void setGenres(const QList<Genre> &newGenres);
     void setLanguage(const QString &newLanguage);
     void setYear(qint16 newYear);
     void setAuthor(const QString &newAuthor);
@@ -31,7 +29,7 @@ public:
     const QString& cover() const;
     float meanScore() const;
     const QString& description() const;
-    const QList<QString>& genres() const;
+    const QList<Genre>& genres() const;
     const QString& language() const;
     qint16 year() const;
     const QString& author() const;
@@ -43,11 +41,15 @@ private:
     QString cover_;
     float meanScore_;
     QString description_;
-    QList<QString> genres_;
+    QList<Genre> genres_;
     QString language_;
     qint16 year_;
     QString author_;
     float price_;
+
+    // Jsonable interface
+public:
+    QJsonObject toJson() const override;
 
 };
 

@@ -28,23 +28,10 @@ private:
     void setupBookRoutes() {
         server_->route("/api/books", QHttpServerRequest::Method::Get, BookHandler::getBook);
         server_->route("/api/books/list", QHttpServerRequest::Method::Get, BookHandler::getBookList);
+        server_->route("/api/books/genres", QHttpServerRequest::Method::Get, BookHandler::getGenresList);
     }
 
-    void handleOptionsRequest() {
-        server_->route("/*", QHttpServerRequest::Method::Options, [this](const QHttpServerRequest &request) {
-            QHttpServerResponse response(
-                QByteArray(),
-                QHttpServerResponse::StatusCode::NoContent
-            );
-
-            response.setHeader("Content-Type", "text/plain");
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-            return response;
-        });
-    }
+    void handleOptionsRequest();
 };
 
 

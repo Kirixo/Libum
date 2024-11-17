@@ -1,5 +1,6 @@
 #include "bookhandler.h"
 #include <qjsondocument.h>
+#include "genrerepository.h"
 #include "logger.h"
 #include "responsefactory.h"
 
@@ -67,4 +68,30 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
                                .arg(page), Logger::LogLevel::Warning);
 
     return ResponseFactory::createResponse("Books not found.", QHttpServerResponse::StatusCode::NotFound);
+}
+
+QHttpServerResponse BookHandler::getGenresList(const QHttpServerRequest &request)
+{
+    GenreRepository genreRepository;
+    QList<Genre> genres = genreRepository.getAllGenres();
+
+    Logger::instance().log(QString("[getGenreList request]"), Logger::LogLevel::Info);
+
+    if (!genres.isEmpty()) {
+        QJsonArray genreArray;
+        for (const Genre &genre : genres) {
+            genreArray.append(genre.toJson());
+        }
+
+        QJsonObject responseJson;
+        responseJson["genres"] = genreArray;
+
+        QByteArray responseData = QJsonDocument(responseJson).toJson(QJsonDocument::Compact);
+
+        return ResponseFactory::createJsonResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
+
+    Logger::instance().log(QString("[getGenreList request] Not Found"), Logger::LogLevel::Warning);
+
+    return ResponseFactory::createResponse("Genres not found.", QHttpServerResponse::StatusCode::NotFound);
 }

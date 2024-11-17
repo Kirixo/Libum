@@ -2,6 +2,7 @@
 #define BOOKREPOSITORY_H
 
 #include "book.h"
+#include "genre.h"
 #include <optional>
 
 class BookRepository
@@ -13,7 +14,7 @@ public:
     int getBooksCount();
 
 private:
-    QList<QString> fetchGenresForBook(int bookId);
+    QList<Genre> fetchGenresForBook(int bookId);
 };
 
 #endif // BOOKREPOSITORY_H

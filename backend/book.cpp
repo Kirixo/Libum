@@ -16,7 +16,10 @@ QJsonObject Book::toJson() const
 
     QJsonArray genreArray;
     for (const auto& genre : genres_) {
-        genreArray.append(genre);
+        QJsonObject tmpJsonGenre;
+        tmpJsonGenre["id"] = genre.id();
+        tmpJsonGenre["name"] = genre.name();
+        genreArray.append(tmpJsonGenre);
     }
     json["genres"] = genreArray;
 
@@ -58,7 +61,7 @@ void Book::setDescription(const QString &newDescription)
     description_ = newDescription;
 }
 
-void Book::setGenres(const QList<QString> &newGenres)
+void Book::setGenres(const QList<Genre> &newGenres)
 {
     genres_ = newGenres;
 }
@@ -108,7 +111,7 @@ const QString& Book::description() const
     return description_;
 }
 
-const QList<QString>& Book::genres() const
+const QList<Genre>& Book::genres() const
 {
     return genres_;
 }

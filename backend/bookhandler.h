@@ -11,6 +11,7 @@ public:
 
     static QHttpServerResponse getBook(const QHttpServerRequest &request);
     static QHttpServerResponse getBookList(const QHttpServerRequest &request);
+    static QHttpServerResponse getGenresList(const QHttpServerRequest &request);
 
 };
 

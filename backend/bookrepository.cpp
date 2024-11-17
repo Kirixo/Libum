@@ -1,6 +1,9 @@
 #include "bookrepository.h"
 #include "logger.h"
+#include "dbcontroller.h"
+#include <qsqldatabase.h>
 #include <qsqlerror.h>
+#include <qsqlquery.h>
 
 BookRepository::BookRepository() {}
 
@@ -104,13 +107,13 @@ int BookRepository::getBooksCount()
     return 0;
 }
 
-QList<QString> BookRepository::fetchGenresForBook(int bookId)
+QList<Genre> BookRepository::fetchGenresForBook(int bookId)
 {
     QSqlDatabase db = DBController::getDatabase();
-    QList<QString> genres;
+    QList<Genre> genres;
 
     QString queryString = R"(
-        SELECT g.genre_name
+        SELECT g.id, g.genre_name
         FROM book_genre bg
         LEFT JOIN genres AS g ON g.id = bg.genre_id
         WHERE bg.book_id = :id
@@ -122,7 +125,10 @@ QList<QString> BookRepository::fetchGenresForBook(int bookId)
 
     if (query.exec()) {
         while (query.next()) {
-            genres.append(query.value("genre_name").toString());
+            Genre tmpGenre;
+            tmpGenre.setId(query.value("id").toInt());
+            tmpGenre.setName(query.value("genre_name").toString());
+            genres.append(std::move(tmpGenre));
         }
     }
 

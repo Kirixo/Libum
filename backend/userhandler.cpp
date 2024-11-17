@@ -22,16 +22,22 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
     QString password = json.value("password").toString();
 
     Logger::instance().log(QString("[registerUser request] email = %1, login = %2, password = %3")
-                               .arg(email).arg(login).arg(password), Logger::LogLevel::Info);
+                               .arg(email, login, password), Logger::LogLevel::Info);
 
     User user = User(email, login, password);
+
+    if(User::checkExistanceInDB(email)) {
+        Logger::instance().log(QString("[registerUser request] User with the same email exists."), Logger::LogLevel::Info);
+
+        return ResponseFactory::createResponse("Email already in use.", QHttpServerResponder::StatusCode::Conflict);
+    }
 
     if(user.saveInDB()){
         return loginUser(request);
     }
 
     Logger::instance().log(QString("[registerUser request] email = %1, login = %2, password = %3")
-                               .arg(email).arg(login).arg(password), Logger::LogLevel::Error);
+                               .arg(email, login, password), Logger::LogLevel::Error);
 
     return ResponseFactory::createResponse("I dunno what's ging on. Internal server error.", QHttpServerResponder::StatusCode::InternalServerError);
 }
