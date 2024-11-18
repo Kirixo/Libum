@@ -17,8 +17,7 @@ QHttpServerResponse BookHandler::getBook(const QHttpServerRequest &request)
         return ResponseFactory::createResponse("Invalid book ID.", QHttpServerResponse::StatusCode::BadRequest);
     }
 
-    BookRepository bookRepository;
-    std::optional<Book> book = bookRepository.fetchBookById(bookId);
+    std::optional<Book> book = BookRepository::fetchBookById(bookId);
 
     if (book) {
         QByteArray responseData = QJsonDocument(book->toJson()).toJson(QJsonDocument::Compact);
@@ -46,8 +45,7 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
     Logger::instance().log(QString("[getBookList request]: limit =  %1, page = %2").arg(limit)
                                .arg(page), Logger::LogLevel::Info);
 
-    BookRepository bookRepository;
-    QList<Book> books = bookRepository.fetchBooks(limit, page);
+    QList<Book> books = BookRepository::fetchBooks(limit, page);
 
     if (!books.isEmpty()) {
         QJsonArray bookArray;
@@ -56,7 +54,7 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
         }
 
         QJsonObject responseJson;
-        responseJson["total_count"] = bookRepository.getBooksCount();
+        responseJson["total_count"] = BookRepository::getBooksCount();
         responseJson["books"] = bookArray;
 
         QByteArray responseData = QJsonDocument(responseJson).toJson(QJsonDocument::Compact);
@@ -72,8 +70,7 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
 
 QHttpServerResponse BookHandler::getGenresList(const QHttpServerRequest &request)
 {
-    GenreRepository genreRepository;
-    QList<Genre> genres = genreRepository.getAllGenres();
+    QList<Genre> genres = GenreRepository::getAllGenres();
 
     Logger::instance().log(QString("[getGenreList request]"), Logger::LogLevel::Info);
 

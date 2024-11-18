@@ -7,7 +7,7 @@ class GenreRepository
 public:
     GenreRepository();
 
-    QList<Genre> getAllGenres();
+    static QList<Genre> getAllGenres();
 };
 
 #endif // GENREREPOSITORY_H

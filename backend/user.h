@@ -15,8 +15,11 @@ public:
     ~User();
 
     bool saveInDB();
+    // void saveAndroidID(QString& email, QString androidID);
+    // bool checkAndroidID(QString& androidID);
+    // void deleteAndroidID(QString& email);
     void authorize(const QString& email, const QString& password);
-    void initializeByID(quint64 id);
+    void fetchByID(quint64 id);
     static bool checkExistanceInDB(const QString& email);
     bool exists();
 

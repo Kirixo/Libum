@@ -9,12 +9,12 @@ class BookRepository
 {
 public:
     BookRepository();
-    std::optional<Book> fetchBookById(int id);
-    QList<Book> fetchBooks(int limit, int page);
-    int getBooksCount();
+    static std::optional<Book> fetchBookById(int id);
+    static QList<Book> fetchBooks(int limit, int page);
+    static int getBooksCount();
 
 private:
-    QList<Genre> fetchGenresForBook(int bookId);
+    static QList<Genre> fetchGenresForBook(int bookId);
 };
 
 #endif // BOOKREPOSITORY_H

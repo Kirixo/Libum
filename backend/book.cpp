@@ -1,6 +1,6 @@
 #include "book.h"
 
-Book::Book() : id_(-1)
+Book::Book() : id_(-1), meanScore_(0)
 {
 }
 
@@ -25,8 +25,8 @@ QJsonObject Book::toJson() const
 
     json["language"] = language_;
     json["author"] = author_;
-    json["mean_score"] = (int)(meanScore_ * 100) / 100.F;
-    json["price"] = (int)(price_ * 100) / 100.F;
+    json["mean_score"] = meanScore_ ? QJsonValue(std::round(meanScore_ * 100) / 100.0) : QJsonValue::Null;
+    json["price"] = std::round(price_ * 100) / 100.0;
 
     return json;
 }

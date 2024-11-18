@@ -9,7 +9,7 @@ User::User()
 
 User::User(quint64 id)
 {
-    initializeByID(id);
+    fetchByID(id);
 }
 
 User::User(const QString &email, const QString &login, const QString &password)
@@ -97,7 +97,7 @@ void User::authorize(const QString &email, const QString &password)
     }
 }
 
-void User::initializeByID(quint64 id)
+void User::fetchByID(quint64 id)
 {
     QSqlDatabase db = DBController::getDatabase();
 
