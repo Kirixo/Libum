@@ -11,7 +11,7 @@ module.exports = {
         target: 'https://molly-busy-jolly.ngrok-free.app/api',
         changeOrigin: true,
         pathRewrite: { '^/path': '' }, // Убирает префикс /path из пути запроса
-        logLevel: 'debug',  // Добавьте логирование
+        logLevel: 'debug', // Добавьте логирование
       },
     },
   },

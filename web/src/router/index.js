@@ -15,8 +15,9 @@ export default createRouter({
       default: MainPage,
     },
   }, {
-    path: '/book',
+    path: '/book/:id',
     name: 'BookPage',
+    props: true,
     component: BookPage,
   },
   {
