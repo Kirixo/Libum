@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import md5 from 'md5'; // Для хеширования пароля
+// import md5 from 'md5'; // Для хеширования пароля
 
 export default {
   props: {
@@ -140,12 +140,13 @@ export default {
     },
     async submitForm() {
       try {
-        const hashedPassword = md5(this.password);
+        // const hashedPassword = md5(this.password);
         await this.$store.dispatch('postRegisterUser', {
           login: this.username,
           email: this.email,
-          password: hashedPassword,
+          password: this.password,
         });
+        // console.log('after post', this.$store.state.userInfo);
 
         if (this.$store.state.userInfo) {
           this.$router.push({ name: 'MainPage' });

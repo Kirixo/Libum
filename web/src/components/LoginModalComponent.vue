@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import md5 from 'md5'; // Для хеширования пароля
+// import md5 from 'md5'; // Для хеширования пароля
 
 export default {
   props: {
@@ -83,15 +83,18 @@ export default {
     },
     async submitForm() {
       try {
-        const hashedPassword = md5(this.password);
+        // const hashedPassword = md5(this.password);
         await this.$store.dispatch('postUserInfo', {
           email: this.email,
-          password: hashedPassword,
+          password: this.password,
+        }).then(() => {
+          // console.log(this.$store.state.userInfo);
+          if (this.$store.state.userInfo) {
+            this.$router.push({ name: 'MainPage' });
+          }
         });
-        if (this.$store.state.userInfo) {
-          this.$router.push({ name: 'MainPage' });
-        }
       } catch (error) {
+        console.log(error);
         this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
         this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
       }
