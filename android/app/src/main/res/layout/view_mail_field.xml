@@ -25,12 +25,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/_label"
-        app:errorEnabled="true"
-        android:padding="@dimen/margin_inside_text"
         android:hint="@string/email_hint"
         android:background="@drawable/rounded_field_background"
-        android:singleLine="true">
+        style="@style/TextAppearance.Libum.Body"
+        android:padding="@dimen/margin_inside_text"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:textColorHighlight="@android:color/transparent"
+        android:inputType="textEmailAddress"
+        android:outlineProvider="none"
+        >
     </com.google.android.material.textfield.TextInputEditText>
+
 
     <TextView
         android:id="@+id/error"

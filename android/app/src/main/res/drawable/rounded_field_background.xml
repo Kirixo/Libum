@@ -2,6 +2,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="3dp"
-        android:color="@color/gray_blue_500" />
+        android:color="@drawable/se_email_field_background" />
     <corners android:radius="8dp"/>
 </shape>

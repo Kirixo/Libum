@@ -1,5 +1,6 @@
 package com.project.libum.domain.repository
 
+import com.project.libum.data.local.dao.UserDao
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.model.LoginResponse
 

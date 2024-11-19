@@ -5,26 +5,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
-import com.google.android.recaptcha.Recaptcha
-import com.google.android.recaptcha.RecaptchaAction
-import com.google.android.recaptcha.RecaptchaClient
-import com.google.android.recaptcha.RecaptchaException
-import com.project.libum.BuildConfig
 import com.project.libum.R
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
 import com.project.libum.domain.validation.EmailValidation
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -46,16 +37,12 @@ class AuthorizationActivity : AppCompatActivity() {
 
 
         authViewModel.loginResult.observe(this) { result ->
-            if(BuildConfig.IS_DEV_MODE){
+            result.onFailure {
+                authViewModel.processLoginError(result, actionOnIncorrectPassword = {
+                    onIncorrectPasswordAction()
+                })
+            }.onSuccess {
                 transactionToMain()
-            }else{
-                result.onFailure {
-                    authViewModel.processLoginError(result, actionOnIncorrectPassword = {
-                        onIncorrectPasswordAction()
-                    })
-                }.onSuccess {
-                    transactionToMain()
-                }
             }
             Log.d("Login Result", "$result")
         }
@@ -67,6 +54,18 @@ class AuthorizationActivity : AppCompatActivity() {
         binding.emailFiled.emailField.addTextChangedListener {
             setAuthFieldError()
             setClickableAuthButton()
+        }
+
+        binding.emailFiled.emailField.setOnFocusChangeListener { view, focusValue ->
+            if (focusValue){
+                scrollToView(view)
+            }
+        }
+
+        binding.passwordFiled.passwordFiled.setOnFocusChangeListener { view, focusValue ->
+            if (focusValue){
+                scrollToView(view)
+            }
         }
     }
 
@@ -83,17 +82,16 @@ class AuthorizationActivity : AppCompatActivity() {
     private fun clickAuthorizationButton(){
         Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
         authViewModel.executeCaptchaAndLogin (actionOnCorrectCaptcha  = {
-            if(validateAuthFormData()){
-                authViewModel.login(LoginRequest(
-                    binding.emailFiled.emailField.text.toString(),
-                    binding.passwordFiled.passwordFiled.text.toString()
-                ))
-            }
+            authViewModel.login(LoginRequest(
+                binding.emailFiled.emailField.text.toString(),
+                binding.passwordFiled.passwordFiled.text.toString()
+            ))
         })
     }
 
     private fun setClickableAuthButton(){
         binding.authorizationButton.isClickable = validateAuthFormData()
+        binding.authorizationButton.isEnabled = validateAuthFormData()
     }
 
     private fun setAuthFieldError(){
@@ -120,6 +118,18 @@ class AuthorizationActivity : AppCompatActivity() {
     private fun transactionToMain(){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun scrollToView(view: View) {
+        binding.scrollView.post {
+
+            val scrollViewHeight = binding.scrollView.height
+            val viewHeight = view.height
+
+            val scrollTo = view.top - (scrollViewHeight - viewHeight) / 2 + 12
+
+            binding.scrollView.smoothScrollTo(0, scrollTo)
+        }
     }
 
     private fun initializeActivity() {
