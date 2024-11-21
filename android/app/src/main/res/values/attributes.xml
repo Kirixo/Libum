@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="BookView">
+        <attr name="displayMode" format="enum">
+            <enum name="wide" value="0"/>
+            <enum name="slim" value="1"/>
+        </attr>
+    </declare-styleable>
+
+
+</resources>
