@@ -3,6 +3,11 @@ build*/
 debug*/
 release*/
 
+# Ignore libs
+include*/
+libs*/
+
+
 # Ignore Qt Creator specific files
 *.pro.user
 *.qmake.stash
