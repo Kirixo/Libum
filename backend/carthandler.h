@@ -8,7 +8,7 @@ public:
     CartHandler();
 
     static QHttpServerResponse addBook(const QHttpServerRequest &request);
-
+    static QHttpServerResponse getUsersCart(const QHttpServerRequest &request);
 };
 
 #endif // CARTHANDLER_H

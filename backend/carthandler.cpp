@@ -33,3 +33,36 @@ QHttpServerResponse CartHandler::addBook(const QHttpServerRequest &request)
                                .arg(responseMessage, userId).arg(bookId), Logger::LogLevel::Error);
     return ResponseFactory::createJsonResponse(responseMessage, QHttpServerResponse::StatusCode::InternalServerError);
 }
+
+QHttpServerResponse CartHandler::getUsersCart(const QHttpServerRequest &request)
+{
+    bool ok;
+    int userId = request.query().queryItemValue("user_id").toInt(&ok);
+    if (!ok) {
+        return ResponseFactory::createResponse("Invalid user ID.", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    Logger::instance().log(QString("[getUsersCart request]: user_id =  %1").arg(userId), Logger::LogLevel::Info);
+
+    QList<Book> books = CartRepository::fetchUsersBooks(userId);
+
+    if (!books.isEmpty()) {
+        QJsonArray bookArray;
+        for (const Book &book : books) {
+            bookArray.append(book.toJson());
+        }
+
+        QJsonObject responseJson;
+        // responseJson["total_count"] = CartRepository::getBooksCount();
+        responseJson["books"] = bookArray;
+
+        QByteArray responseData = QJsonDocument(responseJson).toJson(QJsonDocument::Compact);
+
+        return ResponseFactory::createJsonResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
+
+    Logger::instance().log(QString("[getUsersCart request] Not Found: user_id =  %1")
+                               .arg(userId), Logger::LogLevel::Warning);
+
+    return ResponseFactory::createResponse("Books not found in the cart.", QHttpServerResponse::StatusCode::NotFound);
+}

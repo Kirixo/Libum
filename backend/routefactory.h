@@ -34,6 +34,7 @@ private:
 
     void setupCartRoutes() {
         server_->route("/api/cart/add", QHttpServerRequest::Method::Post, CartHandler::addBook);
+        server_->route("/api/cart", QHttpServerRequest::Method::Get, CartHandler::getUsersCart);
     }
 
     void handleOptionsRequest();
