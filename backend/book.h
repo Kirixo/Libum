@@ -1,7 +1,7 @@
 #ifndef BOOK_H
 #define BOOK_H
 #include <QObject>
-#include <qurl.h>
+#include <QUrl>
 #include "genre.h"
 #include "jsonable.h"
 

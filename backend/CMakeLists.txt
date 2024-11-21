@@ -30,6 +30,8 @@ add_executable(Libum
   logger.h logger.cpp
   genre.h genre.cpp
   genrerepository.h genrerepository.cpp
+  cartrepository.h cartrepository.cpp
+  carthandler.h carthandler.cpp
 )
 target_link_libraries(Libum Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::HttpServer)
 

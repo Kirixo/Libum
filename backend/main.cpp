@@ -25,18 +25,20 @@ int main(int argc, char *argv[])
         }
     }
 
-
-
     ServerController::setServerSettings("http", "127.0.0.1", 4925);
 
     std::shared_ptr<QHttpServer> server = std::make_shared<QHttpServer>();
     std::shared_ptr<DBController> dbController = std::make_shared<DBController>();
 
-
-    if(dbController->connect("localhost", "kirixo", "1111", "test", 5433)) {
-        Logger::instance().log("Libum db opened from main.cpp", Logger::LogLevel::Info);
+    const QString dbHost = "localhost";
+    const QString dbUser = "kirixo";
+    const QString dbPassword = "1111";
+    const QString dbName = "libumdb";
+    const int dbPort = 5433;
+    if(dbController->connect(dbHost, dbUser, dbPassword, dbName, dbPort)) {
+        Logger::instance().log(dbName + " database opened from main.cpp", Logger::LogLevel::Info);
     } else {
-        Logger::instance().log("Libum db opening error in main.cpp" +
+        Logger::instance().log(dbName + " database opening error in main.cpp" +
                                    dbController->getDatabase().lastError().text(), Logger::LogLevel::Error);
     }
 

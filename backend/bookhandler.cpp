@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "responsefactory.h"
 
+
 BookHandler::BookHandler() {}
 
 QHttpServerResponse BookHandler::getBook(const QHttpServerRequest &request)
@@ -29,18 +30,19 @@ QHttpServerResponse BookHandler::getBook(const QHttpServerRequest &request)
 
 QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
 {
+    const int defautLimit = 24;
+    const int defaultPage = 1;
+
     bool ok;
     int limit = request.query().queryItemValue("limit").toInt(&ok);
     if (!ok) {
-        return ResponseFactory::createResponse("Invalid limit.", QHttpServerResponse::StatusCode::BadRequest);
+        limit = defautLimit;
     }
 
     int page = request.query().queryItemValue("page").toInt(&ok);
     if (!ok) {
-        return ResponseFactory::createResponse("Invalid page.", QHttpServerResponse::StatusCode::BadRequest);
+        page = defaultPage;
     }
-
-    qDebug() << "[getBookList request]: limit = " << limit << ", page = " << page;
 
     Logger::instance().log(QString("[getBookList request]: limit =  %1, page = %2").arg(limit)
                                .arg(page), Logger::LogLevel::Info);
