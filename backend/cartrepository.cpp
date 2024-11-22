@@ -61,6 +61,29 @@ bool CartRepository::remove(quint64 userId, quint64 bookId)
 
 bool CartRepository::clear(quint64 userId)
 {
+    QSqlDatabase db = DBController::getDatabase();
+    if (!db.isOpen()) {
+        Logger::instance().log(QString("[clear] Database not open!"), Logger::LogLevel::Warning);
+        return {};
+    }
+
+    QString queryString = R"(
+        DELETE FROM carts_content
+        WHERE user_id = :user_id;
+    )";
+
+    QSqlQuery query(db);
+    query.prepare(queryString);
+    query.bindValue(":user_id", userId);
+
+    if (query.exec()) {
+        return true;
+    } else {
+        Logger::instance().log(QString("[clear] Database query error!")
+                                   .append(query.lastError().text()), Logger::LogLevel::Warning);
+    }
+
+    return false;
 }
 
 QList<Book> CartRepository::fetchUsersBooks(quint64 userId)

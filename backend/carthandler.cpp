@@ -24,7 +24,7 @@ QHttpServerResponse CartHandler::addBook(const QHttpServerRequest &request)
     if(CartRepository::addBook(userId, bookId)) {
         const QByteArray responseMessage = "Book has been successfully added in the cart.";
         Logger::instance().log(QString("[addBook request]: %1 user_id =  %2, book_id = %3 ")
-                                   .arg(responseMessage, userId).arg(bookId), Logger::LogLevel::Info);
+                                   .arg(responseMessage).arg(userId).arg(bookId), Logger::LogLevel::Info);
         return ResponseFactory::createJsonResponse(responseMessage, QHttpServerResponse::StatusCode::Ok);
     }
 
@@ -56,7 +56,7 @@ QHttpServerResponse CartHandler::removeBook(const QHttpServerRequest &request)
                                    .arg(responseMessage, userId).arg(bookId), Logger::LogLevel::Info);
         return ResponseFactory::createJsonResponse(responseMessage, QHttpServerResponse::StatusCode::Ok);
     }
-
+    // TODO: specify errors
     const QByteArray responseMessage = "Operation failed.";
     Logger::instance().log(QString("[removeBook request]: %1 user_id =  %2, book_id = %3 ")
                                .arg(responseMessage, userId).arg(bookId), Logger::LogLevel::Error);
@@ -65,7 +65,26 @@ QHttpServerResponse CartHandler::removeBook(const QHttpServerRequest &request)
 
 QHttpServerResponse CartHandler::clearCart(const QHttpServerRequest &request)
 {
+    bool ok;
+    int userId = request.query().queryItemValue("user_id").toInt(&ok);
+    if (!ok) {
+        return ResponseFactory::createResponse("Invalid user ID.", QHttpServerResponse::StatusCode::BadRequest);
+    }
 
+    Logger::instance().log(QString("[clearCart request]: user_id =  %1")
+                               .arg(userId), Logger::LogLevel::Info);
+
+    if(CartRepository::clear(userId)) {
+        const QByteArray responseMessage = "User's cart has been successfully cleared.";
+        Logger::instance().log(QString("[clearCart request]: %1 user_id =  %2")
+                                   .arg(responseMessage, userId), Logger::LogLevel::Info);
+        return ResponseFactory::createJsonResponse(responseMessage, QHttpServerResponse::StatusCode::Ok);
+    }
+    // TODO: specify errors
+    const QByteArray responseMessage = "Operation failed.";
+    Logger::instance().log(QString("[clearCart request]: %1 user_id =  %2")
+                               .arg(responseMessage, userId), Logger::LogLevel::Error);
+    return ResponseFactory::createJsonResponse(responseMessage, QHttpServerResponse::StatusCode::InternalServerError);
 }
 
 QHttpServerResponse CartHandler::getUsersCart(const QHttpServerRequest &request)
