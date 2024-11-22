@@ -1,5 +1,6 @@
 package com.project.libum.domain.usecase
 
+import android.util.Log
 import com.project.libum.core.exeption.IncorrectPasswordException
 import com.project.libum.core.exeption.NoCachedUserException
 import com.project.libum.data.local.dao.UserDao
@@ -12,7 +13,7 @@ class LogInCachedUserUseCase(
 ) {
     suspend operator fun invoke(){
         val userDao =  userDao.getUser()
-
+        Log.d("Cached auth", "invoke: LogInCachedUserUseCase ${userDao?.password} ${userDao?.email}")
         if (userDao != null){
 
             val loginRequest = LoginRequest(
@@ -23,12 +24,13 @@ class LogInCachedUserUseCase(
             val res = authRepository.login(loginRequest)
 
             if (res.isFailure){
-                throw IncorrectPasswordException("Incorrect password")
+                val exception = res.exceptionOrNull()
+                if(exception != null){
+                    throw exception
+                }
             }
-
         }else{
             throw NoCachedUserException(null)
         }
     }
-
 }

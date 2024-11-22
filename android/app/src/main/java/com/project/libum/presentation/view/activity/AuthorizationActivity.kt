@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import android.window.SplashScreen
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,10 +16,8 @@ import com.project.libum.R
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
 import com.project.libum.domain.validation.EmailValidation
-import com.project.libum.presentation.viewmodel.AuthManager
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class AuthorizationActivity : AppCompatActivity() {
@@ -26,14 +25,11 @@ class AuthorizationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthorizationBinding
 
     private val authViewModel: AuthorizationActivityModel by viewModels()
-    private val authManager: AuthManager by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeActivity()
         processErrorsFromExtras()
-        authManager.restoreState()
-        setUpState()
         authViewModel.initializeCaptcha()
 
         setClickableAuthButton()
@@ -50,7 +46,7 @@ class AuthorizationActivity : AppCompatActivity() {
         }
 
         binding.authorizationButton.setOnClickListener {
-            clickAuthorizationButton()
+            login()
         }
 
         binding.emailFiled.emailField.addTextChangedListener {
@@ -72,29 +68,13 @@ class AuthorizationActivity : AppCompatActivity() {
                 scrollToView(view)
             }
         }
-
-
-    }
-
-    private fun setUpState() {
-        val savedEmail = authManager.email
-        val savedPassword = authManager.password
-        binding.emailFiled.emailField.setText(savedEmail)
-
-        Log.d("AuthorizationActivity", "Restored email: $savedEmail, password: $savedPassword")
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        authManager.saveEmailAndPassword(binding.emailFiled.emailField.text.toString(), binding.passwordFiled.passwordFiled.text.toString())
     }
 
     private fun onIncorrectPasswordAction(){
         Toast.makeText(this, getString(R.string.incorrect_password), Toast.LENGTH_SHORT).show()
     }
 
-    private fun clickAuthorizationButton(){
+    private fun login(){
         Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
         authViewModel.executeCaptchaAndLogin (actionOnCorrectCaptcha  = {
             authViewModel.login(LoginRequest(

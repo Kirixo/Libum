@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+
     <application
         android:name=".LibumApp"
         android:allowBackup="true"
@@ -16,23 +16,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Libum"
         tools:targetApi="31">
+
         <activity
-            android:name=".presentation.view.activity.AuthorizationActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan"
-            android:noHistory="true"
-            >
+            android:name=".presentation.view.activity.LauncherActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+
+        <activity
+            android:name=".presentation.view.activity.SplashActivity"
+            android:exported="true"
+            android:noHistory="true">
+        </activity>
+
+        <activity
+            android:name=".presentation.view.activity.AuthorizationActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
+
         <activity
             android:name=".presentation.view.activity.MainActivity"
-            android:exported="true"
-            >
-        </activity>
+            android:exported="true" />
     </application>
 
 </manifest>

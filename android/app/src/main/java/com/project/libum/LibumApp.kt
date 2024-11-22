@@ -33,41 +33,27 @@ class LibumApp : Application(){
             AppDatabase::class.java, "app_database"
         ).build()
 
-        if (isActivityRunning(AuthorizationActivity::class.java) || isActivityRunning(MainActivity::class.java)) {
-            Log.d("LibumApp", "Activity already running, skipping start")
-            return
-        }
-
         CoroutineScope(Dispatchers.Main).launch {
+            val app = applicationContext as LibumApp
             var intent: Intent
 
             try {
-                logInCachedUserUseCase.invoke()
+                app.logInCachedUserUseCase.invoke()
                 intent = Intent(applicationContext, MainActivity::class.java)
             } catch (e: IncorrectPasswordException) {
-                Log.d("Cached auth", "onCreate: Failure - Incorrect Password")
+                Log.d("Cached auth", "SplashActivity: Failure - Incorrect Password")
                 intent = Intent(applicationContext, AuthorizationActivity::class.java)
-                intent.putExtra(ERROR_MSG, e.message)
+                intent.putExtra(LibumApp.ERROR_MSG, e.message)
             } catch (e: NoCachedUserException) {
-                Log.d("Cached auth", "onCreate: Failure - No Cached User")
+                Log.d("Cached auth", "SplashActivity: Failure - No Cached User")
                 intent = Intent(applicationContext, AuthorizationActivity::class.java)
             }
 
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
-    }
 
-    private fun isActivityRunning(activityClass: Class<*>): Boolean {
-        val am = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
-        for (task in am.appTasks) {
-            if (task.taskInfo.topActivity?.className == activityClass.name) {
-                return true
-            }
-        }
-        return false
     }
-
 
     companion object{
         val ERROR_MSG = "ERROR_MSG"

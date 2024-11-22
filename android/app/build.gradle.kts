@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
 
+    implementation(libs.androidx.core.splashscreen)
+
     implementation(libs.hilt.android)
     implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)

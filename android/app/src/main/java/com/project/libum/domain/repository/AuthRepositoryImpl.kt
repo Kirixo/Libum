@@ -1,5 +1,6 @@
 package com.project.libum.domain.repository
 
+import android.util.Log
 import com.project.libum.core.exeption.IncorrectPasswordException
 import com.project.libum.data.local.dao.UserDao
 import com.project.libum.data.local.dao.UserEntity
@@ -30,16 +31,17 @@ class AuthRepositoryImpl(
                     )
 
                     withContext(Dispatchers.IO) {
+                        Log.d("Cached auth", "login: saved user ${loginResponse.email} ${request.password}")
                         userDao.insertUser(userEntity)
                     }
 
                     Result.success(loginResponse)
                 } ?: Result.failure(Exception("Empty response"))
             } else {
-                if(response.code() == 401){
-                    Result.failure(IncorrectPasswordException("Incorrect password"))
-                }else{
-                    Result.failure(Exception("Login failed"))
+                when(response.code()){
+                    401 -> Result.failure(IncorrectPasswordException("Incorrect password"))
+                    404 -> Result.failure(IncorrectPasswordException("Network error"))
+                    else -> Result.failure(Exception("Login failed"))
                 }
             }
         } catch (e: Exception) {
