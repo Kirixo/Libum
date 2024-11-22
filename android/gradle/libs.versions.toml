@@ -22,13 +22,14 @@ navigationUiKtx = "2.8.3"
 activity = "1.9.3"
 recaptchaVersion = "18.7.0-beta01"
 retrofit = "2.11.0"
-roomKtx = "2.6.1"
+roomKtx = "2.6.0"
 
 [libraries]
 androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
-design = { module = "com.android.support:design", version.ref = "design" }
 google-recaptcha = { module = "com.google.android.recaptcha:recaptcha", version.ref = "recaptchaVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }

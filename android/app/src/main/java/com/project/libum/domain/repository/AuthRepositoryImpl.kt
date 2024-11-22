@@ -26,6 +26,7 @@ class AuthRepositoryImpl(
                         id = loginResponse.id,
                         email = loginResponse.email,
                         login = loginResponse.login,
+                        password = request.password
                     )
 
                     withContext(Dispatchers.IO) {
@@ -43,18 +44,6 @@ class AuthRepositoryImpl(
             }
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    suspend fun getCachedUser(): UserEntity? {
-        return withContext(Dispatchers.IO) {
-            userDao.getUser()
-        }
-    }
-
-    suspend fun logout() {
-        withContext(Dispatchers.IO) {
-            userDao.clearUserData()
         }
     }
 }

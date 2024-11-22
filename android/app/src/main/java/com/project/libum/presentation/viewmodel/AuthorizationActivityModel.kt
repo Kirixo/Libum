@@ -12,7 +12,6 @@ import com.project.libum.data.model.LoginResponse
 import com.project.libum.domain.usecase.ExecuteRecaptchaUseCase
 import com.project.libum.domain.usecase.InitializeRecaptchaUseCase
 import com.project.libum.domain.repository.AuthRepository
-import com.project.libum.domain.usecase.LogInCachedUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,21 +21,15 @@ class AuthorizationActivityModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val executeRecaptchaUseCase: ExecuteRecaptchaUseCase,
     private val initializeRecaptchaUseCase: InitializeRecaptchaUseCase,
-    private val logInCachedUserUseCase: LogInCachedUserUseCase,
 ) : ViewModel() {
 
     private val _loginResult = MutableLiveData<Result<LoginResponse>>()
     val loginResult: LiveData<Result<LoginResponse>> = _loginResult
 
+
     fun login(request: LoginRequest) {
         viewModelScope.launch {
             _loginResult.value = authRepository.login(request)
-        }
-    }
-
-    fun loginCachedUser(){
-        viewModelScope.launch {
-            val userDao = logInCachedUserUseCase()
         }
     }
 

@@ -65,9 +65,10 @@ object AppModule{
 
     @Provides
     fun provideLogInCachedUserUseCase(
-        userDao: UserDao
+        userDao: UserDao,
+        authRepository: AuthRepository
     ): LogInCachedUserUseCase {
-        return LogInCachedUserUseCase(userDao)
+        return LogInCachedUserUseCase(userDao, authRepository)
     }
 
 

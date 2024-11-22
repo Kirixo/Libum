@@ -10,10 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
+import com.project.libum.LibumApp
 import com.project.libum.R
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
 import com.project.libum.domain.validation.EmailValidation
+import com.project.libum.presentation.viewmodel.AuthManager
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,17 +26,17 @@ class AuthorizationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthorizationBinding
 
     private val authViewModel: AuthorizationActivityModel by viewModels()
+    private val authManager: AuthManager by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeActivity()
-
-        binding.emailFiled.emailField.setText(savedInstanceState?.getString(EMAIL_FILED, ""))
-        binding.passwordFiled.passwordFiled.setText(savedInstanceState?.getString(PASSWORD_FIELD, ""))
-
-        setClickableAuthButton()
+        processErrorsFromExtras()
+        authManager.restoreState()
+        setUpState()
         authViewModel.initializeCaptcha()
 
+        setClickableAuthButton()
 
         authViewModel.loginResult.observe(this) { result ->
             result.onFailure {
@@ -56,6 +58,9 @@ class AuthorizationActivity : AppCompatActivity() {
             setClickableAuthButton()
         }
 
+        binding.passwordFiled.passwordFiled.addTextChangedListener {
+        }
+
         binding.emailFiled.emailField.setOnFocusChangeListener { view, focusValue ->
             if (focusValue){
                 scrollToView(view)
@@ -67,12 +72,22 @@ class AuthorizationActivity : AppCompatActivity() {
                 scrollToView(view)
             }
         }
+
+
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(EMAIL_FILED, binding.emailFiled.emailField.text.toString())
-        outState.putString(PASSWORD_FIELD, binding.passwordFiled.passwordFiled.text.toString())
+    private fun setUpState() {
+        val savedEmail = authManager.email
+        val savedPassword = authManager.password
+        binding.emailFiled.emailField.setText(savedEmail)
+
+        Log.d("AuthorizationActivity", "Restored email: $savedEmail, password: $savedPassword")
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        authManager.saveEmailAndPassword(binding.emailFiled.emailField.text.toString(), binding.passwordFiled.passwordFiled.text.toString())
     }
 
     private fun onIncorrectPasswordAction(){
@@ -132,6 +147,13 @@ class AuthorizationActivity : AppCompatActivity() {
         }
     }
 
+    private fun processErrorsFromExtras() {
+        val msg = intent.getStringExtra(LibumApp.ERROR_MSG)
+        if (msg != null) {
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun initializeActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
         supportActionBar?.hide()
@@ -144,8 +166,5 @@ class AuthorizationActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    companion object{
-        const val EMAIL_FILED = "EMAIL_FIELD"
-        const val PASSWORD_FIELD = "PASSWORD_FIELD"
-    }
+
 }

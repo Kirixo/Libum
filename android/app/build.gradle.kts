@@ -72,10 +72,12 @@ dependencies {
     implementation(libs.junit)
     implementation(libs.gson)
     implementation(libs.converter.gson)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)
+    kapt(libs.androidx.room.compiler)
 
 
     testImplementation(libs.junit)
