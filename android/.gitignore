@@ -8,7 +8,6 @@ local.properties
 app/src/main/res/xml/config.xml
 app/src/main/res/xml/network_security_config.xml
 
-
 # Log/OS Files
 *.log
 
