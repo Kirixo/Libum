@@ -6,8 +6,6 @@
 #include "dbcontroller.h"
 #include "bookrepository.h"
 
-CartRepository::CartRepository() {}
-
 bool CartRepository::addBook(quint64 userId, quint64 bookId)
 {
     QSqlDatabase db = DBController::getDatabase();
@@ -33,6 +31,36 @@ bool CartRepository::addBook(quint64 userId, quint64 bookId)
     }
 
     return true;
+}
+
+bool CartRepository::remove(quint64 userId, quint64 bookId)
+{
+    QSqlDatabase db = DBController::getDatabase();
+    if (!db.isOpen()) {
+        Logger::instance().log(QString("[remove] Database not open!"), Logger::LogLevel::Warning);
+        return {};
+    }
+
+    QString queryString = R"(
+        DELETE FROM carts_content
+        WHERE user_id = :user_id AND book_id = :book_id;
+    )";
+
+    QSqlQuery query(db);
+    query.prepare(queryString);
+    query.bindValue(":user_id", userId);
+    query.bindValue(":book_id", bookId);
+    if (query.exec()) {
+        return true;
+    } else {
+        Logger::instance().log(QString("[remove] Database query error!")
+                                   .append(query.lastError().text()), Logger::LogLevel::Warning);
+        return false;
+    }
+}
+
+bool CartRepository::clear(quint64 userId)
+{
 }
 
 QList<Book> CartRepository::fetchUsersBooks(quint64 userId)

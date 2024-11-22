@@ -7,11 +7,12 @@
 class CartRepository
 {
 public:
-    CartRepository();
-
     static bool addBook(quint64 userId, quint64 bookid);
+    static bool remove(quint64 userId, quint64 bookid);
+    static bool clear(quint64 userId);
     static QList<Book> fetchUsersBooks(quint64 userId);
-
+private:
+    CartRepository() = delete;
 };
 
 #endif // CARTREPOSITORY_H
