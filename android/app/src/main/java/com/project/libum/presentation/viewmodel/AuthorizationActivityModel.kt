@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.recaptcha.RecaptchaAction
 import com.project.libum.core.exeption.IncorrectPasswordException
+import com.project.libum.data.local.dao.UserEntity
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.data.model.LoginResponse
 import com.project.libum.domain.usecase.ExecuteRecaptchaUseCase
 import com.project.libum.domain.usecase.InitializeRecaptchaUseCase
 import com.project.libum.domain.repository.AuthRepository
+import com.project.libum.domain.repository.UserCacheRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,15 +23,20 @@ class AuthorizationActivityModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val executeRecaptchaUseCase: ExecuteRecaptchaUseCase,
     private val initializeRecaptchaUseCase: InitializeRecaptchaUseCase,
+    private val cacheRepository: UserCacheRepository
 ) : ViewModel() {
 
-    private val _loginResult = MutableLiveData<Result<LoginResponse>>()
-    val loginResult: LiveData<Result<LoginResponse>> = _loginResult
+    private val _loginResult = MutableLiveData<Result<UserEntity>>()
+    val loginResult: LiveData<Result<UserEntity>> = _loginResult
 
 
     fun login(request: LoginRequest) {
         viewModelScope.launch {
             _loginResult.value = authRepository.login(request)
+            try{
+                cacheRepository.saveUserLoinData(loginResult.value?.getOrNull()!!)
+            }catch (e: Exception){
+            }
         }
     }
 
@@ -53,7 +60,7 @@ class AuthorizationActivityModel @Inject constructor(
         }
     }
 
-    fun processLoginError(response: Result<LoginResponse>, actionOnIncorrectPassword: () -> Unit) {
+    fun processLoginError(response: Result<UserEntity>, actionOnIncorrectPassword: () -> Unit) {
         response.onFailure { exception ->
             when (exception) {
                 is IncorrectPasswordException -> {

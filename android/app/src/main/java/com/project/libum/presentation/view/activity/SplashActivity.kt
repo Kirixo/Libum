@@ -1,31 +1,42 @@
 package com.project.libum.presentation.view.activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.project.libum.LibumApp
-import com.project.libum.core.exeption.IncorrectPasswordException
-import com.project.libum.core.exeption.NoCachedUserException
-import com.project.libum.domain.usecase.CheckAuthorizationUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.project.libum.domain.usecase.LogInCachedUserUseCase
+import com.project.libum.domain.usecase.LoginResult
+import com.project.libum.presentation.view.extension.navigateToAuthorization
+import com.project.libum.presentation.view.extension.navigateToMainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
-    private val checkAuthorizationUseCase = CheckAuthorizationUseCase()
+    @Inject
+    lateinit var logInCachedUserUseCase: LogInCachedUserUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
-            val intent = checkAuthorizationUseCase.invoke(this@SplashActivity)
-            startActivity(intent)
-            finish()
+            val result = logInCachedUserUseCase.invoke()
+
+            when (result) {
+                is LoginResult.Success -> navigateToMainActivity(applicationContext)
+                is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext,"No cached user found.")
+                is LoginResult.IncorrectPasswordOrEmail -> navigateToAuthorization(applicationContext,"Incorrect password or email.")
+                is LoginResult.NetworkError -> navigateToAuthorization(applicationContext, result.message)
+            }
         }
     }
+
+
+
 }

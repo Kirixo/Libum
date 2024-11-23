@@ -4,17 +4,25 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.project.libum.LibumApp
-import com.project.libum.core.exeption.IncorrectPasswordException
-import com.project.libum.core.exeption.NoCachedUserException
-import com.project.libum.domain.usecase.CheckAuthorizationUseCase
+import com.project.libum.domain.usecase.LogInCachedUserUseCase
+import com.project.libum.domain.usecase.LoginResult
+import com.project.libum.presentation.view.extension.navigateToAuthorization
+import com.project.libum.presentation.view.extension.navigateToMainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LauncherActivity : AppCompatActivity() {
 
-    private val checkAuthorizationUseCase = CheckAuthorizationUseCase()
+    @Inject
+    lateinit var logInCachedUserUseCase: LogInCachedUserUseCase
+
+    private var isDataLoading: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,20 +32,20 @@ class LauncherActivity : AppCompatActivity() {
             splashScreen.setKeepOnScreenCondition { isDataLoading }
 
             lifecycleScope.launch {
-                val intent = checkAuthorizationUseCase.invoke(this@LauncherActivity)
+                val result = logInCachedUserUseCase.invoke()
+
+                when (result) {
+                    is LoginResult.Success -> navigateToMainActivity(applicationContext)
+                    is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext,"No cached user found.")
+                    is LoginResult.IncorrectPasswordOrEmail -> navigateToAuthorization(applicationContext,"Incorrect password or email.")
+                    is LoginResult.NetworkError -> navigateToAuthorization(applicationContext,result.message)
+                }
+                Log.d("LauncherActivity", "onCreate: ${result.toString()}")
                 isDataLoading = false
-                navigateToNextActivity(intent)
             }
         } else {
             navigateToSplashActivity()
         }
-    }
-
-    private var isDataLoading: Boolean = true
-
-    private fun navigateToNextActivity(nextIntent: Intent) {
-        startActivity(nextIntent)
-        finish()
     }
 
     private fun navigateToSplashActivity() {

@@ -4,8 +4,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@drawable/shaped_white_background_corner_8dp"
+    android:backgroundTint="@color/blue_100"
+
+    android:padding="8dp"
     >
     <com.project.libum.presentation.view.custom.SettingButtonView
+        android:id="@+id/logout_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:button_text="@string/logout_label"
@@ -14,13 +19,5 @@
         >
     </com.project.libum.presentation.view.custom.SettingButtonView>
 
-    <com.project.libum.presentation.view.custom.SettingButtonView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:button_text="@string/logout_label"
-        app:button_logo="@drawable/ic_logout_48dp"
-        app:action_button="@drawable/ic_action_arrow"
-        >
-    </com.project.libum.presentation.view.custom.SettingButtonView>
 
 </LinearLayout>

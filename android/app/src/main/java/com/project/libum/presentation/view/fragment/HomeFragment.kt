@@ -18,7 +18,9 @@ import com.project.libum.presentation.adapter.BookAdapter
 import com.project.libum.presentation.adapter.SpacingItemDecoration
 import com.project.libum.presentation.view.custom.BookView
 import com.project.libum.presentation.viewmodel.MainActivityModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding

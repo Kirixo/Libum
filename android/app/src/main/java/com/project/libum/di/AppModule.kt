@@ -12,6 +12,8 @@ import com.project.libum.domain.repository.AuthRepository
 import com.project.libum.domain.repository.AuthRepositoryImpl
 import com.project.libum.domain.repository.BooksListRepository
 import com.project.libum.domain.repository.BooksListRepositoryImpl
+import com.project.libum.domain.repository.UserCacheRepository
+import com.project.libum.domain.repository.UserCacheRepositoryImpl
 import com.project.libum.domain.usecase.LogInCachedUserUseCase
 import dagger.Module
 import dagger.Provides
@@ -25,8 +27,8 @@ object AppModule{
 
     @Provides
     @Singleton
-    fun provideAuthRepository(userDao: UserDao): AuthRepository {
-        return AuthRepositoryImpl(userDao)
+    fun provideAuthRepository(userCacheRepositoryImpl: UserCacheRepository): AuthRepository {
+        return AuthRepositoryImpl(userCacheRepositoryImpl)
     }
 
     @Provides
@@ -40,6 +42,13 @@ object AppModule{
     fun provideBookListRepository(): BooksListRepository{
         return BooksListRepositoryImpl()
     }
+
+    @Provides
+    @Singleton
+    fun provideUserCacheRepository(userDao: UserDao): UserCacheRepository{
+        return UserCacheRepositoryImpl(userDao)
+    }
+
 
     @Provides
     @Singleton
@@ -65,10 +74,9 @@ object AppModule{
 
     @Provides
     fun provideLogInCachedUserUseCase(
-        userDao: UserDao,
         authRepository: AuthRepository
     ): LogInCachedUserUseCase {
-        return LogInCachedUserUseCase(userDao, authRepository)
+        return LogInCachedUserUseCase(authRepository)
     }
 
 

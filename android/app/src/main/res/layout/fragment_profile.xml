@@ -49,23 +49,16 @@
         >
     </include>
 
-    <FrameLayout
-        android:layout_width="wrap_content"
+
+    <include
+        android:id="@+id/profile_buttons"
+        layout="@layout/view_profile_buttons"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@id/premium_blanc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp"
-        android:background="@drawable/shaped_white_background_corner_8dp"
-        android:backgroundTint="@color/blue_100"
         >
-        <include
-            layout="@layout/view_profile_buttons"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            >
-        </include>
-
-    </FrameLayout>
+    </include>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
