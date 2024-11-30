@@ -8,17 +8,24 @@ import androidx.lifecycle.viewModelScope
 import com.project.libum.data.dto.Book
 import com.project.libum.data.dto.BookCategories
 import com.project.libum.domain.repository.BooksListRepository
+import com.project.libum.domain.usecase.BookFavoritesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityModel @Inject constructor(
-    private val bookListRepository: BooksListRepository
+    private val bookListRepository: BooksListRepository,
+    private val bookFavoritesUseCases: BookFavoritesUseCases
+
 ): ViewModel() {
 
     private val _books = MutableLiveData<List<Book>>()
     val books: LiveData<List<Book>> = _books
+
+    init {
+        getBooksFromServer()
+    }
 
     fun getBooksFromServer(){
         viewModelScope.launch {
@@ -30,6 +37,14 @@ class MainActivityModel @Inject constructor(
                 _books.value = emptyList()
             }
         }
+    }
+
+    fun addBookToFavorites(book: Book) {
+        bookFavoritesUseCases.addToFavorites(book)
+    }
+
+    fun deleteBookToFavorites(book: Book) {
+        bookFavoritesUseCases.deleteFromFavorites(book)
     }
 
 

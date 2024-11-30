@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.libum.R
@@ -27,8 +26,7 @@ class HomeFragment : Fragment() {
     private val mainActivityModel: MainActivityModel by activityViewModels<MainActivityModel>()
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
-    private var bookStyle: BookView.BookDisplayStyle = BookView.BookDisplayStyle.WIDE
-    private var isActivatedChangeButton = false
+    private var isActivatedBookStyleButton = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,43 +40,25 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null) {
-            isActivatedChangeButton = savedInstanceState.getBoolean(CHANGE_BUTTON_STYLE, false)
-
-            bookStyle = when(savedInstanceState.getInt(BOOK_STYLE, 0)){
-                0 -> BookView.BookDisplayStyle.WIDE
-                1 -> BookView.BookDisplayStyle.SLIM
-                else -> BookView.BookDisplayStyle.WIDE
-            }
-
-            binding.actionField.listStyleChangerButton.isActivated = isActivatedChangeButton
-        }
-
-        binding.actionField.listStyleChangerButton.setOnClickListener{ button ->
-            button.isActivated = !button.isActivated
-            bookStyle = if(!button.isActivated){
-                BookView.BookDisplayStyle.WIDE
-            }else{
-                BookView.BookDisplayStyle.SLIM
-            }
-            setBookStyle()
-            isActivatedChangeButton = button.isActivated
+        binding.actionField.listStyleChangerButton.setOnClickListener{
+            changeStateOfBookStyleButton()
+            homeViewModel.changeBookStyleByActivated(isActivatedBookStyleButton)
         }
 
         mainActivityModel.books.observe(viewLifecycleOwner) { books ->
             bookAdapter.setBooks(books)
-            bookAdapter.setStyle(bookStyle)
+        }
+
+        homeViewModel.bookStyle.observe(viewLifecycleOwner){ displayStyle ->
+            when(displayStyle){
+                BookView.BookDisplayStyle.SLIM -> setSlimBookAdapter()
+                BookView.BookDisplayStyle.WIDE -> setWideBookAdapter()
+                else -> setWideBookAdapter()
+            }
+            bookAdapter.setStyle(displayStyle)
         }
 
         initializeBookAdapter()
-
-        bookAdapter.setBooks(mainActivityModel.books.value)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(BOOK_STYLE, bookStyle.id)
-        outState.putBoolean(CHANGE_BUTTON_STYLE, isActivatedChangeButton)
-        super.onSaveInstanceState(outState)
     }
 
 
@@ -86,33 +66,34 @@ class HomeFragment : Fragment() {
         bookAdapter = BookAdapter()
         val spacingDecoration = SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.item_spacing))
         binding.bookList.addItemDecoration(spacingDecoration)
+
+        bookAdapter.setOnFavoriteClickListener { book ->
+            if (book.isFavorite) {
+                mainActivityModel.deleteBookToFavorites(book)
+            } else {
+                mainActivityModel.addBookToFavorites(book)
+            }
+        }
+
         binding.bookList.adapter = bookAdapter
-        setBookStyle()
     }
 
-    private fun setBookStyle(){
-        when(bookStyle){
-            BookView.BookDisplayStyle.WIDE -> setWideBookAdapter()
-            BookView.BookDisplayStyle.SLIM -> setSlimBookAdapter()
-        }
+    private fun changeStateOfBookStyleButton(){
+        val button = binding.actionField.listStyleChangerButton
+        button.isActivated = !button.isActivated
+        isActivatedBookStyleButton = button.isActivated
     }
 
     private fun setWideBookAdapter(){
-        Log.d("Books", "setWideBookAdapter: Wide set")
         binding.bookList.layoutManager = LinearLayoutManager(context)
-        bookAdapter.setStyle(bookStyle)
     }
 
     private fun setSlimBookAdapter(){
-        Log.d("Books", "setSlimBookAdapter: Slim set")
-        val gridLayoutManager = GridLayoutManager(context, 3)
+        val gridLayoutManager = GridLayoutManager(context, SLIM_BOOK_IN_ROW_COUNT)
         binding.bookList.layoutManager = gridLayoutManager
-        bookAdapter.setStyle(bookStyle)
     }
 
-
     companion object{
-        const val BOOK_STYLE: String = "BOOK_STYLE"
-        const val CHANGE_BUTTON_STYLE: String = "CHANGE_BUTTON_STYLE"
+        const val SLIM_BOOK_IN_ROW_COUNT = 3
     }
 }

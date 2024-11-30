@@ -47,11 +47,8 @@ class AuthRepositoryImpl(
 
     override suspend fun loginCached(): Result<UserEntity> {
 
-
         val user = userCacheRepositoryImpl.getUserData()
         val res = login(LoginRequest(user.email, user.password))
-
-        Log.d("GOIDA", "loginCached: ${res.getOrNull()} ")
 
         res.onFailure {
             throw res.exceptionOrNull()!!

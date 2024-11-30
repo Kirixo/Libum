@@ -14,6 +14,7 @@ import com.project.libum.domain.repository.BooksListRepository
 import com.project.libum.domain.repository.BooksListRepositoryImpl
 import com.project.libum.domain.repository.UserCacheRepository
 import com.project.libum.domain.repository.UserCacheRepositoryImpl
+import com.project.libum.domain.usecase.BookFavoritesUseCases
 import com.project.libum.domain.usecase.LogInCachedUserUseCase
 import dagger.Module
 import dagger.Provides
@@ -49,6 +50,11 @@ object AppModule{
         return UserCacheRepositoryImpl(userDao)
     }
 
+    @Provides
+    @Singleton
+    fun provideBookFavoritesUseCases(): BookFavoritesUseCases {
+        return BookFavoritesUseCases()
+    }
 
     @Provides
     @Singleton

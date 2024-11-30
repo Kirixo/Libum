@@ -35,6 +35,7 @@ class SettingButtonView @JvmOverloads constructor(
                 setText(text)
 
                 val actionButtonResId = typedArray.getResourceId(R.styleable.SettingButtonView_action_button, 0)
+
                 if (actionButtonResId != 0){
                     setArrowVisibility(actionButtonResId)
                 }else{

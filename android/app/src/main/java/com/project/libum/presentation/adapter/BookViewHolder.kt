@@ -5,4 +5,6 @@ import com.project.libum.data.dto.Book
 
 interface BookViewHolder{
     fun bind(book: Book)
+    fun setFavoriteClickListener(action: () -> Unit)
+    fun updateFavoriteState(isFavorite: Boolean)
 }
