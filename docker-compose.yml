@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    image: kirixo/libum_api:1.0.0
+    ports:
+      - "21011:4925"
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+
+  database:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: kirixo
+      POSTGRES_PASSWORD: 1111
+      POSTGRES_DB: libumdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+      -
+networks:
+  app-network:
