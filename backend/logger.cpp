@@ -71,6 +71,6 @@ QString Logger::formatMessage(const QString &message, LogLevel level)
 
     return QString("[%1] [%2] %3")
         .arg(QDateTime::currentDateTime()
-        .toString("dd-MM-yyyy HH:mm:ss"))
+        .toString("dd-MM-yyyy HH:mm::ss"))
         .arg(levelStr).arg(message);
 }

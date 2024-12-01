@@ -14,10 +14,22 @@ int main(int argc, char *argv[])
     // Load configuration
     QSettings settings("config.ini", QSettings::IniFormat);
 
+<<<<<<< HEAD
     // Logger configuration
     QString logFile = settings.value("Logger/logFile", "Libum.log").toString();
     bool enableConsoleOutput = settings.value("Logger/enableConsoleOutput", true).toBool();
     QString logLevel = settings.value("Logger/logLevel", "Debug").toString();
+=======
+    QTranslator translator;
+    const QStringList uiLanguages = QLocale::system().uiLanguages();
+    for (const QString &locale : uiLanguages) {
+        const QString baseName = "Libum_" + QLocale(locale).name();
+        if (translator.load(":/i18n/" + baseName)) {
+            a.installTranslator(&translator);
+            break;
+        }
+    }
+>>>>>>> parent of e378eea (Created Docker configuration)
 
     Logger::instance().setLogFile(logFile);
     Logger::instance().enableConsoleOutput(enableConsoleOutput);
@@ -40,6 +52,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<QHttpServer> server = std::make_shared<QHttpServer>();
     std::shared_ptr<DBController> dbController = std::make_shared<DBController>();
 
+<<<<<<< HEAD
     // Database configuration
     QString dbHost = settings.value("Database/host", "localhost").toString();
     QString dbUser = settings.value("Database/user", "user").toString();
@@ -48,6 +61,14 @@ int main(int argc, char *argv[])
     int dbPort = settings.value("Database/port", "5432").toInt();
 
     if (dbController->connect(dbHost, dbUser, dbPassword, dbName, dbPort)) {
+=======
+    const QString dbHost = "localhost";
+    const QString dbUser = "kirixo";
+    const QString dbPassword = "1111";
+    const QString dbName = "libumdb";
+    const int dbPort = 5433;
+    if(dbController->connect(dbHost, dbUser, dbPassword, dbName, dbPort)) {
+>>>>>>> parent of e378eea (Created Docker configuration)
         Logger::instance().log(dbName + " database opened from main.cpp", Logger::LogLevel::Info);
     } else {
         Logger::instance().log(dbName + " database opening error in main.cpp: " +

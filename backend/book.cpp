@@ -31,6 +31,11 @@ QJsonObject Book::toJson() const
     return json;
 }
 
+bool Book::exists()
+{
+    return id_ != -1;
+}
+
 void Book::setId(qint64 newId)
 {
     id_ = newId;

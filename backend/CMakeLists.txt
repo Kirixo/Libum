@@ -47,10 +47,6 @@ install(TARGETS Libum
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# JWT Library
-# add_subdirectory(libs/cpp-jwt)
-# target_link_libraries(Libum PRIVATE jwt-cpp)
-# End JWT Library
 
 # set(FIREBASE_CPP_SDK_DIR libs/firebase/)
 # # Add Firebase libraries to the target using the function from the SDK.
