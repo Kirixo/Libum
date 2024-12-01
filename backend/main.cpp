@@ -15,22 +15,22 @@ int main(int argc, char *argv[])
     Logger::instance().enableConsoleOutput(true);
     Logger::instance().setLogLevel(Logger::LogLevel::Debug);
 
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "Libum_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
-    }
+    // QTranslator translator;
+    // const QStringList uiLanguages = QLocale::system().uiLanguages();
+    // for (const QString &locale : uiLanguages) {
+    //     const QString baseName = "Libum_" + QLocale(locale).name();
+    //     if (translator.load(":/i18n/" + baseName)) {
+    //         a.installTranslator(&translator);
+    //         break;
+    //     }
+    // }
 
     ServerController::setServerSettings("http", "127.0.0.1", 4925);
 
     std::shared_ptr<QHttpServer> server = std::make_shared<QHttpServer>();
     std::shared_ptr<DBController> dbController = std::make_shared<DBController>();
 
-    const QString dbHost = "localhost";
+    const QString dbHost = "host.docker.internal";
     const QString dbUser = "kirixo";
     const QString dbPassword = "1111";
     const QString dbName = "libumdb";

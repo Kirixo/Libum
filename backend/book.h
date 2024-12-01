@@ -11,8 +11,6 @@ public:
     Book();
     ~Book();
 
-    bool exists();
-
     void setId(qint64 newId);
     void setTitle(const QString &newTitle);
     void setCover(const QString &newCover);
