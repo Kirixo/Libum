@@ -25,4 +25,4 @@ RUN aqt install-qt linux desktop 6.7.0 linux_gcc_64 --modules \
 ENV CMAKE_PREFIX_PATH="/6.7.0/gcc_64/lib/cmake/Qt6:$CMAKE_PREFIX_PATH"
 RUN mkdir /build
 WORKDIR /app
-CMD ["sh", "-c", "cmake -B /build -S /app && cmake --build /build && /build/Libum"]
+CMD ["./apibuilder.sh"]
