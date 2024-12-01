@@ -23,7 +23,7 @@ services:
       POSTGRES_PASSWORD: 1111
       POSTGRES_DB: libumdb
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
 networks:
