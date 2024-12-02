@@ -1,6 +1,7 @@
 #ifndef ROUTEFACTORY_H
 #define ROUTEFACTORY_H
 #include <QtHttpServer/QHttpServer>
+#include "carthandler.h"
 #include "dbcontroller.h"
 #include "userhandler.h"
 #include "bookhandler.h"
@@ -29,6 +30,13 @@ private:
         server_->route("/api/books", QHttpServerRequest::Method::Get, BookHandler::getBook);
         server_->route("/api/books/list", QHttpServerRequest::Method::Get, BookHandler::getBookList);
         server_->route("/api/books/genres", QHttpServerRequest::Method::Get, BookHandler::getGenresList);
+    }
+
+    void setupCartRoutes() {
+        server_->route("/api/cart/add", QHttpServerRequest::Method::Post, CartHandler::addBook);
+        server_->route("/api/cart", QHttpServerRequest::Method::Get, CartHandler::getUsersCart);
+        server_->route("/api/cart", QHttpServerRequest::Method::Delete, CartHandler::removeBook);
+        server_->route("/api/cart/clear", QHttpServerRequest::Method::Delete, CartHandler::clearCart);
     }
 
     void handleOptionsRequest();

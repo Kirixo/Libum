@@ -8,6 +8,7 @@ void RouteFactory::registerAllRoutes()
     handleOptionsRequest();
     setupUserRoutes();
     setupBookRoutes();
+    setupCartRoutes();
 }
 
 void RouteFactory::handleOptionsRequest()

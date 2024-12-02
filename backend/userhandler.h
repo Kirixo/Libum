@@ -1,8 +1,8 @@
 #ifndef USERHANDLER_H
 #define USERHANDLER_H
-#include "dbcontroller.h"
 #include <QtHttpServer/QHttpServer>
 #include <QtHttpServer/QHttpServerResponse>
+#include "dbcontroller.h"
 
 class UserHandler
 {
