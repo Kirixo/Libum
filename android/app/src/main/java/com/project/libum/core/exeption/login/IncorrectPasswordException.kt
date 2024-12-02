@@ -1,3 +1,3 @@
-package com.project.libum.core.exeption
+package com.project.libum.core.exeption.login
 
 class IncorrectPasswordException(message: String?) : Exception(message)

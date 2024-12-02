@@ -3,10 +3,8 @@ package com.project.libum.presentation.adapter
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.project.libum.R
 import com.project.libum.data.dto.Book
 import com.project.libum.databinding.ViewBookSlimBinding
 import com.project.libum.databinding.ViewBookWideBinding
@@ -16,10 +14,15 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var books = listOf<Book>()
     private var displayStyle = BookView.BookDisplayStyle.WIDE
-    private var onFavoriteClick: ((Book) -> Unit)? = null
+    private var onFavoriteClick: ((Book, Boolean) -> Unit)? = null
+    private var onBookClick: ((Book) -> Unit)? = null
 
-    fun setOnFavoriteClickListener(listener: (Book) -> Unit) {
+    fun setOnFavoriteClickListener(listener: (Book, Boolean) -> Unit) {
         onFavoriteClick = listener
+    }
+
+    fun setOnBookClickView(listener: (Book) -> Unit){
+        onBookClick = listener
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -48,7 +51,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return when (viewType) {
             BookView.BookDisplayStyle.WIDE.id-> {
                 val binding = ViewBookWideBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                BookViewHolderWide(binding, )
+                BookViewHolderWide(binding)
             }
             BookView.BookDisplayStyle.SLIM.id-> {
                 val binding = ViewBookSlimBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -62,10 +65,16 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val book = books[position]
         if (holder is BookViewHolder) {
             holder.bind(book)
+
             holder.setFavoriteClickListener {
-                onFavoriteClick?.invoke(book)
+                val newFavoriteState = !book.isFavorite
+                onFavoriteClick?.invoke(book, newFavoriteState)
             }
+
             holder.updateFavoriteState(book.isFavorite)
+            holder.setButtonClickListener {
+                onBookClick?.invoke(book)
+            }
         }
     }
 
@@ -88,6 +97,14 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun updateFavoriteState(isFavorite: Boolean) {
             binding.favoriteButton.isActivated = isFavorite
         }
+
+        override fun setButtonClickListener(action: () -> Unit) {
+            binding.bookImage.setOnClickListener{
+                action()
+            }
+        }
+
+
     }
 
     class BookViewHolderSlim(private val binding: ViewBookSlimBinding) :
@@ -104,6 +121,12 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun updateFavoriteState(isFavorite: Boolean) {
             binding.favoriteButton.isActivated = isFavorite
+        }
+
+        override fun setButtonClickListener(action: () -> Unit) {
+            binding.bookImage.setOnClickListener{
+                action()
+            }
         }
 
     }

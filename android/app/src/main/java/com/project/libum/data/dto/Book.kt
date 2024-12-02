@@ -1,13 +1,12 @@
 package com.project.libum.data.dto
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class Book(
     val id: Int,
     val title: String,
     val author: String,
-    val isFavorite: Boolean,
-)
-
-enum class BookCategories{
-    MyBooks,
-    All,
-}
+    var isFavorite: Boolean,
+) : Parcelable

@@ -50,10 +50,37 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="Button.Transparent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">44dp</item>
+
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
     <style name="TextAppearance.Libum.LargeTitle">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">@font/roboto</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.Libum.CatalogTitle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextAppearance.Libum.CatalogMainTitle">
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:textStyle">normal</item>
     </style>
 

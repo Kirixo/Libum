@@ -7,8 +7,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.project.libum.LibumApp
-import com.project.libum.domain.usecase.LogInCachedUserUseCase
+import com.project.libum.domain.usecase.LogInUseCase
 import com.project.libum.domain.usecase.LoginResult
 import com.project.libum.presentation.view.extension.navigateToAuthorization
 import com.project.libum.presentation.view.extension.navigateToMainActivity
@@ -20,7 +19,7 @@ import javax.inject.Inject
 class LauncherActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var logInCachedUserUseCase: LogInCachedUserUseCase
+    lateinit var logInUserUseCase: LogInUseCase
 
     private var isDataLoading: Boolean = true
 
@@ -32,7 +31,7 @@ class LauncherActivity : AppCompatActivity() {
             splashScreen.setKeepOnScreenCondition { isDataLoading }
 
             lifecycleScope.launch {
-                val result = logInCachedUserUseCase.invoke()
+                val result = logInUserUseCase.invoke()
 
                 when (result) {
                     is LoginResult.Success -> navigateToMainActivity(applicationContext)

@@ -1,13 +1,11 @@
 package com.project.libum.domain.repository
 
 import android.util.Log
-import com.project.libum.core.exeption.IncorrectPasswordException
+import com.project.libum.core.exeption.login.IncorrectPasswordException
+import com.project.libum.core.exeption.login.NetworkErrorException
 import com.project.libum.data.local.dao.UserEntity
 import com.project.libum.data.model.LoginRequest
-import com.project.libum.data.model.LoginResponse
 import com.project.libum.data.remote.ApiClient.apiService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 class AuthRepositoryImpl(
@@ -20,7 +18,7 @@ class AuthRepositoryImpl(
         try {
             val response = apiService.login(request)
 
-            Log.d("AuthRepositoryImpl", "loginCached: ${response.code()}")
+            Log.d("AuthRepositoryImpl", "loginCached: response code: ${response.code()}")
             if (response.isSuccessful) {
                 return response.body()?.let { loginResponse ->
 
@@ -36,7 +34,7 @@ class AuthRepositoryImpl(
             } else {
                 return when(response.code()){
                     401 -> Result.failure(IncorrectPasswordException("Incorrect password"))
-                    404 -> Result.failure(IncorrectPasswordException("Network error"))
+                    404 -> Result.failure(NetworkErrorException("Network error"))
                     else -> Result.failure(Exception("Login failed"))
                 }
             }

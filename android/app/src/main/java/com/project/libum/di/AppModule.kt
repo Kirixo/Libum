@@ -15,7 +15,7 @@ import com.project.libum.domain.repository.BooksListRepositoryImpl
 import com.project.libum.domain.repository.UserCacheRepository
 import com.project.libum.domain.repository.UserCacheRepositoryImpl
 import com.project.libum.domain.usecase.BookFavoritesUseCases
-import com.project.libum.domain.usecase.LogInCachedUserUseCase
+import com.project.libum.domain.usecase.LogInUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,13 +78,10 @@ object AppModule{
         return InitializeRecaptchaUseCase(recaptchaService)
     }
 
+
     @Provides
-    fun provideLogInCachedUserUseCase(
-        authRepository: AuthRepository
-    ): LogInCachedUserUseCase {
-        return LogInCachedUserUseCase(authRepository)
+    fun provideLogInUserUseCase(authRepository: AuthRepository, cacheRepository: UserCacheRepository): LogInUseCase{
+        return LogInUseCase(authRepository,cacheRepository)
     }
-
-
 
 }

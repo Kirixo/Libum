@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import android.window.SplashScreen
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,6 +14,7 @@ import com.project.libum.LibumApp
 import com.project.libum.R
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
+import com.project.libum.domain.usecase.LoginResult
 import com.project.libum.domain.validation.EmailValidation
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,13 +35,12 @@ class AuthorizationActivity : AppCompatActivity() {
         setClickableAuthButton()
 
         authViewModel.loginResult.observe(this) { result ->
-            result.onFailure {
-                authViewModel.processLoginError(result, actionOnIncorrectPassword = {
-                    onIncorrectPasswordAction()
-                })
-            }.onSuccess {
-                transactionToMain()
+
+            when (result) {
+                is LoginResult.Success -> transactionToMain()
+                else -> onErrorAction(result)
             }
+
             Log.d("Login Result", "$result")
         }
 
@@ -70,13 +69,19 @@ class AuthorizationActivity : AppCompatActivity() {
         }
     }
 
-    private fun onIncorrectPasswordAction(){
-        Toast.makeText(this, getString(R.string.incorrect_password), Toast.LENGTH_SHORT).show()
+    private fun onErrorAction(loginResult: LoginResult){
+        val errorMsgId = when (loginResult) {
+            is LoginResult.IncorrectPasswordOrEmail -> R.string.incorrect_password_error
+            is LoginResult.NetworkError -> R.string.network_error
+            else -> R.string.unknow_error
+        }
+
+        Toast.makeText(this, getString(errorMsgId), Toast.LENGTH_SHORT).show()
     }
 
     private fun login(){
         Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
-        authViewModel.executeCaptchaAndLogin (actionOnCorrectCaptcha  = {
+        authViewModel.executeCaptcha (actionOnCorrectCaptcha  = {
             authViewModel.login(LoginRequest(
                 binding.emailFiled.emailField.text.toString(),
                 binding.passwordFiled.passwordFiled.text.toString()
