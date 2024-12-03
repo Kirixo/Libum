@@ -2,15 +2,14 @@ package com.project.libum.presentation.view.activity
 
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.project.libum.R
 import com.project.libum.databinding.ActivityMainBinding
-import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import com.project.libum.presentation.viewmodel.MainActivityModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeActivity()
+
     }
 
     private fun initializeActivity() {

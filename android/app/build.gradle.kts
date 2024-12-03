@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
+
 }
 
 kapt {
@@ -45,11 +47,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -72,9 +74,14 @@ dependencies {
     implementation(libs.junit)
     implementation(libs.gson)
     implementation(libs.converter.gson)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)
+    kapt(libs.androidx.room.compiler)
 
 
     testImplementation(libs.junit)

@@ -7,9 +7,9 @@ import retrofit2.Response
 class BooksListRepositoryImpl: BooksListRepository {
     override suspend fun getBooksList(): List<Book> {
         // TODO("Not yet implemented")
-        return listOf(Book(2, "Biblia", "allah"),
-            Book(2, "Biblia", "allah"),
-            Book(2, "Biblia", "allah"),
-            Book(2, "Biblia", "allah"))
+        return listOf(Book(2, "Xd1", "ololo", true),
+            Book(2, "Xd2", "ololo", false),
+            Book(2, "Xd3", "ololo", true),
+            Book(2, "xd4", "ololo", false))
     }
 }

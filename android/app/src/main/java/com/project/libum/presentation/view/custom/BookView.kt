@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.project.libum.R
@@ -18,6 +17,7 @@ class BookView: ConstraintLayout {
     private lateinit var byPremiumView: ImageView
     private lateinit var readPercentView: TextView
     private lateinit var moreButton: ImageButton
+    private lateinit var favoriteButton: ImageButton
 
     constructor(context: Context): super(context){
         initializeView()
@@ -47,17 +47,6 @@ class BookView: ConstraintLayout {
         initializeBookInfoFields()
     }
 
-    private fun initializeMoreButt(){
-        moreButton.setOnClickListener {
-
-        }
-    }
-
-    private fun createPopUpMenu(){
-        val popupMenu = PopupMenu(context, moreButton)
-        popupMenu.inflate(R.menu.bottom_nav_menu)
-    }
-
     private fun updateLayout() {
         removeAllViews()
         val layoutRes = when (displayMode) {
@@ -77,6 +66,7 @@ class BookView: ConstraintLayout {
         byPremiumView = findViewById(R.id.premium_icon)
         readPercentView = findViewById(R.id.book_read_percent)
         moreButton = findViewById(R.id.more_options_button)
+        favoriteButton = findViewById(R.id.favorite_button)
 
     }
 

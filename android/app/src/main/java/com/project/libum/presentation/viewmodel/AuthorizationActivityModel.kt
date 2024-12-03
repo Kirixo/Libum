@@ -6,29 +6,28 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.recaptcha.RecaptchaAction
-import com.project.libum.core.exeption.IncorrectPasswordException
 import com.project.libum.data.model.LoginRequest
-import com.project.libum.data.model.LoginResponse
 import com.project.libum.domain.usecase.ExecuteRecaptchaUseCase
 import com.project.libum.domain.usecase.InitializeRecaptchaUseCase
-import com.project.libum.domain.repository.AuthRepository
+import com.project.libum.domain.usecase.LogInUseCase
+import com.project.libum.domain.usecase.LoginResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthorizationActivityModel @Inject constructor(
-    private val authRepository: AuthRepository,
     private val executeRecaptchaUseCase: ExecuteRecaptchaUseCase,
     private val initializeRecaptchaUseCase: InitializeRecaptchaUseCase,
+    private val logInUserUseCase: LogInUseCase
 ) : ViewModel() {
 
-    private val _loginResult = MutableLiveData<Result<LoginResponse>>()
-    val loginResult: LiveData<Result<LoginResponse>> = _loginResult
+    private val _loginResult = MutableLiveData<LoginResult>()
+    val loginResult: LiveData<LoginResult> = _loginResult
 
     fun login(request: LoginRequest) {
         viewModelScope.launch {
-            _loginResult.value = authRepository.login(request)
+            _loginResult.value = logInUserUseCase.invoke(request)
         }
     }
 
@@ -41,26 +40,13 @@ class AuthorizationActivityModel @Inject constructor(
         }
     }
 
-    fun executeCaptchaAndLogin(actionOnCorrectCaptcha: () -> Unit) {
+    fun executeCaptcha(actionOnCorrectCaptcha: () -> Unit) {
         viewModelScope.launch {
             val result = executeRecaptchaUseCase(RecaptchaAction.LOGIN)
             if (result.isSuccess) {
                 actionOnCorrectCaptcha()
             } else {
                 Log.e("AuthorizationViewModel", "Captcha execution failed: ${result.exceptionOrNull()}")
-            }
-        }
-    }
-
-    fun processLoginError(response: Result<LoginResponse>, actionOnIncorrectPassword: () -> Unit) {
-        response.onFailure { exception ->
-            when (exception) {
-                is IncorrectPasswordException -> {
-                    actionOnIncorrectPassword()
-                }
-                else -> {
-                    Log.e("Login Error", "Error: ${exception.message}")
-                }
             }
         }
     }

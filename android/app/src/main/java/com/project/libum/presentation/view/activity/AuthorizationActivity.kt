@@ -5,27 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
-import com.google.android.recaptcha.Recaptcha
-import com.google.android.recaptcha.RecaptchaAction
-import com.google.android.recaptcha.RecaptchaClient
-import com.google.android.recaptcha.RecaptchaException
-import com.project.libum.BuildConfig
+import com.project.libum.LibumApp
 import com.project.libum.R
 import com.project.libum.data.model.LoginRequest
 import com.project.libum.databinding.ActivityAuthorizationBinding
+import com.project.libum.domain.usecase.LoginResult
 import com.project.libum.domain.validation.EmailValidation
 import com.project.libum.presentation.viewmodel.AuthorizationActivityModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class AuthorizationActivity : AppCompatActivity() {
@@ -37,63 +29,69 @@ class AuthorizationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeActivity()
-
-        binding.emailFiled.emailField.setText(savedInstanceState?.getString(EMAIL_FILED, ""))
-        binding.passwordFiled.passwordFiled.setText(savedInstanceState?.getString(PASSWORD_FIELD, ""))
-
-        setClickableAuthButton()
+        processErrorsFromExtras()
         authViewModel.initializeCaptcha()
 
+        setClickableAuthButton()
 
         authViewModel.loginResult.observe(this) { result ->
-            if(BuildConfig.IS_DEV_MODE){
-                transactionToMain()
-            }else{
-                result.onFailure {
-                    authViewModel.processLoginError(result, actionOnIncorrectPassword = {
-                        onIncorrectPasswordAction()
-                    })
-                }.onSuccess {
-                    transactionToMain()
-                }
+
+            when (result) {
+                is LoginResult.Success -> transactionToMain()
+                else -> onErrorAction(result)
             }
+
             Log.d("Login Result", "$result")
         }
 
         binding.authorizationButton.setOnClickListener {
-            clickAuthorizationButton()
+            login()
         }
 
         binding.emailFiled.emailField.addTextChangedListener {
             setAuthFieldError()
             setClickableAuthButton()
         }
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(EMAIL_FILED, binding.emailFiled.emailField.text.toString())
-        outState.putString(PASSWORD_FIELD, binding.passwordFiled.passwordFiled.text.toString())
-    }
+        binding.passwordFiled.passwordFiled.addTextChangedListener {
+        }
 
-    private fun onIncorrectPasswordAction(){
-        Toast.makeText(this, getString(R.string.incorrect_password), Toast.LENGTH_SHORT).show()
-    }
-
-    private fun clickAuthorizationButton(){
-        Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
-        authViewModel.executeCaptchaAndLogin (actionOnCorrectCaptcha  = {
-            if(validateAuthFormData()){
-                authViewModel.login(LoginRequest(
-                    binding.emailFiled.emailField.text.toString(),
-                    binding.passwordFiled.passwordFiled.text.toString()
-                ))
+        binding.emailFiled.emailField.setOnFocusChangeListener { view, focusValue ->
+            if (focusValue){
+                scrollToView(view)
             }
+        }
+
+        binding.passwordFiled.passwordFiled.setOnFocusChangeListener { view, focusValue ->
+            if (focusValue){
+                scrollToView(view)
+            }
+        }
+    }
+
+    private fun onErrorAction(loginResult: LoginResult){
+        val errorMsgId = when (loginResult) {
+            is LoginResult.IncorrectPasswordOrEmail -> R.string.incorrect_password_error
+            is LoginResult.NetworkError -> R.string.network_error
+            else -> R.string.unknow_error
+        }
+
+        Toast.makeText(this, getString(errorMsgId), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun login(){
+        Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
+        authViewModel.executeCaptcha (actionOnCorrectCaptcha  = {
+            authViewModel.login(LoginRequest(
+                binding.emailFiled.emailField.text.toString(),
+                binding.passwordFiled.passwordFiled.text.toString()
+            ))
         })
     }
 
     private fun setClickableAuthButton(){
         binding.authorizationButton.isClickable = validateAuthFormData()
+        binding.authorizationButton.isEnabled = validateAuthFormData()
     }
 
     private fun setAuthFieldError(){
@@ -122,6 +120,25 @@ class AuthorizationActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun scrollToView(view: View) {
+        binding.scrollView.post {
+
+            val scrollViewHeight = binding.scrollView.height
+            val viewHeight = view.height
+
+            val scrollTo = view.top - (scrollViewHeight - viewHeight) / 2 + 12
+
+            binding.scrollView.smoothScrollTo(0, scrollTo)
+        }
+    }
+
+    private fun processErrorsFromExtras() {
+        val msg = intent.getStringExtra(LibumApp.ERROR_MSG)
+        if (msg != null) {
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun initializeActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
         supportActionBar?.hide()
@@ -134,8 +151,5 @@ class AuthorizationActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    companion object{
-        const val EMAIL_FILED = "EMAIL_FIELD"
-        const val PASSWORD_FIELD = "PASSWORD_FIELD"
-    }
+
 }

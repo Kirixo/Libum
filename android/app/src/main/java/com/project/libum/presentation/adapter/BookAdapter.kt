@@ -14,6 +14,16 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var books = listOf<Book>()
     private var displayStyle = BookView.BookDisplayStyle.WIDE
+    private var onFavoriteClick: ((Book, Boolean) -> Unit)? = null
+    private var onBookClick: ((Book) -> Unit)? = null
+
+    fun setOnFavoriteClickListener(listener: (Book, Boolean) -> Unit) {
+        onFavoriteClick = listener
+    }
+
+    fun setOnBookClickView(listener: (Book) -> Unit){
+        onBookClick = listener
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun setBooks(newBooks: List<Book>? ) {
@@ -53,10 +63,21 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val book = books[position]
-        if (holder is BookViewHolder){
+        if (holder is BookViewHolder) {
             holder.bind(book)
+
+            holder.setFavoriteClickListener {
+                val newFavoriteState = !book.isFavorite
+                onFavoriteClick?.invoke(book, newFavoriteState)
+            }
+
+            holder.updateFavoriteState(book.isFavorite)
+            holder.setButtonClickListener {
+                onBookClick?.invoke(book)
+            }
         }
     }
+
 
     override fun getItemCount(): Int = books.size
 
@@ -68,6 +89,22 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.bookTitleText.text = book.title
             binding.authorText.text = book.author
         }
+
+        override fun setFavoriteClickListener(action: () -> Unit) {
+            binding.favoriteButton.setOnClickListener { action() }
+        }
+
+        override fun updateFavoriteState(isFavorite: Boolean) {
+            binding.favoriteButton.isActivated = isFavorite
+        }
+
+        override fun setButtonClickListener(action: () -> Unit) {
+            binding.bookImage.setOnClickListener{
+                action()
+            }
+        }
+
+
     }
 
     class BookViewHolderSlim(private val binding: ViewBookSlimBinding) :
@@ -77,5 +114,20 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun bind(book: Book) {
             binding.bookTitleText.text = book.title
         }
+
+        override fun setFavoriteClickListener(action: () -> Unit) {
+            binding.favoriteButton.setOnClickListener { action() }
+        }
+
+        override fun updateFavoriteState(isFavorite: Boolean) {
+            binding.favoriteButton.isActivated = isFavorite
+        }
+
+        override fun setButtonClickListener(action: () -> Unit) {
+            binding.bookImage.setOnClickListener{
+                action()
+            }
+        }
+
     }
 }

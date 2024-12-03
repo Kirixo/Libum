@@ -8,5 +8,11 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="SettingButtonView">
+        <attr name="button_logo" format="reference" />
+        <attr name="button_text" format="string" />
+        <attr name="action_button" format="reference" />
+    </declare-styleable>
+
 
 </resources>
