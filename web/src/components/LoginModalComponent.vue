@@ -91,6 +91,7 @@ export default {
           // console.log(this.$store.state.userInfo);
           if (this.$store.state.userInfo) {
             this.$router.push({ name: 'MainPage' });
+            // this.$router.push({ name: 'CartPage' });
           }
         });
       } catch (error) {
