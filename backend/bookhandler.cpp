@@ -33,14 +33,15 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
     const int defautLimit = 24;
     const int defaultPage = 1;
 
-    bool ok;
-    int limit = request.query().queryItemValue("limit").toInt(&ok);
-    if (!ok) {
+    bool isLimitOk;
+    int limit = request.query().queryItemValue("limit").toInt(&isLimitOk);
+    if (!isLimitOk) {
         limit = defautLimit;
     }
 
-    int page = request.query().queryItemValue("page").toInt(&ok);
-    if (!ok) {
+    bool isPageOk;
+    int page = request.query().queryItemValue("page").toInt(&isPageOk);
+    if (!isPageOk) {
         page = defaultPage;
     }
 

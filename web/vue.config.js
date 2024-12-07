@@ -8,7 +8,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/path': {
-        target: 'https://literate-vastly-pony.ngrok-free.app/api',
+        target: 'http://localhost/api',
         changeOrigin: true,
         pathRewrite: { '^/path': '' }, // Убирает префикс /path из пути запроса
         logLevel: 'debug', // Добавьте логирование

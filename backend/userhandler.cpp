@@ -26,7 +26,7 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
 
     User user = User(email, login, password);
 
-    if(User::checkExistanceInDB(email)) {
+    if(user.checkExistanceInDB()) {
         Logger::instance().log(QString("[registerUser request] User with the same email exists."), Logger::LogLevel::Info);
 
         return ResponseFactory::createResponse("Email already in use.", QHttpServerResponder::StatusCode::Conflict);
@@ -39,7 +39,7 @@ QHttpServerResponse UserHandler::registerUser(const QHttpServerRequest &request)
     Logger::instance().log(QString("[registerUser request] email = %1, login = %2, password = %3")
                                .arg(email, login, password), Logger::LogLevel::Error);
 
-    return ResponseFactory::createResponse("I dunno what's ging on. Internal server error.", QHttpServerResponder::StatusCode::InternalServerError);
+    return ResponseFactory::createResponse("Internal server error.", QHttpServerResponder::StatusCode::InternalServerError);
 }
 
 QHttpServerResponse UserHandler::loginUser(const QHttpServerRequest &request)

@@ -43,7 +43,7 @@ QJsonObject User::toJson() const
 
 bool User::saveInDB()
 {
-    if(email_.isNull() || login_.isNull() || password_.isNull()) {
+    if(checkNullVariables(email_, login_, password_)) {
         Logger::instance().log(QString("[saveInDB] email, login or password is NULL!"), Logger::LogLevel::Warning);
         return false;
     }
@@ -117,7 +117,7 @@ void User::fetchByID(quint64 id)
     id_ = -1;
 }
 
-bool User::checkExistanceInDB(const QString &email)
+bool User::checkExistanceInDB()
 {
     QString queryString = R"(
         SELECT 1 FROM users
@@ -126,13 +126,9 @@ bool User::checkExistanceInDB(const QString &email)
 
     QSqlQuery query(DBController::getDatabase());
     query.prepare(queryString);
-    query.bindValue(":email", email);
-
-    if (query.exec() && query.next()) {
-        return 1;
-    } else {
-        return 0;
-    }
+    query.bindValue(":email", email_);
+    
+    return query.exec() && query.next();
 }
 
 bool User::exists()
@@ -153,5 +149,11 @@ QString User::email() const
 QString User::login() const
 {
     return login_;
+}
+
+template <typename... T>
+requires (HasIsNull<T> && ...)
+bool User::checkNullVariables(T&&... variables) const {
+    return (... || variables.isNull());
 }
 
