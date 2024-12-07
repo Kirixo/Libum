@@ -1,32 +1,44 @@
 package com.project.libum.presentation.view.fragment
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.project.libum.R
-import com.project.libum.presentation.viewmodel.HomeViewModel
+import com.project.libum.core.utils.SwipeGestureListener
+import com.project.libum.data.dto.Book
 import com.project.libum.databinding.FragmentHomeBinding
 import com.project.libum.presentation.adapter.BookAdapter
 import com.project.libum.presentation.adapter.SpacingItemDecoration
+import com.project.libum.presentation.view.activity.BookReaderActivity
+import com.project.libum.presentation.view.activity.BookReaderActivity.Companion.BOOK_DATA
 import com.project.libum.presentation.view.custom.BookView
+import com.project.libum.presentation.view.extension.showErrorMessage
+import com.project.libum.presentation.viewmodel.HomeViewModel
 import com.project.libum.presentation.viewmodel.MainActivityModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val mainActivityModel: MainActivityModel by activityViewModels<MainActivityModel>()
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
-    private var bookStyle: BookView.BookDisplayStyle = BookView.BookDisplayStyle.WIDE
-    private var isActivatedChangeButton = false
+    private var isActivatedBookStyleButton = false
+
+    private lateinit var gestureDetector: GestureDetector
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,80 +49,113 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (savedInstanceState != null) {
-            isActivatedChangeButton = savedInstanceState.getBoolean(CHANGE_BUTTON_STYLE, false)
-
-            bookStyle = when(savedInstanceState.getInt(BOOK_STYLE, 0)){
-                0 -> BookView.BookDisplayStyle.WIDE
-                1 -> BookView.BookDisplayStyle.SLIM
-                else -> BookView.BookDisplayStyle.WIDE
-            }
-
-            binding.actionField.listStyleChangerButton.isActivated = isActivatedChangeButton
-        }
-
-        binding.actionField.listStyleChangerButton.setOnClickListener{ button ->
-            button.isActivated = !button.isActivated
-            bookStyle = if(!button.isActivated){
-                BookView.BookDisplayStyle.WIDE
-            }else{
-                BookView.BookDisplayStyle.SLIM
-            }
-            setBookStyle()
-            isActivatedChangeButton = button.isActivated
+        binding.actionField.listStyleChangerButton.setOnClickListener{
+            changeStateOfBookStyleButton()
+            homeViewModel.changeBookStyleByActivated(isActivatedBookStyleButton)
         }
 
         mainActivityModel.books.observe(viewLifecycleOwner) { books ->
             bookAdapter.setBooks(books)
-            bookAdapter.setStyle(bookStyle)
         }
 
+        homeViewModel.bookStyle.observe(viewLifecycleOwner){ displayStyle ->
+            when(displayStyle){
+                BookView.BookDisplayStyle.SLIM -> setSlimBookAdapter()
+                BookView.BookDisplayStyle.WIDE -> setWideBookAdapter()
+                else -> setWideBookAdapter()
+            }
+            bookAdapter.setStyle(displayStyle)
+        }
+
+        homeViewModel.catalogState.observe(viewLifecycleOwner){
+            val (previous, current, next) = homeViewModel.getSurroundingCatalogStates()
+
+            binding.bookCategories.previousCatalogState.text = previous.name
+            binding.bookCategories.currentCatalogState.text = current.name
+            binding.bookCategories.nextCatalogState.text = next.name
+        }
+
+        binding.bookCategories.nextCatalogState.setOnClickListener{
+            homeViewModel.changeNextCatalogState()
+        }
+
+        binding.bookCategories.previousCatalogState.setOnClickListener{
+            homeViewModel.changePreviousCatalogState()
+        }
+
+        gestureDetector = GestureDetector(context, SwipeGestureListener(
+            onSwipeRight = {
+                homeViewModel.changeNextCatalogState()
+                Log.d("HomeFragment", "onViewCreated: swipe right")
+                           },
+            onSwipeLeft = {
+                homeViewModel.changePreviousCatalogState()
+                Log.d("HomeFragment", "onViewCreated: swipe left")
+            }
+            )
+        )
+
+        binding.catalogBackground.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+        }
+
+
         initializeBookAdapter()
-
-        bookAdapter.setBooks(mainActivityModel.books.value)
     }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(BOOK_STYLE, bookStyle.id)
-        outState.putBoolean(CHANGE_BUTTON_STYLE, isActivatedChangeButton)
-        super.onSaveInstanceState(outState)
-    }
-
 
     private fun initializeBookAdapter(){
         bookAdapter = BookAdapter()
         val spacingDecoration = SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.item_spacing))
         binding.bookList.addItemDecoration(spacingDecoration)
+
+        bookAdapter.setOnFavoriteClickListener { book, isFavorite ->
+            lifecycleScope.launch {
+                val result = if (isFavorite) {
+                    mainActivityModel.addBookToFavorites(book)
+                } else {
+                    mainActivityModel.deleteBookToFavorites(book)
+                }
+                result.onSuccess {
+                    bookAdapter.notifyItemChanged(mainActivityModel.books.value!!.indexOf(book))
+                }.onFailure {
+                    showErrorMessage(context, "Failed to update favorite status for ${book.title}")
+                }
+            }
+        }
+
+        bookAdapter.setOnBookClickView { book: Book ->
+            openBookReaderActivity(book)
+        }
+
         binding.bookList.adapter = bookAdapter
-        setBookStyle()
     }
 
-    private fun setBookStyle(){
-        when(bookStyle){
-            BookView.BookDisplayStyle.WIDE -> setWideBookAdapter()
-            BookView.BookDisplayStyle.SLIM -> setSlimBookAdapter()
-        }
+    private fun openBookReaderActivity(book: Book){
+        val intent = Intent(context, BookReaderActivity::class.java)
+        intent.putExtra(BOOK_DATA, book)
+        startActivity(intent)
+    }
+
+    private fun changeStateOfBookStyleButton(){
+        val button = binding.actionField.listStyleChangerButton
+        button.isActivated = !button.isActivated
+        isActivatedBookStyleButton = button.isActivated
     }
 
     private fun setWideBookAdapter(){
-        Log.d("Books", "setWideBookAdapter: Wide set")
         binding.bookList.layoutManager = LinearLayoutManager(context)
-        bookAdapter.setStyle(bookStyle)
     }
 
     private fun setSlimBookAdapter(){
-        Log.d("Books", "setSlimBookAdapter: Slim set")
-        val gridLayoutManager = GridLayoutManager(context, 3)
+        val gridLayoutManager = GridLayoutManager(context, SLIM_BOOK_IN_ROW_COUNT)
         binding.bookList.layoutManager = gridLayoutManager
-        bookAdapter.setStyle(bookStyle)
     }
 
-
     companion object{
-        const val BOOK_STYLE: String = "BOOK_STYLE"
-        const val CHANGE_BUTTON_STYLE: String = "CHANGE_BUTTON_STYLE"
+        const val SLIM_BOOK_IN_ROW_COUNT = 3
     }
 }

@@ -28,33 +28,34 @@
         >
     </ImageView>
 
-    <View
-        android:id="@+id/_title_background"
-        android:layout_width="0dp"
-        android:layout_height="29dp"
-        app:layout_constraintBottom_toBottomOf="@id/book_image"
+    <ImageButton
+        android:id="@+id/favorite_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         app:layout_constraintStart_toStartOf="@id/book_image"
-        app:layout_constraintEnd_toEndOf="@id/book_image"
-        android:background="@color/gray_blue_200"
-        android:alpha="0.6"
+        app:layout_constraintTop_toTopOf="@id/book_image"
+        android:layout_margin="4dp"
+        android:src="@drawable/se_heart_24dp"
+        android:padding="0dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
         >
-    </View>
+    </ImageButton>
 
     <TextView
         android:id="@+id/book_title_text"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="@id/_title_background"
-        app:layout_constraintEnd_toEndOf="@id/_title_background"
-        app:layout_constraintTop_toTopOf="@id/_title_background"
-        app:layout_constraintBottom_toBottomOf="@id/_title_background"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/book_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:maxLines="2"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:ellipsize="marquee"
         style="@style/TextAppearance.Material3.LabelSmall"
         android:textColor="?colorOnBackground"
-        android:text="A very cool book title  title title title title title title"
+        android:text="A very cool book title  title title title title title title title"
         tools:ignore="HardcodedText"
         >
     </TextView>
@@ -64,8 +65,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.Material3.LabelMedium"
-        app:layout_constraintTop_toBottomOf="@id/book_image"
+        app:layout_constraintTop_toBottomOf="@id/book_title_text"
         app:layout_constraintStart_toStartOf="@id/book_image"
+        android:layout_marginTop="4dp"
         android:text="100%"
         tools:ignore="HardcodedText">
     </TextView>

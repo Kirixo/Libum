@@ -41,6 +41,20 @@
         >
     </ImageView>
 
+    <ImageButton
+        android:id="@+id/favorite_button"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:layout_constraintStart_toStartOf="@id/book_image"
+        app:layout_constraintTop_toTopOf="@id/book_image"
+        android:layout_margin="4dp"
+        android:src="@drawable/se_heart_24dp"
+        android:padding="0dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        >
+    </ImageButton>
+
     <TextView
         android:id="@+id/book_title_text"
         android:layout_width="0dp"
