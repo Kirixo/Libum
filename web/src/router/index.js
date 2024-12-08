@@ -4,6 +4,7 @@ import {
 } from 'vue-router';
 import MainPage from '@/pages/MainPage.vue';
 import BookPage from '@/pages/BookPage.vue';
+import CartPage from '@/pages/CartPage.vue';
 import TestPage from '@/pages/testModalsPage.vue';
 
 export default createRouter({
@@ -19,6 +20,11 @@ export default createRouter({
     name: 'BookPage',
     props: true,
     component: BookPage,
+  }, {
+    path: '/cart',
+    name: 'CartPage',
+    props: true,
+    component: CartPage,
   },
   {
     path: '/test',

@@ -7,11 +7,14 @@
 module.exports = {
   devServer: {
     proxy: {
-      '/path': {
-        target: 'http://localhost/api',
+      '/api': {
+        target: 'https://literate-vastly-pony.ngrok-free.app',
         changeOrigin: true,
-        pathRewrite: { '^/path': '' }, // Убирает префикс /path из пути запроса
-        logLevel: 'debug', // Добавьте логирование
+        pathRewrite: { '^/api': '/api' },
+        logLevel: 'debug',
+        headers: {
+          'ngrok-skip-browser-warning': 'ERR_NGROK_6024',
+        },
       },
     },
   },

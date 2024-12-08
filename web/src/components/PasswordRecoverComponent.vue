@@ -2,38 +2,25 @@
   <div v-if="isVisible" class="modal-overlay">
     <div class="modal-content">
       <button @click="closeModal" class="close-btn">&#10005;</button>
-      <h2>З поверненням</h2>
+      <h2>Відновлення паролю</h2>
       <form @submit.prevent="submitForm">
+
+        <div class="form-group">
+          <p class="restore-email-info">
+            Введіть свій адрес електронної пошти, та ми надішлемо вам інструкції по підновленню паролю
+          </p>
+        </div>
+
         <div class="form-group">
           <label for="email">
-            Електронна пошта
+            Електронная пошта
             <input type="email" id="email" v-model="email" required placeholder="Введіть ваш email"
               @blur="validateEmail" />
           </label>
           <p v-if="emailError" class="error-message">{{ emailError }}</p>
         </div>
-
-        <div class="form-group">
-          <label for="password">
-            Пароль
-            <input type="password" id="password" v-model="password"
-             required placeholder="Введіть ваш пароль"
-              @blur="validatePassword" />
-          </label>
-          <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
-        </div>
-        <div class="extra-options">
-          <a href="#">Забули пароль?</a>
-          <a href="#">Не маєте аккаунту?</a>
-        </div>
-
         <button type="submit" class="submit-btn" :disabled="!isFormValid">
           Продовжити
-        </button>
-        <button type="button" class="google-btn" @click="signInWithGoogle">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google logo"
-            class="google-logo" />
-          Продовжити з Google
         </button>
       </form>
     </div>
@@ -41,7 +28,6 @@
 </template>
 
 <script>
-// import md5 from 'md5'; // Для хеширования пароля
 
 export default {
   props: {
@@ -53,14 +39,13 @@ export default {
   data() {
     return {
       email: '',
-      password: '',
-      emailError: null,
-      passwordError: null,
     };
   },
   computed: {
     isFormValid() {
-      return !this.emailError && !this.passwordError && this.email && this.password;
+      return (
+        this.email
+      );
     },
   },
   methods: {
@@ -69,41 +54,29 @@ export default {
       if (!this.email) {
         this.emailError = 'Email є обов\'язковим полем';
       } else if (!emailPattern.test(this.email)) {
-        this.emailError = 'Некорректний формат Email';
+        this.emailError = 'Некоректний формат Email';
       } else {
         this.emailError = null;
       }
     },
-    validatePassword() {
-      if (!this.password) {
-        this.passwordError = 'Пароль є обов\'язковим полем';
-      } else {
-        this.passwordError = null;
-      }
-    },
-    async submitForm() {
-      try {
-        // const hashedPassword = md5(this.password);
-        await this.$store.dispatch('postUserInfo', {
-          email: this.email,
-          password: this.password,
-        }).then(() => {
-          // console.log(this.$store.state.userInfo);
-          if (this.$store.state.userInfo) {
-            this.$router.push({ name: 'MainPage' });
-            // this.$router.push({ name: 'CartPage' });
-          }
-        });
-      } catch (error) {
-        console.log(error);
-        this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
-        this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
-      }
-    },
-    signInWithGoogle() {
-      // todo
-      console.log('Авторизация через Google');
-    },
+    // async submitForm() {
+    //   try {
+    //     await this.$store.dispatch('postRegisterUser', {
+    //       login: this.username,
+    //       email: this.email,
+    //       password: this.password,
+    //     });
+    //     // console.log('after post', this.$store.state.userInfo);
+
+    //     if (this.$store.state.userInfo) {
+    //       this.$router.push({ name: 'MainPage' });
+    //     }
+    //   } catch (error) {
+    //     this.usernameError = 'Ошибка авторизации. Проверьте введенные данные.';
+    //     this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
+    //     this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
+    //   }
+    // },
     closeModal() {
       this.$emit('close');
     },
@@ -185,32 +158,6 @@ button.submit-btn:hover:not(:disabled) {
   background-color: #5783C8;
 }
 
-button.google-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  background-color: #fff;
-  color: #444;
-  border: 2px solid #b4c3dd;
-  border-radius: 12px;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s;
-}
-
-button.google-btn:hover {
-  background-color: #5783C8;
-}
-
-.google-logo {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-}
-
 button.close-btn {
   position: absolute;
   top: 10px;
@@ -249,5 +196,9 @@ button.close-btn:hover {
 
 .extra-options a:hover {
   text-decoration: underline;
+}
+
+.restore-email-info{
+    text-align: center;
 }
 </style>
