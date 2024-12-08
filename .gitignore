@@ -9,6 +9,7 @@ Thumbs.db
 # Temporary or backup files
 *.tmp
 *.bak
+postgres_data/
 
 # IDE-specific settings
 .vscode/

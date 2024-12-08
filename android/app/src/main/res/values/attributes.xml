@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="BookView">
+        <attr name="displayMode" format="enum">
+            <enum name="wide" value="0"/>
+            <enum name="slim" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="SettingButtonView">
+        <attr name="button_logo" format="reference" />
+        <attr name="button_text" format="string" />
+        <attr name="action_button" format="reference" />
+    </declare-styleable>
+
+
+</resources>
