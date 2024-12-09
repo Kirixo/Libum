@@ -1,44 +1,39 @@
 <template>
   <Header />
   <div class="book-page">
-    <!-- Хлібні крихти на білому фоні -->
     <div class="breadcrumbs-container">
       <div class="breadcrumbs">
         <span>/ Сучасна проза /</span>
-        <span class="breadcrumbs-book-title">Назва книги</span>
+        <span class="breadcrumbs-book-title">{{ bookTitle }}</span>
       </div>
     </div>
-    <!-- Основний вміст на блакитному фоні -->
     <div class="content-wrapper">
       <div class="book-content">
-        <!-- Ліва секція з обкладинкою книги -->
         <div class="left-section">
           <div class="image-placeholder"></div>
-          <RatingStars :rating='4.5' />
+          <RatingStars :rating="bookRating" />
         </div>
-
-        <!-- Права секція з інформацією про книгу -->
         <div class="right-section">
-          <h1 class="book-title">Назва книги</h1>
-          <p class="author">*автор*</p>
+          <h1 class="book-title">{{ bookTitle }}</h1>
+          <p class="author">{{ author }}</p>
           <div class="tags-container">
-            <span class="tag">Тег</span>
-            <span class="tag">Тег</span>
-            <span class="tag">ТегТегТег</span>
-            <span class="tag">тег</span>
-            <span class="tag">ще тег</span>
+            <span v-for="(tag, index) in tags" :key="index" class="tag">{{ tag }}</span>
           </div>
-
-          <p class="pages">Сторінок: 201</p>
-          <p class="price">300 грн</p>
+          <p class="pages">Сторінок: {{ pages }}</p>
+          <p class="price">{{ price }} грн</p>
           <div class="actions">
-            <button class="action-button">
+            <button class="action-button" @click="addToCart">
               <img :src="require('@/assets/cart-icon.png')" alt="Cart Icon" class="icon" />
               Додати до кошику
             </button>
-            <button class="action-button">
+            <!-- Кнопка "Додати до обраного" або "Видалити з обраного" -->
+            <button v-if="!isFavorite" class="action-button" @click="toggleFavorite">
               <img :src="require('@/assets/favorite-icon.png')" alt="Favorite Icon" class="icon" />
               Додати в обране
+            </button>
+            <button v-else class="action-button" @click="toggleFavorite">
+              <img :src="require('@/assets/favorite-icon.png')" alt="Favorite Icon" class="icon" />
+              Видалити з обраного
             </button>
             <button class="action-button">
               <img :src="require('@/assets/read-icon.png')" alt="Read Icon" class="icon" />
@@ -47,24 +42,10 @@
           </div>
         </div>
       </div>
-      <!-- Анотація книги -->
       <div class="annotation">
-        <p class="annotation-title"><strong>Анотація до книги "Назва книги"</strong></p>
+        <p class="annotation-title"><strong>Анотація до книги "{{ bookTitle }}"</strong></p>
         <div class="annotation-text-container">
-          <p class="annotation-text">
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація*
-          </p>
-          <p class="annotation-text">
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-            *Анотація* *Анотація* *Анотація* *Анотація*
-          </p>
+          <p class="annotation-text">{{ annotation }}</p>
         </div>
       </div>
     </div>
@@ -83,7 +64,7 @@ export default {
   props: {
     id: {
       type: String,
-      default: () => { },
+      default: '',
     },
   },
   components: {
@@ -91,18 +72,76 @@ export default {
     RatingStars,
     Footer,
   },
+  data() {
+    return {
+      bookTitle: 'Назва книги',
+      author: 'Автор',
+      tags: ['Тег 1', 'Тег 2', 'Тег 3'],
+      pages: 201,
+      price: 300,
+      isFavorite: false,
+      bookRating: 4.5,
+      annotation: 'Тут буде анотація до книги...',
+    };
+  },
   mounted() {
-    this.getBook(this.id);
-    console.log(23);
+    if (this.id) {
+      this.getBook(this.id);
+    }
   },
   methods: {
     getBook(id) {
-      return axios
+      axios
         .get('https://literate-vastly-pony.ngrok-free.app/api/books', {
           params: { id },
         })
         .then((res) => {
-          console.log(res);
+          const bookData = res.data;
+          this.bookTitle = bookData.title || this.bookTitle;
+          this.author = bookData.author || this.author;
+          this.tags = bookData.tags || this.tags;
+          this.pages = bookData.pages || this.pages;
+          this.price = bookData.price || this.price;
+          this.bookRating = bookData.rating || this.bookRating;
+          this.annotation = bookData.annotation || this.annotation;
+          this.isFavorite = bookData.isFavorite || this.isFavorite;
+        })
+        .catch((error) => {
+          console.error('Error fetching book data:', error);
+        });
+    },
+    addToCart() {
+      // Додаємо книгу до кошику
+      console.log('Додано до кошику');
+    },
+    toggleFavorite() {
+      // Заглушка для запиту на сервер
+      if (this.isFavorite) {
+        this.removeFromFavorites();
+      } else {
+        this.addToFavorites();
+      }
+    },
+    addToFavorites() {
+      // Замість цього виконати реальний запит для додавання в обране
+      axios.post('https://your-api-endpoint.com/favorites', { bookId: this.id })
+        .then(() => {
+          this.isFavorite = true;
+          console.log('Книга додана до обраного');
+        })
+        .catch((error) => {
+          console.error('Помилка додавання до обраного:', error);
+        });
+    },
+    removeFromFavorites() {
+      // Замість цього виконати реальний запит для видалення з обраного
+      axios.delete('https://your-api-endpoint.com/favorites', { data: { bookId: this.id } })
+        .then(() => {
+          this.isFavorite = false;
+          console.log('Книга видалена з обраного');
+        })
+        .catch((error) => {
+          console.error('Помилка видалення з обраного:', error);
         });
     },
   },
