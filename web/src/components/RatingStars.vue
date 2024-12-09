@@ -1,63 +1,75 @@
 <template>
-    <div class="star-rating">
-        <img v-for="(star, index) in stars" :key="index" :src="getStarImage(star)" alt="Star" class="star" />
+    <div class="rating-stars">
+        <span v-for="star in 5" :key="star" class="star" :class="{ filled: star <= displayedRating }" role="button"
+            tabindex="0" :aria-label="`Rate ${star} star${star > 1 ? 's' : ''}`" @click="setRating(star)"
+            @keydown="event => handleKeydown(event, star)" @mouseover="() => setHoverRating(star)"
+            @mouseleave="resetHover" @focus="() => hoverRating(star)" @blur="resetHover">
+            ★
+        </span>
     </div>
 </template>
 
 <script>
-import fullStar from '../assets/full-star.svg';
-import halfStar from '../assets/half-star.svg';
-import emptyStar from '../assets/empty-star.svg';
-
 export default {
-    name: 'StarRating',
+    name: 'RatingStars',
     props: {
-        rating: {
+        modelValue: {
             type: Number,
-            required: true,
+            default: 0,
+        },
+    },
+    data() {
+        return {
+            currentRating: this.modelValue,
+            hoverRating: 0,
+        };
+    },
+    methods: {
+        setRating(rating) {
+            this.currentRating = rating;
+            this.$emit('update:modelValue', rating);
+        },
+        setHoverRating(rating) {
+            this.hoverRating = rating;
+        },
+        resetHover() {
+            this.hoverRating = 0;
+        },
+        handleKeydown(event, rating) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                this.setRating(rating);
+                event.preventDefault();
+            }
         },
     },
     computed: {
-        stars() {
-            const clampedRating = Math.min(Math.max(this.rating, 0), 5); // Ограничение
-            const fullStars = Math.floor(clampedRating);
-            const halfStars = clampedRating % 1 >= 0.5 ? 1 : 0;
-            const emptyStars = 5 - fullStars - halfStars;
-            return [
-                ...Array(fullStars).fill('full'),
-                ...Array(halfStars).fill('half'),
-                ...Array(emptyStars).fill('empty'),
-            ];
-        },
-    },
-
-    methods: {
-        getStarImage(star) {
-            if (star === 'full') {
-                return fullStar;
-            }
-            if (star === 'half') {
-                return halfStar;
-            }
-            return emptyStar;
+        displayedRating() {
+            return this.hoverRating || this.currentRating;
         },
     },
 };
 </script>
 
 <style scoped>
-.star-rating {
+.rating-stars {
     display: flex;
-    gap: 8px;
-    /* Збільшення відступу між зірочками */
-    margin-top: 10px;
-    /* Додаємо відступ між зображенням книги та зірочками */
+    gap: 5px;
+    cursor: pointer;
+    margin-top: -20px;
+    /* Поднимаем блок выше */
 }
 
 .star {
-    width: 30px;
-    /* Збільшення розміру зірочки */
-    height: 30px;
-    /* Збільшення висоти зірочки */
+    font-size: 3.5rem;
+    color: #819CC7;
+    transition: color 0.2s;
+}
+
+.star.filled {
+    color: #3F5C8A;
+}
+
+.star:focus {
+    outline: 2px solid blue;
 }
 </style>
