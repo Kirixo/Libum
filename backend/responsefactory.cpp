@@ -21,6 +21,16 @@ QHttpServerResponse ResponseFactory::createJsonResponse(const QByteArray &conten
     return response;
 }
 
+QHttpServerResponse ResponseFactory::createFileResponse(const QByteArray &content, QHttpServerResponse::StatusCode statusCode)
+{
+    QHttpServerResponse response = QHttpServerResponse(
+        content, statusCode
+        );
+    addCorsHeaders(response);
+    response.setHeader("Content-Type", "application/octet-stream");
+    return response;
+}
+
 void ResponseFactory::addCorsHeaders(QHttpServerResponse &response)
 {
     response.setHeader("Access-Control-Allow-Origin", "*");

@@ -11,6 +11,8 @@ public:
 
     static QHttpServerResponse createJsonResponse(const QByteArray &content, QHttpServerResponse::StatusCode statusCode);
 
+    static QHttpServerResponse createFileResponse(const QByteArray &content, QHttpServerResponse::StatusCode statusCode);
+
 private:
     static void addCorsHeaders(QHttpServerResponse &response);
 };

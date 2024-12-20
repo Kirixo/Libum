@@ -13,6 +13,7 @@ public:
     static QHttpServerResponse getBookList(const QHttpServerRequest &request);
     static QHttpServerResponse getGenresList(const QHttpServerRequest &request);
 
+    static QHttpServerResponse getFileForReader(const QHttpServerRequest &request);
 };
 
 #endif // BOOKHANDLER_H

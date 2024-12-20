@@ -135,4 +135,30 @@ QList<Genre> BookRepository::fetchGenresForBook(int bookId)
     return genres;
 }
 
+QList<Book> BookRepository::fetchBooksByTitle(QString searchQuery)
+{
+    return {};
+}
 
+std::optional<QString> BookRepository::fetchFilePathForReader(int bookId)
+{
+    QSqlDatabase db = DBController::getDatabase();
+    const QString type = "c_fb2";
+
+    QString queryString = R"(
+        SELECT bf.path
+        FROM book_files bf
+        WHERE bf.book_id = :id AND bf.type = :type;
+    )";
+
+    QSqlQuery query(db);
+    query.prepare(queryString);
+    query.bindValue(":id", bookId);
+    query.bindValue(":type", type);
+
+    if (query.exec() && query.next()) {
+        return query.value("path").toString();
+    }
+
+    return std::nullopt;
+}
