@@ -28,6 +28,7 @@ import com.project.libum.presentation.viewmodel.HomeViewModel
 import com.project.libum.presentation.viewmodel.MainActivityModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -107,6 +108,11 @@ class HomeFragment : Fragment() {
         initializeBookAdapter()
     }
 
+    override fun onResume() {
+        super.onResume()
+        mainActivityModel.updateBooks()
+    }
+
     private fun initializeBookAdapter(){
         bookAdapter = BookAdapter()
         val spacingDecoration = SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.item_spacing))
@@ -150,12 +156,13 @@ class HomeFragment : Fragment() {
         binding.bookList.layoutManager = LinearLayoutManager(context)
     }
 
-    private fun setSlimBookAdapter(){
-        val gridLayoutManager = GridLayoutManager(context, SLIM_BOOK_IN_ROW_COUNT)
+    private fun setSlimBookAdapter() {
+        val totalWidth = resources.displayMetrics.widthPixels
+        val itemWidth = resources.getDimensionPixelSize(R.dimen.slim_book_width)
+        val spanCount = max(1, totalWidth / itemWidth)
+
+        val gridLayoutManager = GridLayoutManager(context, spanCount)
         binding.bookList.layoutManager = gridLayoutManager
     }
 
-    companion object{
-        const val SLIM_BOOK_IN_ROW_COUNT = 3
-    }
 }

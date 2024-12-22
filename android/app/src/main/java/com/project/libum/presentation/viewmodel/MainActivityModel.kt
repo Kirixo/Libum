@@ -26,11 +26,11 @@ class MainActivityModel @Inject constructor(
         getBooksFromServer()
     }
 
-    suspend fun addBookToFavorites(book: Book): Result<Unit> {
+    fun addBookToFavorites(book: Book): Result<Unit> {
         return bookFavoritesUseCases.addToFavorites(book)
     }
 
-    suspend fun deleteBookToFavorites(book: Book): Result<Unit> {
+    fun deleteBookToFavorites(book: Book): Result<Unit> {
         return bookFavoritesUseCases.deleteFromFavorites(book)
     }
 

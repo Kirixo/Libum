@@ -88,6 +88,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun bind(book: Book) {
             binding.bookTitleText.text = book.title
             binding.authorText.text = book.author
+            binding.bookReadPercent.text = "${book.percentRead}%"
         }
 
         override fun setFavoriteClickListener(action: () -> Unit) {
@@ -103,8 +104,6 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 action()
             }
         }
-
-
     }
 
     class BookViewHolderSlim(private val binding: ViewBookSlimBinding) :
@@ -113,6 +112,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun bind(book: Book) {
             binding.bookTitleText.text = book.title
+            binding.bookReadPercent.text = "${book.percentRead}%"
         }
 
         override fun setFavoriteClickListener(action: () -> Unit) {

@@ -4,6 +4,7 @@ appcompatVersion = "1.6.1"
 converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
 design = "28.0.0"
+flexbox = "3.0.0"
 gson = "2.10.1"
 
 hiltAndroidCompiler = "2.50"
@@ -32,6 +33,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+flexbox = { module = "com.google.android:flexbox", version.ref = "flexbox" }
 google-recaptcha = { module = "com.google.android.recaptcha:recaptcha", version.ref = "recaptchaVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidCompiler" }

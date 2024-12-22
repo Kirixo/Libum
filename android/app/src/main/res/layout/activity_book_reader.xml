@@ -7,22 +7,51 @@
     android:layout_height="match_parent"
     tools:context=".presentation.view.activity.BookReaderActivity">
 
-    <View
-        android:id="@+id/content_button"
+
+    <WebView
+        android:id="@+id/book_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/information_layout"
+        android:background="@color/background"
+        android:clickable="false"
+        android:visibility="visible"
+        >
+    </WebView>
+
+    <LinearLayout
+        android:id="@+id/control_buttons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp"
         >
-    </View>
 
-<!--    <include-->
-<!--        layout="@layout/view_book_text"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        >-->
-<!--    </include>-->
+        <View
+            android:id="@+id/prev_page"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+        </View>
+
+        <View
+            android:id="@+id/content_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            >
+        </View>
+
+        <View
+            android:id="@+id/next_page"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            >
+        </View>
+
+    </LinearLayout>
 
     <include
         android:id="@+id/view_book_content"
@@ -37,5 +66,54 @@
         >
     </include>
 
+
+    <LinearLayout
+        android:id="@+id/information_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+        <TextView
+            android:id="@+id/current_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:text="0"
+            >
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:text=" | "
+            >
+        </TextView>
+
+        <TextView
+            android:id="@+id/max_pages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Material3.LabelSmall"
+            android:text="0"
+            >
+        </TextView>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/loader_bar"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:theme="@style/CircularProgress"
+        android:visibility="visible">
+    </ProgressBar>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

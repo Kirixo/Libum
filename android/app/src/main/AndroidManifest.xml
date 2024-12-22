@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:name=".LibumApp"
@@ -18,9 +21,8 @@
         tools:targetApi="31">
         <activity
             android:name=".presentation.view.activity.BookReaderActivity"
-            android:exported="false"
-            android:noHistory="true"
-            />
+            android:exported="true"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".presentation.view.activity.LauncherActivity"

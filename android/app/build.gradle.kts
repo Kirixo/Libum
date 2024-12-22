@@ -77,12 +77,14 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
 
     implementation(libs.androidx.core.splashscreen)
+    implementation ("com.ibm.icu:icu4j:72.1")
 
     implementation(libs.hilt.android)
     implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.room.compiler)
 
+    implementation("org.jsoup:jsoup:1.15.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

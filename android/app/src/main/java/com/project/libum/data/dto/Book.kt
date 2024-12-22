@@ -9,4 +9,7 @@ data class Book(
     val title: String,
     val author: String,
     var isFavorite: Boolean,
+    var percentRead: Int,
+    var localPercentRead: Int? = 0,
+    var lastReadPage: Int? = 0
 ) : Parcelable

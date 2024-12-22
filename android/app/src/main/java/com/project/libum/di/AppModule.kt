@@ -3,6 +3,8 @@ package com.project.libum.di
 import android.app.Application
 import android.content.Context
 import com.project.libum.BuildConfig
+import com.project.libum.data.local.FileStorageController
+import com.project.libum.data.local.dao.BookDao
 import com.project.libum.data.local.dao.UserDao
 import com.project.libum.domain.usecase.ExecuteRecaptchaUseCase
 import com.project.libum.domain.usecase.InitializeRecaptchaUseCase
@@ -12,9 +14,11 @@ import com.project.libum.domain.repository.AuthRepository
 import com.project.libum.domain.repository.AuthRepositoryImpl
 import com.project.libum.domain.repository.BooksListRepository
 import com.project.libum.domain.repository.BooksListRepositoryImpl
+import com.project.libum.domain.repository.StoredBookRepository
 import com.project.libum.domain.repository.UserCacheRepository
 import com.project.libum.domain.repository.UserCacheRepositoryImpl
 import com.project.libum.domain.usecase.BookFavoritesUseCases
+import com.project.libum.domain.usecase.BookUseCases
 import com.project.libum.domain.usecase.LogInUseCase
 import dagger.Module
 import dagger.Provides
@@ -40,8 +44,8 @@ object AppModule{
 
     @Provides
     @Singleton
-    fun provideBookListRepository(): BooksListRepository{
-        return BooksListRepositoryImpl()
+    fun provideBookListRepository(bookDao: BookDao): BooksListRepository{
+        return BooksListRepositoryImpl(bookDao)
     }
 
     @Provides
@@ -78,10 +82,18 @@ object AppModule{
         return InitializeRecaptchaUseCase(recaptchaService)
     }
 
-
     @Provides
     fun provideLogInUserUseCase(authRepository: AuthRepository, cacheRepository: UserCacheRepository): LogInUseCase{
         return LogInUseCase(authRepository,cacheRepository)
     }
 
+    @Provides
+    fun provideBookStore(appStorageController: FileStorageController, bookDao: BookDao): StoredBookRepository{
+        return StoredBookRepository(appStorageController, bookDao)
+    }
+
+    @Provides
+    fun provideBookUseCase(bookRepository: StoredBookRepository): BookUseCases{
+        return BookUseCases(bookRepository)
+    }
 }

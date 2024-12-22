@@ -17,6 +17,10 @@
         <item name="cornerSize">0dp</item>
     </style>
 
+    <style name="CircularProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/blue_500</item>
+    </style>
+
     <style name="roundedImageViewRounded" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>

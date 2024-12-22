@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@id/avatar_image"
         android:layout_marginTop="8dp"
         style="@style/TextAppearance.Material3.LabelLarge"
-        android:text="XD"
+        android:text="Future user name"
         >
     </TextView>
 
@@ -59,8 +59,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/edges_margin"
+        android:layout_marginEnd="@dimen/edges_margin"
         >
     </include>
 

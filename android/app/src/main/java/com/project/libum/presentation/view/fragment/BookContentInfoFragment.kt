@@ -15,11 +15,16 @@ class BookContentInfoFragment : Fragment() {
     private val bookReaderViewModel: BookReadActivityModel by activityViewModels<BookReadActivityModel>()
     private lateinit var binding: FragmentBookContenInfoBinding
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         bookReaderViewModel.bookData.observe(viewLifecycleOwner){ book ->
             setStartUpState(book)
+        }
+
+        bookReaderViewModel.currentPage.observe(viewLifecycleOwner){
+            onUpdate()
         }
     }
 
@@ -38,4 +43,8 @@ class BookContentInfoFragment : Fragment() {
         binding.readProgressPercent.text ="${bookReaderViewModel.getReadPercent()}%"
     }
 
+    private fun onUpdate(){
+        binding.readProgressBar.progress = bookReaderViewModel.getReadPercent()
+        binding.readProgressPercent.text ="${bookReaderViewModel.getReadPercent()}%"
+    }
 }

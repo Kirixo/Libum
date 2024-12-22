@@ -8,8 +8,8 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/book_image"
-        android:layout_width="98dp"
-        android:layout_height="142dp"
+        android:layout_width="@dimen/slim_book_width"
+        android:layout_height="@dimen/slim_book_height"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:src="@color/gray_200"
