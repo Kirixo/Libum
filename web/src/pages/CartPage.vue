@@ -12,8 +12,13 @@
 
     <div class="cart-content">
       <!-- Первый столбец (список товаров) -->
-      <div class="cart-items">
-        <CartItem v-for="book in books" :key="book.id" :book="book" @remove="removeCurrentBook(book.id)" />
+      <div v-if="isCartEmpty" class="empty-cart-message">
+        Ваш кошик порожній. Будь ласка, додайте книжки, аби оформити замовлення!
+      </div>
+      <div v-else>
+        <div class="cart-items">
+          <CartItem v-for="book in books" :key="book.id" :book="book" @remove="removeCurrentBook(book.id)" />
+        </div>
       </div>
 
       <!-- Второй столбец (итоги, кнопки, подписка) -->
@@ -78,8 +83,12 @@ export default {
     ...mapState({
       books: (state) => state.cartBooks || [], // Получаем книги из Vuex
     }),
+    // Проверяем, пуста ли корзина
+    isCartEmpty() {
+      return this.$store.state.cartBooks.length === 0;
+    },
     totalPrice() {
-      return this.books.length ? this.books.reduce((total, book) => total + book.price, 0) : 0;
+      return this.books.length ? this.books.reduce((total, book) => total + book.price, 0).toFixed(2) : 0;
     },
   },
   methods: {
@@ -140,7 +149,8 @@ export default {
 
 .cart-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  justify-content: center;
   gap: 30px;
 }
 
@@ -231,5 +241,11 @@ export default {
     width: 100%;
     min-width: 540px;
   }
+}
+
+.empty-cart-message {
+  color: #6E85B7;
+  font-size: 24px;
+  margin: 20px;
 }
 </style>
