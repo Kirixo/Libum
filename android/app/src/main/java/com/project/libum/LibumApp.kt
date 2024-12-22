@@ -17,7 +17,6 @@ class LibumApp : Application(){
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("LibumApp", "onCreate: start")
 
         database = Room.databaseBuilder(
             this,

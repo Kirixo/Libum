@@ -14,8 +14,8 @@ class LBReader(
     var currentBookPage = 0
         private set
 
-    fun setBookText(text: String, encoding: String){
-        val bookHtml = BookHtml(text, pageWidth, pageHeight, encoding, context)
+    fun setBookText(htmlBookText: String, encoding: String){
+        val bookHtml = BookHtml(htmlBookText, pageWidth, pageHeight, encoding, context)
         setBookHtml(bookHtml)
     }
 

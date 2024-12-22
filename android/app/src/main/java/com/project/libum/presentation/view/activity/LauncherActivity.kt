@@ -35,7 +35,7 @@ class LauncherActivity : AppCompatActivity() {
 
                 when (result) {
                     is LoginResult.Success -> navigateToMainActivity(applicationContext)
-                    is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext,"No cached user found.")
+                    is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext,null)
                     is LoginResult.IncorrectPasswordOrEmail -> navigateToAuthorization(applicationContext,"Incorrect password or email.")
                     is LoginResult.NetworkError -> navigateToAuthorization(applicationContext,result.message)
                 }

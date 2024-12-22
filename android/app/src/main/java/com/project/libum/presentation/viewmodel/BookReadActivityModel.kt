@@ -58,9 +58,14 @@ class BookReadActivityModel @Inject constructor(
 
     fun getBookText(bookId: Int){
         viewModelScope.launch {
-            bookUseCases.getBookContent(bookId){ text ->
-                if (text == null) Log.d("ABOBA", "getBookText: Book with id $bookId text is null")
-                else setBootText(text)
+            bookUseCases.getBookContent(bookId){ xmlText ->
+                if (xmlText == null) {
+                    Log.d("ABOBA", "getBookText: Book with id $bookId text is null")
+                }
+                else{
+                    val htmlText = Parser().parseXmlToHtml(xmlText)
+                    setBootText(htmlText)
+                }
             }
         }
     }

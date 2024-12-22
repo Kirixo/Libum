@@ -10,9 +10,6 @@ class BookUseCases(
     private val storedBookRepository: StoredBookRepository
 ) {
 
-    private fun getBookContent(bookId: Int, charset: Charset?): String?{
-         return storedBookRepository.readBookContent(bookId.toString(), charset?:Charset.defaultCharset())
-    }
 
     private suspend fun fetchBook(bookId: Int, callback: (String?) -> Unit ){
         try {
@@ -32,8 +29,8 @@ class BookUseCases(
 
     suspend fun getBookContent(bookId: Int, callback: (String?) -> Unit){
         if(storedBookRepository.isExist(bookId.toString())){
-            val bookContent = getBookContent(
-                bookId,
+            val bookContent = storedBookRepository.readBookContent(
+                bookId.toString(),
                 Charset.forName(storedBookRepository.getBookMetaData(bookId)!!.encoding))
             callback(bookContent)
         }else{

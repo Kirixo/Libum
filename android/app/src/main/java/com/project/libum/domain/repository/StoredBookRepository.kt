@@ -40,6 +40,7 @@ class StoredBookRepository(
                 val bytesRead = bufferedStream.read(peekedBytes)
 
                 val detectedEncoding = Parser.getEncoding(peekedBytes, bytesRead)
+                val encoding = detectedEncoding?:Charset.defaultCharset()
                 val destinationFile = File(fileStorageController.cacheDir, "$bookId.fb2")
 
                 FileOutputStream(destinationFile).use { output ->
@@ -49,7 +50,7 @@ class StoredBookRepository(
 
                 saveBookMetaData(BookEntity(
                     bookId,
-                    detectedEncoding?.name()?:Charset.defaultCharset().name(),
+                    encoding.name(),
                     0))
 
                 bookFetchedCallback(destinationFile, detectedEncoding)

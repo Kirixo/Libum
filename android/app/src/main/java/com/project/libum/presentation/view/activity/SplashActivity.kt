@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.project.libum.R
 import com.project.libum.domain.usecase.LogInUseCase
 import com.project.libum.domain.usecase.LoginResult
 import com.project.libum.presentation.view.extension.navigateToAuthorization
@@ -27,8 +28,9 @@ class SplashActivity : AppCompatActivity() {
 
             when (result) {
                 is LoginResult.Success -> navigateToMainActivity(applicationContext)
-                is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext,"No cached user found.")
-                is LoginResult.IncorrectPasswordOrEmail -> navigateToAuthorization(applicationContext,"Incorrect password or email.")
+                is LoginResult.NoCachedUser -> navigateToAuthorization(applicationContext, null)
+                is LoginResult.IncorrectPasswordOrEmail -> navigateToAuthorization(applicationContext,getString(
+                    R.string.incorrect_password_error))
                 is LoginResult.NetworkError -> navigateToAuthorization(applicationContext, result.message)
             }
         }

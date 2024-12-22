@@ -18,7 +18,7 @@ class LogInUseCase @Inject constructor(
         return try {
             val loginResult = loginRequest?.let {
                 authRepository.login(it).also { result ->
-                    result.getOrNull()?.let { user -> cacheRepository.saveUserLoinData(user) }
+                    result.getOrThrow().let { user -> cacheRepository.saveUserLoinData(user) }
                 }
             } ?: authRepository.loginCached()
             return LoginResult.Success(loginResult.getOrNull()!!)
@@ -30,15 +30,15 @@ class LogInUseCase @Inject constructor(
     private fun handleLoginException(e: Exception): LoginResult {
         return when (e) {
             is IncorrectPasswordException -> {
-                Log.d("LogInUseCase", "handleLoginException: ${e.message}")
+                Log.d("LogInUseCase", "handleLoginException: incorrect password ${e.message}")
                 LoginResult.IncorrectPasswordOrEmail
             }
             is NoCachedUserException -> {
-                Log.d("LogInUseCase", "handleLoginException: ${e.message}")
+                Log.d("LogInUseCase", "handleLoginException: no cached user  ${e.message}")
                 LoginResult.NoCachedUser
             }
             else -> {
-                Log.d("LogInUseCase", "handleLoginException: ${e.message}")
+                Log.d("LogInUseCase", "handleLoginException: xd ${e.message}")
                 LoginResult.NetworkError(e.message ?: "Unknown error")
             }
         }

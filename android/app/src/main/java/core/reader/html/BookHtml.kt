@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.math.ceil
 
 class BookHtml(
-    htmlBodyText: String,
+    private val htmlBodyText: String,
     private val pageWidth: Int,
     private val pageHeight: Int,
     private val encoding: String,
@@ -29,8 +29,7 @@ class BookHtml(
             applyStyle(value)
         }
 
-    private var bodyText: String = Parser().parseXmlToHtml(htmlBodyText)
-    private var document: Document = Jsoup.parse(bodyText)
+    private var document: Document = Jsoup.parse(htmlBodyText)
     private val pages = mutableListOf<String>()
 
     init {
@@ -106,7 +105,7 @@ class BookHtml(
         val currentPageContent = StringBuilder()
         var currentHeight = 0
 
-        val parts = splitTextAndImages(bodyText)
+        val parts = splitTextAndImages(htmlBodyText)
 
         for (part in parts) {
             if (part.startsWith("<img")) {
@@ -124,35 +123,48 @@ class BookHtml(
                 currentHeight += scaledImageHeight
 
             } else {
-                val words = part.split(" ")
+                val words = Regex("""\S+|\s+""").findAll(part).map { it.value }.toList()
 
                 var lineWidth = 0
                 var linesUsed = 0
                 val lineWords = mutableListOf<String>()
+                var isHeader = false
+                var lineSpacing = currentStyle.spacing.toFloat()
+
+                if (part.startsWith("<h4")) {
+                    isHeader = true
+                    lineSpacing *= 2f
+                }
 
                 for (word in words) {
                     val wordWidth = calculateWordWidth(stripHtmlTags(word))
 
-                    if (lineWidth + wordWidth > pageWidth - currentStyle.edgesMargin * 2) {
+                    if (lineWidth*1.5 + wordWidth > pageWidth - currentStyle.edgesMargin * 2) {
                         currentPageContent.append(lineWords.joinToString(" "))
                         linesUsed++
                         lineWords.clear()
                         lineWidth = 0
+                        currentHeight += lineSpacing.toInt()
+
+                        if (currentHeight > pageHeight) {
+                            pages.add(currentPageContent.toString())
+                            currentPageContent.clear()
+                            linesUsed = 0
+                            currentHeight = 0
+                        }
                     }
 
                     lineWords.add(word)
                     lineWidth += wordWidth
-
-                    if ((linesUsed) * currentStyle.spacing > pageHeight) {
-                        pages.add(currentPageContent.append("<br>").toString())
-                        currentPageContent.clear()
-                        linesUsed = 0
-                        currentHeight = 0
-                    }
                 }
 
                 if (lineWords.isNotEmpty()) {
-                    currentPageContent.append(lineWords.joinToString(" "))
+                    currentPageContent.append(lineWords.joinToString(" ")).append("</p><p>")
+                    currentHeight += lineSpacing.toInt()
+                }
+
+                if (isHeader) {
+                    currentPageContent.append("</h4>")
                 }
             }
         }
@@ -161,6 +173,7 @@ class BookHtml(
             pages.add(currentPageContent.toString())
         }
     }
+
 
     private fun calculateImageSize(base64Data: String): Pair<Int, Int> {
         val image = decodeBase64Image(base64Data) ?: return Pair(0, 0)

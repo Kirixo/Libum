@@ -2,6 +2,7 @@ package com.project.libum.presentation.view.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -35,13 +36,10 @@ class AuthorizationActivity : AppCompatActivity() {
         setClickableAuthButton()
 
         authViewModel.loginResult.observe(this) { result ->
-
             when (result) {
                 is LoginResult.Success -> transactionToMain()
                 else -> onErrorAction(result)
             }
-
-            Log.d("Login Result", "$result")
         }
 
         binding.authorizationButton.setOnClickListener {
@@ -51,9 +49,6 @@ class AuthorizationActivity : AppCompatActivity() {
         binding.emailFiled.emailField.addTextChangedListener {
             setAuthFieldError()
             setClickableAuthButton()
-        }
-
-        binding.passwordFiled.passwordFiled.addTextChangedListener {
         }
 
         binding.emailFiled.emailField.setOnFocusChangeListener { view, focusValue ->
@@ -67,6 +62,19 @@ class AuthorizationActivity : AppCompatActivity() {
                 scrollToView(view)
             }
         }
+
+        binding.passwordFiled.passwordVisibilityButton?.setOnClickListener {
+            it.isActivated = !it.isActivated
+            binding.passwordFiled.passwordFiled.inputType = if (it.isActivated) {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            if(binding.passwordFiled.passwordFiled.isFocused){
+                binding.passwordFiled.passwordFiled.setSelection(binding.passwordFiled.passwordFiled.text?.length ?: 0)
+            }
+        }
+
     }
 
     private fun onErrorAction(loginResult: LoginResult){
@@ -80,7 +88,6 @@ class AuthorizationActivity : AppCompatActivity() {
     }
 
     private fun login(){
-        Log.d("AuthorizationActivity", "onCreate: AuthorizationButton button clicked")
         authViewModel.executeCaptcha (actionOnCorrectCaptcha  = {
             authViewModel.login(LoginRequest(
                 binding.emailFiled.emailField.text.toString(),
