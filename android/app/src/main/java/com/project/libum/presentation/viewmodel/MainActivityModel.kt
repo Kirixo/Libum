@@ -1,5 +1,7 @@
 package com.project.libum.presentation.viewmodel
 
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.project.libum.data.dto.Book
 import com.project.libum.domain.repository.BooksListRepository
 import com.project.libum.domain.usecase.BookFavoritesUseCases
+import com.project.libum.presentation.view.custom.BookView
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,4 +58,33 @@ class MainActivityModel @Inject constructor(
         // TODO(Implement filtration by category)
         return _books.value
     }
+
+    fun saveThemePreference(context: Context, isNightMode: Boolean) {
+        val sharedPreferences = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("NightMode", isNightMode)
+        editor.apply()
+    }
+
+    fun loadThemePreference(context: Context): Boolean {
+        val sharedPreferences = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
+        return sharedPreferences.getBoolean("NightMode", false)
+    }
+
+    fun saveBookDisplayStyle(context: Context, displayStyle: BookView.BookDisplayStyle) {
+        val sharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("BookDisplayStyle", displayStyle.name)
+        editor.apply()
+    }
+
+    fun loadBookDisplayStyle(context: Context): BookView.BookDisplayStyle {
+        val sharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val savedStyle = sharedPreferences.getString("BookDisplayStyle", BookView.BookDisplayStyle.WIDE.name)
+        return BookView.BookDisplayStyle.valueOf(savedStyle ?: BookView.BookDisplayStyle.WIDE.name)
+    }
+
+    // TODO Saving scroll position after collapse app
+
+    // TODO Show scroll position
 }

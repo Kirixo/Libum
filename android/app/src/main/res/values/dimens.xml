@@ -4,6 +4,7 @@
     <dimen name="edge_margine">16dp</dimen>
     <dimen name="margin_inside_text">12dp</dimen>
     <dimen name="item_spacing">16dp</dimen>
+    <dimen name="first_item_spacing">38dp</dimen>
     <dimen name="edges_margin">8dp</dimen>
     <dimen name="slim_book_width">98dp</dimen>
     <dimen name="slim_book_height">142dp</dimen>

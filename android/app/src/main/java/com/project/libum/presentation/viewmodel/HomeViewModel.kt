@@ -21,13 +21,8 @@ class HomeViewModel : ViewModel() {
         changeBookStyle(STANDARD_BOOK_STYLE)
     }
 
-    private fun changeBookStyle(bookStyle: BookDisplayStyle){
+    fun changeBookStyle(bookStyle: BookDisplayStyle){
         _bookStyle.postValue(bookStyle)
-    }
-
-    fun changeBookStyleByActivated(isActivated: Boolean){
-        val bookStyle = if(isActivated) BookDisplayStyle.SLIM else BookDisplayStyle.WIDE
-        changeBookStyle(bookStyle)
     }
 
     fun getSurroundingCatalogStates(): Triple<BookCategories, BookCategories, BookCategories> {
@@ -66,7 +61,6 @@ class HomeViewModel : ViewModel() {
     }
 
     companion object{
-
         val STANDARD_BOOK_STYLE: BookDisplayStyle = BookDisplayStyle.WIDE
     }
 }

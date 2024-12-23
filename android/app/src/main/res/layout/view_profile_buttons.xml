@@ -8,10 +8,31 @@
     android:backgroundTint="@color/blue_100"
     android:padding="8dp"
     >
+
+    <com.project.libum.presentation.view.custom.SettingButtonView
+        android:id="@+id/localization_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:button_text="@string/localization_label"
+        app:button_logo="@drawable/ic_localization_24dp"
+        app:additional_text="@string/n_a"
+        >
+    </com.project.libum.presentation.view.custom.SettingButtonView>
+
+    <com.project.libum.presentation.view.custom.SettingButtonView
+        android:id="@+id/theme_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:button_text="@string/theme_label"
+        app:button_logo="@drawable/ic_theme_48dp"
+        app:additional_text="@string/n_a"
+        >
+    </com.project.libum.presentation.view.custom.SettingButtonView>
+
     <com.project.libum.presentation.view.custom.SettingButtonView
         android:id="@+id/logout_button"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:button_text="@string/logout_label"
         app:button_logo="@drawable/ic_logout_48dp"
         app:action_button="@drawable/ic_action_arrow"

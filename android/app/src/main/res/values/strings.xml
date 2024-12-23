@@ -24,4 +24,10 @@
     <string name="unknow_error">Try later</string>
     <string name="network_error">Network error</string>
     <string name="incorrect_password_error">Incorrect password or email</string>
+    <string name="localization_label">Localization</string>
+    <string name="plaintext">PlainText</string>
+    <string name="theme_label">Theme</string>
+    <string name="n_a">N/A</string>
+    <string name="night_theme_label">Night</string>
+    <string name="day_theme_label">Day</string>
 </resources>

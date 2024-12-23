@@ -5,10 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat.recreate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.project.libum.R
 import com.project.libum.databinding.FragmentProfileBinding
 import com.project.libum.presentation.view.activity.AuthorizationActivity
+import com.project.libum.presentation.viewmodel.MainActivityModel
 import com.project.libum.presentation.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,6 +22,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val mainActivityModel: MainActivityModel by activityViewModels<MainActivityModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,14 +36,27 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.accountLogin.text = profileViewModel.getUserName()
+
+        val mode = mainActivityModel.loadThemePreference(requireContext())
+        setThemeTitle(mode)
+
         initializeButtons()
     }
 
     private fun initializeButtons(){
-        binding.profileButtons.logoutButton.setOnActionButtonClickListener {
+        val buttons = binding.profileButtons
+
+        buttons.logoutButton.setOnActionButtonClickListener {
             profileViewModel.logout{
                 navigateToMainActivity()
             }
+        }
+
+        buttons.themeChangeButton.setOnButtonClickListener {
+            val isNightMode = mainActivityModel.loadThemePreference(requireContext())
+            setThemeTitle(isNightMode)
+            mainActivityModel.saveThemePreference(requireContext(), !isNightMode)
+            recreate(requireActivity())
         }
     }
 
@@ -46,4 +65,13 @@ class ProfileFragment : Fragment() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
+
+    private fun setThemeTitle(isNightMode: Boolean) {
+        if (isNightMode){
+            binding.profileButtons.themeChangeButton.setAdditionalText(getString(R.string.night_theme_label))
+        }else{
+            binding.profileButtons.themeChangeButton.setAdditionalText(getString(R.string.day_theme_label))
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.project.libum.presentation.view.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,17 +9,21 @@ import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.project.libum.R
 import com.project.libum.core.utils.SwipeGestureListener
 import com.project.libum.data.dto.Book
 import com.project.libum.databinding.FragmentHomeBinding
 import com.project.libum.presentation.adapter.BookAdapter
+import com.project.libum.presentation.adapter.GridSpacingItemDecoration
 import com.project.libum.presentation.adapter.SpacingItemDecoration
 import com.project.libum.presentation.view.activity.BookReaderActivity
 import com.project.libum.presentation.view.activity.BookReaderActivity.Companion.BOOK_DATA
@@ -37,7 +42,6 @@ class HomeFragment : Fragment() {
     private val mainActivityModel: MainActivityModel by activityViewModels<MainActivityModel>()
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var bookAdapter: BookAdapter
-    private var isActivatedBookStyleButton = false
 
     private lateinit var gestureDetector: GestureDetector
 
@@ -54,9 +58,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val bookStyle = mainActivityModel.loadBookDisplayStyle(requireContext())
+        homeViewModel.changeBookStyle(bookStyle)
+
         binding.actionField.listStyleChangerButton.setOnClickListener{
-            changeStateOfBookStyleButton()
-            homeViewModel.changeBookStyleByActivated(isActivatedBookStyleButton)
+            changeBookStyleNext()
         }
 
         mainActivityModel.books.observe(viewLifecycleOwner) { books ->
@@ -70,6 +76,8 @@ class HomeFragment : Fragment() {
                 else -> setWideBookAdapter()
             }
             bookAdapter.setStyle(displayStyle)
+            mainActivityModel.saveBookDisplayStyle(requireContext(), displayStyle)
+            changeStateOfBookStyleButton()
         }
 
         homeViewModel.catalogState.observe(viewLifecycleOwner){
@@ -113,10 +121,8 @@ class HomeFragment : Fragment() {
         mainActivityModel.updateBooks()
     }
 
-    private fun initializeBookAdapter(){
+    private fun initializeBookAdapter() {
         bookAdapter = BookAdapter()
-        val spacingDecoration = SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.item_spacing))
-        binding.bookList.addItemDecoration(spacingDecoration)
 
         bookAdapter.setOnFavoriteClickListener { book, isFavorite ->
             lifecycleScope.launch {
@@ -133,12 +139,13 @@ class HomeFragment : Fragment() {
             }
         }
 
-        bookAdapter.setOnBookClickView { book: Book ->
+        bookAdapter.setOnBookClickView { book ->
             openBookReaderActivity(book)
         }
 
         binding.bookList.adapter = bookAdapter
     }
+
 
     private fun openBookReaderActivity(book: Book){
         val intent = Intent(context, BookReaderActivity::class.java)
@@ -146,23 +153,80 @@ class HomeFragment : Fragment() {
         startActivity(intent)
     }
 
+    private fun changeBookStyleNext(){
+        val bookStyle = if ( homeViewModel.bookStyle.value == BookView.BookDisplayStyle.WIDE) {
+            BookView.BookDisplayStyle.SLIM
+        } else {
+            BookView.BookDisplayStyle.WIDE
+        }
+
+        homeViewModel.changeBookStyle(bookStyle)
+    }
+
     private fun changeStateOfBookStyleButton(){
-        val button = binding.actionField.listStyleChangerButton
-        button.isActivated = !button.isActivated
-        isActivatedBookStyleButton = button.isActivated
+        when(homeViewModel.bookStyle.value){
+            BookView.BookDisplayStyle.WIDE -> setStyleButtonWideIcon()
+            BookView.BookDisplayStyle.SLIM ->  setStyleButtonSlimIcon()
+            null -> setStyleButtonWideIcon()
+        }
+    }
+
+    private fun setStyleButtonWideIcon(){
+        val drawable = ResourcesCompat.getDrawable(
+            requireContext().resources,
+            R.drawable.ic_standart_list_24dp,
+            requireContext().theme
+        )
+
+        binding.actionField.listStyleChangerButton.setImageDrawable(drawable)
+    }
+
+    private fun setStyleButtonSlimIcon(){
+        val drawable = ResourcesCompat.getDrawable(
+            requireContext().resources,
+            R.drawable.ic_block_list_24dp,
+            requireContext().theme
+        )
+
+        binding.actionField.listStyleChangerButton.setImageDrawable(drawable)
     }
 
     private fun setWideBookAdapter(){
+        clearItemDecorations(binding.bookList)
         binding.bookList.layoutManager = LinearLayoutManager(context)
+
+        val spacingDecoration = SpacingItemDecoration(
+            resources.getDimensionPixelSize(R.dimen.item_spacing),
+            resources.getDimensionPixelSize(R.dimen.first_item_spacing),
+            resources.getDimensionPixelSize(R.dimen.first_item_spacing)
+        )
+
+        binding.bookList.addItemDecoration(spacingDecoration)
     }
 
     private fun setSlimBookAdapter() {
+        clearItemDecorations(binding.bookList)
+        val gridLayoutManager = GridLayoutManager(context, getSpanCount())
+        binding.bookList.layoutManager = gridLayoutManager
+
+        val spacingDecoration = GridSpacingItemDecoration(
+            resources.getDimensionPixelSize(R.dimen.item_spacing),
+            resources.getDimensionPixelSize(R.dimen.first_item_spacing),
+            resources.getDimensionPixelSize(R.dimen.first_item_spacing)
+        )
+        binding.bookList.addItemDecoration(spacingDecoration)
+    }
+
+    private fun getSpanCount(): Int{
         val totalWidth = resources.displayMetrics.widthPixels
         val itemWidth = resources.getDimensionPixelSize(R.dimen.slim_book_width)
-        val spanCount = max(1, totalWidth / itemWidth)
+         return  max(1, totalWidth / itemWidth)
+    }
 
-        val gridLayoutManager = GridLayoutManager(context, spanCount)
-        binding.bookList.layoutManager = gridLayoutManager
+    private fun clearItemDecorations(recyclerView: RecyclerView) {
+        while (recyclerView.itemDecorationCount > 0) {
+            recyclerView.removeItemDecorationAt(0)
+        }
     }
 
 }

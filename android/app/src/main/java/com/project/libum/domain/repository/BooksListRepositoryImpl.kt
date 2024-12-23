@@ -14,6 +14,22 @@ class BooksListRepositoryImpl @Inject constructor(
             Book(1, "First book", "First author", true, -1),
             Book(2, "Second Book", "Second author", false, -1),
             Book(3, "Third book", "Third author", true, -1),
+            Book(4, "Fourth book", "Fourth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
+            Book(5, "Fifth book", "Fifth author", true, -1),
         )
 
         return getValidatedBookList(bookList)
