@@ -4,7 +4,15 @@
       <img :src="require('@/assets/Logo.svg')" alt="Logo" class="logo-image" />
     </div>
     <nav class="navigation">
-      <button class="books-button">Книги ↓</button>
+      <button class="books-button" @click="toggleDropdownMenu" ref="booksButton">Книги ↓</button>
+      <!-- Використовуємо позиціонування під кнопкою -->
+      <div v-if="isDropdownMenuVisible" class="dropdown-menu" :style="dropdownMenuPosition">
+        <ul>
+          <li>Книга 1</li>
+          <li>Книга 2</li>
+          <li>Книга 3</li>
+        </ul>
+      </div>
       <button class="library-button">Бібліотека</button>
     </nav>
     <div class="search-profile">
@@ -19,10 +27,35 @@
     </div>
     <div class="auth-section">
       <template v-if="this.$store.state.userInfo">
-        <button class="profile-menu">
+        <button class="profile-menu" @click="toggleProfileDropdown" ref="profileButton">
           <span class="menu-icon">☰</span>
           <div class="profile-picture"></div>
         </button>
+        <!-- Дропдаун меню для профілю користувача -->
+        <div v-if="isProfileDropdownVisible" class="profile-dropdown-menu" :style="profileDropdownPosition">
+          <ul>
+            <!-- Пункт з аватаром та ім'ям користувача -->
+            <li class="profile-info">
+              <div class="avatar"></div>
+              <span class="name">Ім'я користувача</span>
+            </li>
+            <li @click="goToProfile" @keydown.enter="goToProfile" tabindex="0" role="button">
+              Профіль
+            </li>
+            <li @click="goToLibrary" @keydown.enter="goToLibrary" tabindex="0" role="button">
+              Бібліотека
+            </li>
+            <li @click="goToPurchaseHistory" @keydown.enter="goToPurchaseHistory" tabindex="0" role="button">
+              Історія придбання
+            </li>
+            <li @click="goToCart" @keydown.enter="goToCart" tabindex="0" role="button">
+              Мій кошик
+            </li>
+            <li @click="logout" @keydown.enter="logout" tabindex="0" role="button">
+              Вихід
+            </li>
+          </ul>
+        </div>
       </template>
       <template v-else>
         <button class="auth-button auth-button-login" @click="showLoginModal">Авторизація</button>
@@ -48,11 +81,15 @@ export default {
   name: 'HeaderComponent',
   data() {
     return {
-      userId: null, // Ідентифікатор користувача, якщо користувач авторизований
+      userId: null,
       isLoginModalVisible: false,
       isSignupModalVisible: false,
       isRestorPasswordModalVisible: false,
-      isSearchActive: false, // Флаг для отслеживания активности поиска
+      isSearchActive: false,
+      isDropdownMenuVisible: false, // Переменная для управления дропдаун меню
+      dropdownMenuPosition: { top: '0px', left: '0px' }, // Стиль для позиціонування меню
+      isProfileDropdownVisible: false, // Для управління видимістю меню профілю
+      profileDropdownPosition: { top: '0px', left: '0px' }, // Стиль для позиціонування меню профілю
     };
   },
   methods: {
@@ -62,11 +99,43 @@ export default {
     showRestorPasswordModal() {
       this.isRestorPasswordModalVisible = true;
     },
+    toggleDropdownMenu() {
+      this.isDropdownMenuVisible = !this.isDropdownMenuVisible;
+
+      if (this.isDropdownMenuVisible) {
+        // Отримуємо координати кнопки "Книги ↓"
+        const buttonRect = this.$refs.booksButton.getBoundingClientRect();
+        this.dropdownMenuPosition = {
+          top: `${buttonRect.bottom + window.scrollY + 10}px`, // Виправлення позиції
+          left: `${buttonRect.left + window.scrollX - 30}px`,
+        };
+      }
+    },
+    toggleProfileDropdown() {
+      this.isProfileDropdownVisible = !this.isProfileDropdownVisible;
+
+      if (this.isProfileDropdownVisible) {
+        // Отримуємо координати кнопки профілю
+        const buttonRect = this.$refs.profileButton.getBoundingClientRect();
+        this.profileDropdownPosition = {
+          top: `${buttonRect.bottom + 10}px`, // Додатковий відступ
+          left: `${buttonRect.left - 133}px`,
+        };
+      }
+    },
     onSearchFocus() {
-      this.isSearchActive = true; // Когда поле поиска активировано
+      this.isSearchActive = true;
     },
     onSearchBlur() {
-      this.isSearchActive = false; // Когда поле поиска теряет фокус
+      this.isSearchActive = false;
+    },
+    logout() {
+      console.log('Вихід з профілю');
+      this.$router.push({ name: 'LogoutPage' });
+    },
+    goToProfile() {
+      console.log('Перехід до профілю');
+      this.$router.push({ name: 'ProfilePage' });
     },
     login() {
       console.log('Перехід до сторінки авторизації');
@@ -77,17 +146,19 @@ export default {
       this.$router.push({ name: 'RegisterPage' });
     },
     fetchUserId() {
-      // Імітація отримання userId (зазвичай отримується через Vuex або localStorage)
       const token = localStorage.getItem('authToken');
       if (token) {
-        this.userId = null; // Замініть на логіку отримання userId
+        this.userId = null;
       } else {
         this.userId = null;
       }
     },
+    closeDropdownMenu() {
+      this.isDropdownMenuVisible = false;
+    },
   },
   created() {
-    this.fetchUserId(); // Перевіряємо наявність userId при завантаженні компонента
+    this.fetchUserId();
   },
 };
 </script>
@@ -117,7 +188,6 @@ export default {
   flex: 2;
 }
 
-/* Стиль для кнопок навигации (Книги и Бібліотека) */
 .books-button,
 .library-button {
   padding: 10px 20px;
@@ -132,7 +202,6 @@ export default {
 
 .books-button {
   margin-right: 20px;
-  /* Увеличиваем отступ справа */
 }
 
 .books-button::before,
@@ -140,35 +209,27 @@ export default {
   content: '';
   position: absolute;
   top: -42px;
-  /* Подсветка выходит за верхний край */
   bottom: -33px;
-  /* Подсветка выходит за нижний край */
   left: -10px;
-  /* Немного расширяем область слева */
   right: -10px;
-  /* Немного расширяем область справа */
   background-color: #6E85B7;
   opacity: 0;
   transition: opacity 0.3s ease;
   border-radius: 10px;
   z-index: -1;
-  /* Псевдоэлемент будет за текстом */
 }
 
 .books-button:hover::before,
 .library-button:hover::before {
   opacity: 1;
-  /* Показываем подсветку при наведении */
 }
 
 .books-button:hover,
 .library-button:hover {
   color: white;
   z-index: 1;
-  /* Текст будет выше псевдоэлемента */
 }
 
-/* Общий стиль для всех кнопок авторизации */
 .auth-button {
   padding: 10px 20px;
   background-color: #6E85B7;
@@ -180,25 +241,19 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-/* Кнопка авторизации */
 .auth-button-login {
   margin-right: 15px;
-  /* Устанавливаем отступ для кнопки авторизации */
 }
 
-/* Кнопка регистрации */
 .auth-button-register {
   margin-left: 0;
-  /* Убираем лишние отступы для кнопки регистрации */
 }
 
-/* Ховер для всех кнопок авторизации */
 .auth-button:hover {
   background-color: #5A6D9A;
   color: white;
 }
 
-/* Стиль для профиля */
 .profile-menu {
   display: flex;
   align-items: center;
@@ -231,7 +286,6 @@ export default {
   font-size: 12px;
 }
 
-/* Стиль для поиска */
 .search-container {
   display: flex;
   align-items: center;
@@ -266,7 +320,6 @@ export default {
   pointer-events: none;
 }
 
-/* Добавляем стили для модальных окон */
 .modal {
   position: fixed;
   top: 0;
@@ -278,15 +331,140 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 999;
-  /* Убедитесь, что модальные окна будут поверх всего */
 }
 
 .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
-  z-index: 1000;
-  /* Важно, чтобы контент окна был на верхнем слое */
+  width: 300px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  width: 200px;
+  z-index: 9999;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown-menu ul li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dropdown-menu ul li:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu ul li:last-child {
+  border-bottom: none;
+}
+
+.books-button,
+.library-button {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.profile-menu {
+  margin-left: 20px;
+}
+
+.books-button::before,
+.library-button::before {
+  content: '';
+  position: absolute;
+  top: -42px;
+  bottom: -33px;
+  left: -10px;
+  right: -10px;
+  background-color: #6E85B7;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.books-button:hover::before,
+.library-button:hover::before {
+  opacity: 1;
+}
+
+.books-button:hover,
+.library-button:hover {
+  color: white;
+  z-index: 1;
+}
+
+.profile-dropdown-menu {
+  position: absolute;
+  background-color: #DDE4F0;
+  border: 1px solid #ccc;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  width: 220px;
+  z-index: 9999;
+  top: 40px;
+  left: -50px;
+}
+
+.profile-dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-dropdown-menu ul li {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-dropdown-menu ul li:hover {
+  background-color: #e0e0e0;
+}
+
+.profile-info {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.profile-info .avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: #bbb;
+  margin-right: 10px;
+  display: inline-block;
+  margin-top: 3px;
+  /* Опускає аватар */
+}
+
+.profile-info .name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  transform: translateY(-3px);
+  /* Піднімає текст на 3px */
+}
+
+.profile-dropdown-menu ul li:last-child {
+  border-bottom: none;
 }
 </style>

@@ -7,28 +7,27 @@
   <div class="book-page">
     <div class="breadcrumbs-container">
       <div class="breadcrumbs">
-        <span>/ Сучасна проза /</span>
-        <span class="breadcrumbs-book-title">Назва книги</span>
+        <span>/ {{ book.genre || 'Жанр не вказано' }} /</span>
+        <span class="breadcrumbs-book-title">{{ book.title || 'Назва книги' }}</span>
       </div>
     </div>
     <div class="content-wrapper">
       <div class="book-content">
         <div class="left-section">
-          <div class="image-placeholder"></div>
-          <RatingStars :rating='4.5' />
+          <div v-if="book.coverImage" class="image-placeholder">
+            <img :src="book.coverImage" alt="Обкладинка книги" />
+          </div>
+          <div v-else class="image-placeholder">Обкладинка відсутня</div>
+          <RatingStars :rating="book.rating || 0" />
         </div>
         <div class="right-section">
-          <h1 class="book-title">Назва книги</h1>
-          <p class="author">*автор*</p>
+          <h1 class="book-title">{{ book.title || 'Назва книги' }}</h1>
+          <p class="author">Автор: {{ book.author || '*Автор невідомий*' }}</p>
           <div class="tags-container">
-            <span class="tag">Тег</span>
-            <span class="tag">Тег</span>
-            <span class="tag">ТегТегТег</span>
-            <span class="tag">тег</span>
-            <span class="tag">ще тег</span>
+            <span v-for="tag in book.tags || []" :key="tag" class="tag">{{ tag }}</span>
           </div>
-          <p class="pages">Сторінок: 201</p>
-          <p class="price">300 грн</p>
+          <p class="pages">Сторінок: {{ book.pages || 'N/A' }}</p>
+          <p class="price">{{ book.price ? `${book.price} грн` : 'Ціна не вказана' }}</p>
           <div class="actions">
             <button class="action-button" @click="toggleCart">
               <img :src="require('@/assets/cart-icon.png')" alt="Cart Icon" class="icon" />
@@ -39,7 +38,6 @@
                 alt="Favorite Icon" class="icon" />
               {{ isFavorite ? 'Видалити з обраного' : 'Додати в обране' }}
             </button>
-
             <button class="action-button read-button">
               <img :src="require('@/assets/read-icon.png')" alt="Read Icon" class="icon" />
               Читати
@@ -48,11 +46,11 @@
         </div>
       </div>
       <div class="annotation">
-        <p class="annotation-title"><strong>Анотація до книги "Назва книги"</strong></p>
+        <p class="annotation-title">
+          <strong>Анотація до книги "{{ book.title || 'Назва книги' }}"</strong>
+        </p>
         <div class="annotation-text-container">
-          <p class="annotation-text">
-            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
-          </p>
+          <p class="annotation-text">{{ book.description || 'Опис відсутній.' }}</p>
         </div>
       </div>
     </div>
@@ -82,7 +80,7 @@ export default {
   data() {
     return {
       book: {},
-      userId: 'https://farming-simulator.pstmn.io/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
+      userId: 'https://libum.yooud.org/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
       isFavorite: false, // Стан кнопки "Додати/Видалити з обраного"
       isInCart: false, // Стан кнопки "Додати/Видалити з кошика"
     };
@@ -92,9 +90,9 @@ export default {
     this.checkCartStatus();
   },
   methods: {
-    async getBook() {
+    async getBook(id) {
       try {
-        const res = await axios.get();
+        const res = await axios.get(`https://libum.yooud.org/api/books?id=${id}`);
         this.book = res.data;
         console.log(res.data);
       } catch (error) {
