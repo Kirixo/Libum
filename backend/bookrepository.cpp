@@ -58,6 +58,7 @@ QList<Book> BookRepository::fetchBooks(int limit, int page)
         SELECT b.id, b.title, b.description, b.authors, b.price, l.lang_name, b.cover
         FROM books AS b
         LEFT JOIN languages AS l ON b.language_id = l.id
+        ORDER BY b.id DESC
         LIMIT :limit OFFSET :offset
     )";
 
