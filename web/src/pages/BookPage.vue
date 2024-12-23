@@ -1,41 +1,46 @@
 <template>
+
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  </head>
   <Header />
   <div class="book-page">
     <div class="breadcrumbs-container">
       <div class="breadcrumbs">
         <span>/ Сучасна проза /</span>
-        <span class="breadcrumbs-book-title">{{ bookTitle }}</span>
+        <span class="breadcrumbs-book-title">Назва книги</span>
       </div>
     </div>
     <div class="content-wrapper">
       <div class="book-content">
         <div class="left-section">
           <div class="image-placeholder"></div>
-          <RatingStars :rating="bookRating" />
+          <RatingStars :rating='4.5' />
         </div>
         <div class="right-section">
-          <h1 class="book-title">{{ bookTitle }}</h1>
-          <p class="author">{{ author }}</p>
+          <h1 class="book-title">Назва книги</h1>
+          <p class="author">*автор*</p>
           <div class="tags-container">
-            <span v-for="(tag, index) in tags" :key="index" class="tag">{{ tag }}</span>
+            <span class="tag">Тег</span>
+            <span class="tag">Тег</span>
+            <span class="tag">ТегТегТег</span>
+            <span class="tag">тег</span>
+            <span class="tag">ще тег</span>
           </div>
-          <p class="pages">Сторінок: {{ pages }}</p>
-          <p class="price">{{ price }} грн</p>
+          <p class="pages">Сторінок: 201</p>
+          <p class="price">300 грн</p>
           <div class="actions">
-            <button class="action-button" @click="addToCart">
+            <button class="action-button" @click="toggleCart">
               <img :src="require('@/assets/cart-icon.png')" alt="Cart Icon" class="icon" />
-              Додати до кошику
+              {{ isInCart ? 'Видалити з кошика' : 'Додати до кошика' }}
             </button>
-            <!-- Кнопка "Додати до обраного" або "Видалити з обраного" -->
-            <button v-if="!isFavorite" class="action-button" @click="toggleFavorite">
-              <img :src="require('@/assets/favorite-icon.png')" alt="Favorite Icon" class="icon" />
-              Додати в обране
+            <button class="action-button" @click="toggleFavorite">
+              <img :src="isFavorite ? require('@/assets/active_heart.svg') : require('@/assets/inactive_heart.svg')"
+                alt="Favorite Icon" class="icon" />
+              {{ isFavorite ? 'Видалити з обраного' : 'Додати в обране' }}
             </button>
-            <button v-else class="action-button" @click="toggleFavorite">
-              <img :src="require('@/assets/favorite-icon.png')" alt="Favorite Icon" class="icon" />
-              Видалити з обраного
-            </button>
-            <button class="action-button">
+
+            <button class="action-button read-button">
               <img :src="require('@/assets/read-icon.png')" alt="Read Icon" class="icon" />
               Читати
             </button>
@@ -43,9 +48,11 @@
         </div>
       </div>
       <div class="annotation">
-        <p class="annotation-title"><strong>Анотація до книги "{{ bookTitle }}"</strong></p>
+        <p class="annotation-title"><strong>Анотація до книги "Назва книги"</strong></p>
         <div class="annotation-text-container">
-          <p class="annotation-text">{{ annotation }}</p>
+          <p class="annotation-text">
+            *Анотація* *Анотація* *Анотація* *Анотація* *Анотація*
+          </p>
         </div>
       </div>
     </div>
@@ -64,7 +71,7 @@ export default {
   props: {
     id: {
       type: String,
-      default: '',
+      required: true,
     },
   },
   components: {
@@ -74,75 +81,78 @@ export default {
   },
   data() {
     return {
-      bookTitle: 'Назва книги',
-      author: 'Автор',
-      tags: ['Тег 1', 'Тег 2', 'Тег 3'],
-      pages: 201,
-      price: 300,
-      isFavorite: false,
-      bookRating: 4.5,
-      annotation: 'Тут буде анотація до книги...',
+      book: {},
+      userId: 'https://farming-simulator.pstmn.io/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
+      isFavorite: false, // Стан кнопки "Додати/Видалити з обраного"
+      isInCart: false, // Стан кнопки "Додати/Видалити з кошика"
     };
   },
   mounted() {
-    if (this.id) {
-      this.getBook(this.id);
-    }
+    this.getBook(this.id);
+    this.checkCartStatus();
   },
   methods: {
-    getBook(id) {
-      axios
-        .get('https://literate-vastly-pony.ngrok-free.app/api/books', {
-          params: { id },
-        })
-        .then((res) => {
-          const bookData = res.data;
-          this.bookTitle = bookData.title || this.bookTitle;
-          this.author = bookData.author || this.author;
-          this.tags = bookData.tags || this.tags;
-          this.pages = bookData.pages || this.pages;
-          this.price = bookData.price || this.price;
-          this.bookRating = bookData.rating || this.bookRating;
-          this.annotation = bookData.annotation || this.annotation;
-          this.isFavorite = bookData.isFavorite || this.isFavorite;
-        })
-        .catch((error) => {
-          console.error('Error fetching book data:', error);
-        });
-    },
-    addToCart() {
-      // Додаємо книгу до кошику
-      console.log('Додано до кошику');
-    },
-    toggleFavorite() {
-      // Заглушка для запиту на сервер
-      if (this.isFavorite) {
-        this.removeFromFavorites();
-      } else {
-        this.addToFavorites();
+    async getBook(id) {
+      try {
+        const res = await axios.get();
+        this.book = res.data;
+        console.log(res.data);
+      } catch (error) {
+        console.error('Error fetching book data:', error);
       }
     },
-    addToFavorites() {
-      // Замість цього виконати реальний запит для додавання в обране
-      axios.post('https://your-api-endpoint.com/favorites', { bookId: this.id })
-        .then(() => {
-          this.isFavorite = true;
-          console.log('Книга додана до обраного');
-        })
-        .catch((error) => {
-          console.error('Помилка додавання до обраного:', error);
-        });
+    async checkCartStatus() {
+      try {
+        const res = await axios.get();
+        this.isInCart = res.data.some((item) => item.book_id === this.id);
+        console.log('Cart status checked:', this.isInCart);
+      } catch (error) {
+        console.error('Error checking cart status:', error);
+      }
     },
-    removeFromFavorites() {
-      // Замість цього виконати реальний запит для видалення з обраного
-      axios.delete('https://your-api-endpoint.com/favorites', { data: { bookId: this.id } })
-        .then(() => {
-          this.isFavorite = false;
-          console.log('Книга видалена з обраного');
-        })
-        .catch((error) => {
-          console.error('Помилка видалення з обраного:', error);
-        });
+    toggleCart() {
+      if (this.isInCart) {
+        // Видалити з кошика
+        axios.delete()
+          .then((response) => {
+            console.log('Book removed from cart', response.data);
+            this.isInCart = false;
+          })
+          .catch((error) => {
+            console.error('Error removing book from cart', error);
+          });
+      } else {
+        // Додати до кошика
+        axios.post()
+          .then((response) => {
+            console.log('Book added to cart', response.data);
+            this.isInCart = true;
+          })
+          .catch((error) => {
+            console.error('Error adding book to cart', error);
+          });
+      }
+    },
+    toggleFavorite() {
+      if (this.isFavorite) {
+        axios.post()
+          .then((response) => {
+            console.log('Book removed from favorites', response.data);
+            this.isFavorite = false; // Зміна статусу на не в обраному
+          })
+          .catch((error) => {
+            console.error('Error removing book from favorites', error);
+          });
+      } else {
+        axios.post()
+          .then((response) => {
+            console.log('Book added to favorites', response.data);
+            this.isFavorite = true; // Зміна статусу на в обраному
+          })
+          .catch((error) => {
+            console.error('Error adding book to favorites', error);
+          });
+      }
     },
   },
 };
@@ -166,9 +176,7 @@ export default {
 
 .breadcrumbs {
   top: -50px;
-  /* Відступаємо від верхнього краю контейнера */
   right: 20px;
-  /* Відступ від правого краю */
   width: auto;
   height: 45px;
   opacity: 1;
@@ -202,28 +210,22 @@ export default {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  /* Дозволяє елементам переноситися на новий рядок */
   width: 100%;
   justify-content: space-between;
-  /* Вирівнює елементи по ширині */
 }
 
 .left-section {
   flex: 0 1 290px;
-  /* Фіксована ширина для лівої секції */
   max-width: 290px;
-  /* Максимальна ширина */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25px;
-  /* Збільшуємо відступ між зображенням і зірочками */
 }
 
 .image-placeholder {
   width: 100%;
   padding-top: 130%;
-  /* Щоб зробити обкладинку книги пропорційною */
   background-color: #d9d9d9;
   border-radius: 20px;
 }
@@ -234,7 +236,11 @@ export default {
   flex-direction: column;
   gap: 10px;
   max-width: 100%;
-  /* Забезпечує, що контент не виходить за межі */
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
 }
 
 .book-title {
@@ -287,42 +293,32 @@ export default {
 .actions {
   display: flex;
   flex-wrap: wrap;
-  /* Дозволяє кнопкам переноситися */
   gap: 20px;
-  /* Відстань між кнопками */
   justify-content: flex-start;
 }
 
 .action-button {
   width: 200px;
-  /* Фіксована ширина кнопки */
   height: 40px;
-  /* Фіксована висота кнопки */
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
-  /* Текст вирівнюється по центру кнопки */
-  background: #6e85b7;
-  color: white;
-  border: 1px solid #ccc;
+  color: #3F5C8A;
+  border: 1px solid #3F5C8A;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  /* Вертикальне центрування іконки і тексту */
   justify-content: center;
   gap: 10px;
-  /* Відстань між іконкою і текстом */
   position: relative;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.icon {
-  width: 18px;
-  height: 18px;
-  position: absolute;
-  /* Фіксоване позиціонування іконки */
-  left: 12px;
-  /* Відступ від лівого краю кнопки */
+.action-button.active {
+  background: #3F5C8A;
+  color: white;
 }
 
 .action-button span {
@@ -331,7 +327,57 @@ export default {
 }
 
 .action-button:hover {
-  background: #6e85b7;
+  background: #3F5C8A;
+  /* Змінюємо фон при наведенні на кнопки */
+  color: white;
+  /* Текст білим при наведенні */
+}
+
+/* Якщо кнопка в кошику */
+.action-button.in-cart {
+  font-family: 'Montserrat', sans-serif;
+  background: #3F5C8A;
+  border-color: #3F5C8A;
+}
+
+.action-button.in-favorite {
+  background: #3F5C8A;
+  color: white;
+  border-color: #3F5C8A;
+}
+
+/* Кнопка у стандартному (не обраному) стані */
+.action-buttonю.in-favorite:not(.in-favorite) {
+  background: transparent;
+  color: #3F5C8A;
+  border-color: #3F5C8A;
+}
+
+/* Зміна кольору при наведені на кнопку, якщо вона в обраному стані */
+.action-button.in-favorite:hover {
+  background: #36558f;
+
+  color: white;
+}
+
+.read-button {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #3F5C8A;
+  /* Синя заливка */
+  color: white;
+  /* Білий текст */
+  border: 1px solid #3F5C8A;
+  /* Синя межа */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 200px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 12px;
 }
 
 .annotation {
