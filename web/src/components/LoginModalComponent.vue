@@ -16,8 +16,7 @@
         <div class="form-group">
           <label for="password">
             Пароль
-            <input type="password" id="password" v-model="password"
-             required placeholder="Введіть ваш пароль"
+            <input type="password" id="password" v-model="password" required placeholder="Введіть ваш пароль"
               @blur="validatePassword" />
           </label>
           <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
@@ -113,7 +112,7 @@ export default {
 
 <style scoped>
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -123,6 +122,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease-in-out;
+  z-index: 9999;
 }
 
 .modal-content {

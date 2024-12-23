@@ -92,7 +92,7 @@ export default {
     this.checkCartStatus();
   },
   methods: {
-    async getBook(id) {
+    async getBook() {
       try {
         const res = await axios.get();
         this.book = res.data;
