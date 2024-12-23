@@ -1,13 +1,16 @@
 package com.project.libum.presentation.view.activity
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
@@ -35,6 +38,7 @@ class AuthorizationActivity : AppCompatActivity() {
 
         setClickableAuthButton()
 
+
         authViewModel.loginResult.observe(this) { result ->
             when (result) {
                 is LoginResult.Success -> transactionToMain()
@@ -52,14 +56,23 @@ class AuthorizationActivity : AppCompatActivity() {
         }
 
         binding.emailFiled.emailField.setOnFocusChangeListener { view, focusValue ->
+            binding.emailFiled.emailContainer.isPressed = focusValue
+
             if (focusValue){
                 scrollToView(view)
             }
+
         }
 
         binding.passwordFiled.passwordFiled.setOnFocusChangeListener { view, focusValue ->
-            if (focusValue){
+            binding.passwordFiled.passwordContainer?.isPressed = focusValue
+            if (focusValue) {
                 scrollToView(view)
+                binding.passwordFiled.passwordVisibilityButton?.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.blue_500))
+            } else {
+                binding.passwordFiled.passwordVisibilityButton?.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.gray_blue_500))
             }
         }
 
@@ -70,11 +83,11 @@ class AuthorizationActivity : AppCompatActivity() {
             } else {
                 InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             }
+
             if(binding.passwordFiled.passwordFiled.isFocused){
                 binding.passwordFiled.passwordFiled.setSelection(binding.passwordFiled.passwordFiled.text?.length ?: 0)
             }
         }
-
     }
 
     private fun onErrorAction(loginResult: LoginResult){
@@ -90,7 +103,7 @@ class AuthorizationActivity : AppCompatActivity() {
     private fun login(){
         authViewModel.executeCaptcha (actionOnCorrectCaptcha  = {
             authViewModel.login(LoginRequest(
-                binding.emailFiled.emailField.text.toString(),
+                binding.emailFiled.emailField.text.toString().trim(),
                 binding.passwordFiled.passwordFiled.text.toString()
             ))
         })

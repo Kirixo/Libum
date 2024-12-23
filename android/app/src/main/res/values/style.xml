@@ -54,6 +54,10 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="CustomTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="colorControlHighlight">@color/gray_blue_500</item>
+    </style>
+
     <style name="Button.Transparent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">44dp</item>
