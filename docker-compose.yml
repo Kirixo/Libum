@@ -34,7 +34,7 @@ services:
       - ./web:/app
     environment:
       - NODE_ENV=development
-    command: sh -c "npm install && npm run build"
+    command: sh -c "chmod -R 777 node_modules/ dist/ && npm install && npm run build"
     depends_on:
       - api
 
@@ -51,6 +51,10 @@ services:
       - frontend
     networks:
       - app-network
+    entrypoint: >
+    sh -c "chmod -R 755 /usr/share/nginx/html && 
+        chown -R www-data:www-data /usr/share/nginx/html && 
+        nginx -g 'daemon off;'"
 
 networks:
   app-network:
