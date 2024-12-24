@@ -32,6 +32,11 @@ add_executable(Libum
   genrerepository.h genrerepository.cpp
   cartrepository.h cartrepository.cpp
   carthandler.h carthandler.cpp
+  bookstatus.h bookstatus.cpp
+  bookstatushandler.h bookstatushandler.cpp
+  bookstatusrepository.h bookstatusrepository.cpp
+  apprepository.h apprepository.cpp
+  downloadapphandler.h downloadapphandler.cpp
   has_method.h
 )
 target_link_libraries(Libum Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::HttpServer)

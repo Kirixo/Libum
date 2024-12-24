@@ -21,13 +21,21 @@ QHttpServerResponse ResponseFactory::createJsonResponse(const QByteArray &conten
     return response;
 }
 
-QHttpServerResponse ResponseFactory::createFileResponse(const QByteArray &content, QHttpServerResponse::StatusCode statusCode)
+QHttpServerResponse ResponseFactory::createFileResponse(const QByteArray &content,
+                                                        QHttpServerResponse::StatusCode statusCode,
+                                                        FileExtentions fileExtension)
 {
     QHttpServerResponse response = QHttpServerResponse(
         content, statusCode
         );
-    addCorsHeaders(response);
-    response.setHeader("Content-Type", "application/octet-stream");
+
+    QString contentType = "application/octet-stream";
+
+    if (fileExtension == FileExtentions::Apk) {
+        contentType = "application/vnd.android.package-archive";
+        response.setHeader("Content-Disposition", "attachment; filename=\"Libum.apk\"");
+    }
+    response.setHeader("Content-Type", contentType.toUtf8());
     return response;
 }
 
