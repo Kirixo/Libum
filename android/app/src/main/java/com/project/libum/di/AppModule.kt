@@ -18,6 +18,7 @@ import com.project.libum.domain.repository.StoredBookRepository
 import com.project.libum.domain.repository.UserCacheRepository
 import com.project.libum.domain.repository.UserCacheRepositoryImpl
 import com.project.libum.domain.usecase.BookFavoritesUseCases
+import com.project.libum.domain.usecase.BookListUseCases
 import com.project.libum.domain.usecase.BookUseCases
 import com.project.libum.domain.usecase.LogInUseCase
 import dagger.Module
@@ -44,8 +45,8 @@ object AppModule{
 
     @Provides
     @Singleton
-    fun provideBookListRepository(bookDao: BookDao): BooksListRepository{
-        return BooksListRepositoryImpl(bookDao)
+    fun provideBookListRepository(bookDao: BookDao, userDao: UserDao): BooksListRepository{
+        return BooksListRepositoryImpl(bookDao, userDao)
     }
 
     @Provides
@@ -58,6 +59,12 @@ object AppModule{
     @Singleton
     fun provideBookFavoritesUseCases(): BookFavoritesUseCases {
         return BookFavoritesUseCases()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookListUseCases(bookRepository: BooksListRepository): BookListUseCases {
+        return BookListUseCases(bookRepository)
     }
 
     @Provides

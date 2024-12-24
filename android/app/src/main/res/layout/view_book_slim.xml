@@ -50,13 +50,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:maxLines="2"
+        android:minLines="2"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:ellipsize="marquee"
         style="@style/TextAppearance.Material3.LabelSmall"
         android:textColor="?colorOnBackground"
-        android:text="A very cool book title  title title title title title title title"
-        tools:ignore="HardcodedText"
+        android:text="@string/n_a"
         >
     </TextView>
 
@@ -68,8 +68,7 @@
         app:layout_constraintTop_toBottomOf="@id/book_title_text"
         app:layout_constraintStart_toStartOf="@id/book_image"
         android:layout_marginTop="4dp"
-        android:text="100%"
-        tools:ignore="HardcodedText">
+        android:text="@string/n_a">
     </TextView>
 
     <ImageButton

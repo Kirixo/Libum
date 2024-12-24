@@ -10,7 +10,6 @@ class BookUseCases(
     private val storedBookRepository: StoredBookRepository
 ) {
 
-
     private suspend fun fetchBook(bookId: Int, callback: (String?) -> Unit ){
         try {
             storedBookRepository.fetchBook(bookId){ _, encoding ->

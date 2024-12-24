@@ -10,14 +10,16 @@ import androidx.lifecycle.viewModelScope
 import com.project.libum.data.dto.Book
 import com.project.libum.domain.repository.BooksListRepository
 import com.project.libum.domain.usecase.BookFavoritesUseCases
+import com.project.libum.domain.usecase.BookListUseCases
 import com.project.libum.presentation.view.custom.BookView
+import com.project.libum.presentation.viewmodel.HomeViewModel.BookCategories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityModel @Inject constructor(
-    private val bookListRepository: BooksListRepository,
+    private val bookListUseCases: BookListUseCases,
     private val bookFavoritesUseCases: BookFavoritesUseCases
 
 ): ViewModel() {
@@ -25,8 +27,14 @@ class MainActivityModel @Inject constructor(
     private val _books = MutableLiveData<List<Book>>()
     val books: LiveData<List<Book>> = _books
 
+    private val limit: Int = 25
+    private val startCategory: BookCategories = BookCategories.All
+    private var categories: HashMap<BookCategories, Int>? = null
+
     init {
-        getBooksFromServer()
+        viewModelScope.launch {
+            categories = bookListUseCases.getCategories()
+        }
     }
 
     fun addBookToFavorites(book: Book): Result<Unit> {
@@ -37,26 +45,38 @@ class MainActivityModel @Inject constructor(
         return bookFavoritesUseCases.deleteFromFavorites(book)
     }
 
-    fun getBooksFromServer(){
+    private fun getBooksFromServer(bookCategories: BookCategories, limit:Int?, page:Int?){
         viewModelScope.launch {
-            try {
-                _books.postValue(bookListRepository.getBooksList())
-                Log.d("Books", "getBooksFromServer: Normal")
-            } catch (e: Exception) {
-                Log.d("Books", "getBooksFromServer: Error")
-                _books.value = emptyList()
+            categories?.get(bookCategories)?.let {
+                val data = bookListUseCases.getBooksList(it, limit, page)
+                _books.postValue(data)
+                Log.d("Books", "getBooksFromServer: Normal, category: $bookCategories")
+                return@launch
             }
+            val data = when(bookCategories){
+                BookCategories.All -> getAllBooksList(limit, page)
+                BookCategories.Favorites -> getFavoritesList()
+                else -> emptyList()
+            }
+            Log.d("Books", "getBooksFromServer: Error, category: $bookCategories")
+            _books.postValue(data)
         }
     }
 
-    fun updateBooks(){
-        // TODO(Implement update)
-        getBooksFromServer()
+    private fun getFavoritesList(): List<Book>{
+        return emptyList()
     }
 
-    fun getBooksByCategory(category: HomeViewModel.BookCategories): List<Book>? {
-        // TODO(Implement filtration by category)
-        return _books.value
+    private suspend fun getAllBooksList(limit:Int?, page:Int?): List<Book>{
+        return bookListUseCases.getAllBooks(limit, page)
+    }
+
+    fun getBooksFromServer(bookCategories: BookCategories){
+        getBooksFromServer(bookCategories, null,null)
+    }
+
+    fun initBooksFromServer(){
+        getBooksFromServer(startCategory, limit, 1)
     }
 
     fun saveThemePreference(context: Context, isNightMode: Boolean) {

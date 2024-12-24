@@ -3,46 +3,35 @@ import com.google.gson.annotations.SerializedName
 import com.project.libum.data.dto.Book
 import java.net.URL
 
-data class LoginResponse(
-    val email: String,
-    val id: Int,
-    val login: String
-)
-
-data class BookListResponse(
-    val id: Int,
-    val name: String
-)
-
-data class BooksResponse(
+data class BookResponse(
     @SerializedName("books")
-    val books: List<BookDto>,
+    val responseBooks: List<ResponseBook>,
     @SerializedName("total_count")
     val totalCount: Int
 )
 
-data class BookDto(
+data class ResponseBook(
     @SerializedName("id")
     val id: Int,
     @SerializedName("title")
     val title: String,
     @SerializedName("cover")
     val cover: String,
-    @SerializedName("description")
-    val description: String,
-    @SerializedName("author")
-    val author: String,
+    @SerializedName("mean_score")
+    val meanScore: Double,
+    @SerializedName("page_count")
+    val pageCount: Int,
+    @SerializedName("genres")
+    val genres: List<Genre>,
     @SerializedName("language")
     val language: String,
-    @SerializedName("mean_score")
-    val meanScore: Double?,
-    @SerializedName("price")
-    val price: Double,
-    @SerializedName("genres")
-    val genres: List<GenreDto>
+    @SerializedName("year")
+    val year: Int,
+    @SerializedName("author")
+    val author: String
 )
 
-fun BookDto.toParcelableBook(): Book {
+fun ResponseBook.toParcelableBook(): Book {
     return Book(
         id = this.id,
         title = this.title,
@@ -55,7 +44,7 @@ fun BookDto.toParcelableBook(): Book {
     )
 }
 
-data class GenreDto(
+data class Genre(
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")

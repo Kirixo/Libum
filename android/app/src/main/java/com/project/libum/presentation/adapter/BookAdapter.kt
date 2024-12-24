@@ -9,6 +9,12 @@ import com.project.libum.data.dto.Book
 import com.project.libum.databinding.ViewBookSlimBinding
 import com.project.libum.databinding.ViewBookWideBinding
 import com.project.libum.presentation.view.custom.BookView
+import android.content.Context
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.project.libum.R
 
 class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -86,9 +92,21 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         BookViewHolder {
 
         override fun bind(book: Book) {
+            val context = binding.root.context
             binding.bookTitleText.text = book.title
             binding.authorText.text = book.author
-            binding.bookReadPercent.text = "${book.percentRead}%"
+            binding.bookReadPercent.text = "${book.percentRead?:0}%"
+
+            loadDrawableFromUrl(
+                context = context,
+                url = book.coverURL.toString(),
+                onSuccess = { drawable ->
+                    binding.bookImage.setImageDrawable(drawable)
+                },
+                onError = { exception ->
+                    exception.printStackTrace()
+                }
+            )
         }
 
         override fun setFavoriteClickListener(action: () -> Unit) {
@@ -100,19 +118,31 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         override fun setButtonClickListener(action: () -> Unit) {
-            binding.bookImage.setOnClickListener{
+            binding.bookImage.setOnClickListener {
                 action()
             }
         }
     }
+
 
     class BookViewHolderSlim(private val binding: ViewBookSlimBinding) :
         RecyclerView.ViewHolder(binding.root),
         BookViewHolder  {
 
         override fun bind(book: Book) {
+            val context = binding.root.context
             binding.bookTitleText.text = book.title
-            binding.bookReadPercent.text = "${book.percentRead}%"
+            binding.bookReadPercent.text = "${book.percentRead?:0}%"
+            loadDrawableFromUrl(
+                context = context,
+                url = book.coverURL.toString(),
+                onSuccess = { drawable ->
+                    binding.bookImage.setImageDrawable(drawable)
+                },
+                onError = { exception ->
+                    exception.printStackTrace()
+                }
+            )
         }
 
         override fun setFavoriteClickListener(action: () -> Unit) {
@@ -130,4 +160,31 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
     }
+
+    companion object{
+        fun loadDrawableFromUrl(
+            context: Context,
+            url: String,
+            onSuccess: (Drawable) -> Unit,
+            onError: (Exception) -> Unit = {}
+        ) {
+            Glide.with(context)
+                .load(url)
+                .into(object : CustomTarget<Drawable>() {
+                    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                        onSuccess(resource)
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        onError(Exception("Failed to load image from $url"))
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // TODO()
+                    }
+                })
+        }
+    }
+
+
 }

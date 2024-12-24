@@ -1,38 +1,62 @@
 package com.project.libum.domain.repository
 
-import android.util.Log
 import com.project.libum.data.dto.Book
 import com.project.libum.data.local.dao.BookDao
+import com.project.libum.data.local.dao.UserDao
+import com.project.libum.data.model.toParcelableBook
+import com.project.libum.data.remote.ApiClient.apiService
 import javax.inject.Inject
 
 class BooksListRepositoryImpl @Inject constructor(
-    private val bookDao: BookDao
+    private val bookDao: BookDao,
+    private val userDao: UserDao,
 ) : BooksListRepository {
-    override suspend fun getBooksList(): List<Book> {
-        // TODO("Not yet implemented")
-        val bookList = mutableListOf(
-            Book(1, "First book", "First author", true, -1),
-            Book(2, "Second Book", "Second author", false, -1),
-            Book(3, "Third book", "Third author", true, -1),
-            Book(4, "Fourth book", "Fourth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
-            Book(5, "Fifth book", "Fifth author", true, -1),
+
+    override suspend fun getUserBooksList(listID: Int, limit: Int?, page: Int?): List<Book> {
+        val user = userDao.getUser()
+        val response = apiService.getBooksList(
+            user!!.id.toString(),
+            listID.toString(),
+            limit,
+            page
         )
 
-        return getValidatedBookList(bookList)
+        if (response.isSuccessful){
+            return getValidatedBookList(response.body()!!.responseBooks.map {
+                it.toParcelableBook()
+            })
+        }
+
+        return emptyList()
+    }
+
+    override suspend fun getAllUserBooks(limit: Int?, page: Int?): List<Book> {
+        val response = apiService.getUserBooksList(
+            limit?: 25,
+            page?: 1
+        )
+
+        if (response.isSuccessful){
+            return getValidatedBookList(response.body()!!.books.map {
+                it.toParcelableBook()
+            })
+        }
+
+        return emptyList()
+    }
+
+    override suspend fun getListsId(): HashMap<String, Int>? {
+        val response = apiService.getListsId()
+
+        if (response.isSuccessful){
+            val hashMap = HashMap<String, Int>()
+            response.body()!!.map {
+                hashMap.put(it.name, it.id)
+            }
+            return hashMap
+        }
+
+        return null
     }
 
     private suspend fun getValidatedBookList(bookList: List<Book>): List<Book> {
@@ -46,7 +70,9 @@ class BooksListRepositoryImpl @Inject constructor(
                         lastReadPage = localBook.lastReadPage
                     )
                 } else {
-                    book
+                    book.copy(
+                        percentRead = null
+                    )
                 }
             } else {
                 book

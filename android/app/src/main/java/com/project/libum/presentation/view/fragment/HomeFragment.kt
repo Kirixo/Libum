@@ -86,6 +86,8 @@ class HomeFragment : Fragment() {
             binding.bookCategories.previousCatalogState.text = previous.name
             binding.bookCategories.currentCatalogState.text = current.name
             binding.bookCategories.nextCatalogState.text = next.name
+
+            mainActivityModel.getBooksFromServer(it)
         }
 
         binding.bookCategories.nextCatalogState.setOnClickListener{
@@ -112,13 +114,12 @@ class HomeFragment : Fragment() {
             gestureDetector.onTouchEvent(event)
         }
 
-
         initializeBookAdapter()
     }
 
     override fun onResume() {
         super.onResume()
-        mainActivityModel.updateBooks()
+        mainActivityModel.initBooksFromServer()
     }
 
     private fun initializeBookAdapter() {

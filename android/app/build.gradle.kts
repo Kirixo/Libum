@@ -79,6 +79,9 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation ("com.ibm.icu:icu4j:72.1")
 
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
+
     implementation(libs.hilt.android)
     implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)

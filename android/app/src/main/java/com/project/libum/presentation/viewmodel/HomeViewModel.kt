@@ -52,12 +52,11 @@ class HomeViewModel : ViewModel() {
     }
 
     enum class BookCategories{
-        MyBooks,
         All,
         Reading,
         Favorites,
         Complete,
-        Archive,
+        Archive
     }
 
     companion object{
