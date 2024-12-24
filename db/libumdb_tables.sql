@@ -117,7 +117,7 @@ CREATE TABLE public.books (
     language_id bigint,
     authors character varying(255),
     year smallint,
-    pages_cout integer,
+    pages_count integer,
     price numeric(8,2) NOT NULL,
     cover character varying(255)
 );
@@ -903,6 +903,9 @@ ALTER TABLE ONLY public.scores
 ALTER TABLE ONLY public.carts
     ADD CONSTRAINT users_id_foreign FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE RESTRICT ON DELETE CASCADE;
 
+
+ALTER TABLE lists
+    ADD CONSTRAINT unique_book_for_user UNIQUE (book_id, user_id);
 
 --
 -- PostgreSQL database dump complete
