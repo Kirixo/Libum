@@ -21,6 +21,25 @@ QHttpServerResponse ResponseFactory::createJsonResponse(const QByteArray &conten
     return response;
 }
 
+QHttpServerResponse ResponseFactory::createFileResponse(const QByteArray &content,
+                                                        QHttpServerResponse::StatusCode statusCode,
+                                                        FileExtentions fileExtension)
+{
+    QHttpServerResponse response = QHttpServerResponse(
+        content, statusCode
+        );
+
+    QString contentType = "application/octet-stream";
+
+    if (fileExtension == FileExtentions::Apk) {
+        contentType = "application/vnd.android.package-archive";
+        response.setHeader("Content-Disposition", "attachment; filename=\"Libum.apk\"");
+    }
+    response.setHeader("Content-Type", contentType.toUtf8());
+
+    return response;
+}
+
 void ResponseFactory::addCorsHeaders(QHttpServerResponse &response)
 {
     response.setHeader("Access-Control-Allow-Origin", "*");

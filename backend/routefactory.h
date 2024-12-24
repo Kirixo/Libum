@@ -26,6 +26,7 @@ private:
 
     void handleOptionsRequest();
     void setupBookListRoutes();
+    void setupDownloadRoutes();
 };
 
 

@@ -35,6 +35,8 @@ add_executable(Libum
   bookstatus.h bookstatus.cpp
   bookstatushandler.h bookstatushandler.cpp
   bookstatusrepository.h bookstatusrepository.cpp
+  apprepository.h apprepository.cpp
+  downloadapphandler.h downloadapphandler.cpp
 )
 target_link_libraries(Libum Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::HttpServer)
 

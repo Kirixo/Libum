@@ -1,5 +1,6 @@
 #include "routefactory.h"
 #include "bookstatushandler.h"
+#include "downloadapphandler.h"
 
 RouteFactory::RouteFactory(std::shared_ptr<QHttpServer> server, std::shared_ptr<DBController> dbcontroller)
     : server_(server), dbcontroller_(dbcontroller) {}
@@ -11,6 +12,8 @@ void RouteFactory::registerAllRoutes()
     setupBookRoutes();
     setupBookListRoutes();
     setupCartRoutes();
+
+    setupDownloadRoutes();
 }
 
 void RouteFactory::setupUserRoutes() {
@@ -40,6 +43,10 @@ void RouteFactory::setupCartRoutes() {
     server_->route("/api/cart", QHttpServerRequest::Method::Get, CartHandler::getUsersCart);
     server_->route("/api/cart", QHttpServerRequest::Method::Delete, CartHandler::removeBook);
     server_->route("/api/cart/clear", QHttpServerRequest::Method::Delete, CartHandler::clearCart);
+}
+
+void RouteFactory::setupDownloadRoutes() {
+    server_->route("/api/download/app", QHttpServerRequest::Method::Get, DownloadAppHandler::handleRequest);
 }
 
 void RouteFactory::handleOptionsRequest()
