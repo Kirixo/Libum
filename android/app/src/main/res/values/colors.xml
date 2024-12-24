@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#0E0E0E</color>
+    <color name="blue_black_700">#0E1115</color>
+    <color name="white">#F7F7F7</color>
+
+    <color name="red_500">#A44E59</color>
+
+    -- Color scheme --
+
+    <color name="blue_200">#819CC7</color>
+    <color name="blue_500">#5884C9</color>
+    <color name="blue_700">#3F5C8A</color>
+
+    <color name="gray_blue_200">#A5C6FA</color>
+    <color name="gray_blue_500">#819CC7</color>
+    <color name="gray_blue_700">#576883</color>
+
+    -- Additional colors --
+
+    <color name="blue_100">#DDE4F0</color>
+    <color name="gray_200">#D9D9D9</color>
+    <color name="background">@color/white</color>
+
+</resources>
+

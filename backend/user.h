@@ -3,6 +3,7 @@
 #include "dbcontroller.h"
 #include <QtSql/QSqlQuery>
 #include "jsonable.h"
+#include "has_method.h"
 
 class User : Jsonable
 {
@@ -20,7 +21,7 @@ public:
     // void deleteAndroidID(QString& email);
     void authorize(const QString& email, const QString& password);
     void fetchByID(quint64 id);
-    static bool checkExistanceInDB(const QString& email);
+    bool checkExistanceInDB();
     bool exists();
 
 
@@ -40,6 +41,11 @@ private:
     QString email_;
     QString login_;
     QString password_;
+
+
+    template <typename... T>
+    requires (HasIsNull<T> && ...)
+    bool checkNullVariables(T&&... variables) const;
 
     // Jsonable interface
 public:

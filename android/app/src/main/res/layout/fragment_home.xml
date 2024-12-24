@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.fragment.HomeFragment"
+    >
+
+
+    <ImageView
+        android:id="@+id/catalog_background"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:src="@drawable/shaped_white_background_corner_36dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        >
+    </ImageView>
+
+    <include
+        android:id="@+id/book_categories"
+        layout="@layout/view_catalog_filter"
+        app:layout_constraintStart_toStartOf="@id/catalog_background"
+        app:layout_constraintEnd_toEndOf="@id/catalog_background"
+        app:layout_constraintTop_toTopOf="@id/catalog_background"
+        app:layout_constraintBottom_toBottomOf="@id/catalog_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        >
+    </include>
+
+    <include
+        android:id="@+id/action_field"
+        layout="@layout/view_action_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/catalog_background"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/book_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/action_field"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
