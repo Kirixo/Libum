@@ -25,6 +25,8 @@ private:
     void setupCartRoutes();
 
     void handleOptionsRequest();
+    void setupBookListRoutes();
+    void setupDownloadRoutes();
 };
 
 
