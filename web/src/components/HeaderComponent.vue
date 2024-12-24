@@ -1,6 +1,10 @@
 <template>
+  <div id="app">
+    <router-view></router-view>
+  </div>
   <header class="header">
-    <div class="logo">
+    <div class="logo" @click="goToHomePage" @keydown.enter="goToHomePage" @keydown.space="goToHomePage" tabindex="0"
+      role="button">
       <img :src="require('@/assets/Logo.svg')" alt="Logo" class="logo-image" />
     </div>
     <nav class="navigation">
@@ -61,7 +65,9 @@
         <button class="auth-button auth-button-login" @click="showLoginModal">Авторизація</button>
         <LoginModal v-if="isLoginModalVisible" :isVisible="isLoginModalVisible" @close="isLoginModalVisible = false"
           @login="handleLogin" />
-        <button class="auth-button auth-button-register" @click="showRestorPasswordModal">Реєстрація</button>
+        <!-- Кнопка "Реєстрація" -->
+        <button class="auth-button auth-button-register" @click="showSignupModal">Реєстрація</button>
+        <!-- Вызов компонента Signup -->
         <Signup v-if="isSignupModalVisible" :isVisible="isSignupModalVisible" @close="isSignupModalVisible = false"
           @signup="handleSignup" />
       </template>
@@ -93,11 +99,15 @@ export default {
     };
   },
   methods: {
+    goToHomePage() {
+      this.$router.push('/');
+    },
     showLoginModal() {
       this.isLoginModalVisible = true;
     },
-    showRestorPasswordModal() {
-      this.isRestorPasswordModalVisible = true;
+    showSignupModal() {
+      // Открытие модального окна регистрации
+      this.isSignupModalVisible = true;
     },
     toggleDropdownMenu() {
       this.isDropdownMenuVisible = !this.isDropdownMenuVisible;
@@ -106,7 +116,7 @@ export default {
         // Отримуємо координати кнопки "Книги ↓"
         const buttonRect = this.$refs.booksButton.getBoundingClientRect();
         this.dropdownMenuPosition = {
-          top: `${buttonRect.bottom + window.scrollY + 10}px`, // Виправлення позиції
+          top: `${buttonRect.bottom + window.scrollY + 10}px`,
           left: `${buttonRect.left + window.scrollX - 30}px`,
         };
       }
@@ -118,7 +128,7 @@ export default {
         // Отримуємо координати кнопки профілю
         const buttonRect = this.$refs.profileButton.getBoundingClientRect();
         this.profileDropdownPosition = {
-          top: `${buttonRect.bottom + 10}px`, // Додатковий відступ
+          top: `${buttonRect.bottom + 10}px`,
           left: `${buttonRect.left - 133}px`,
         };
       }
@@ -155,6 +165,10 @@ export default {
     },
     closeDropdownMenu() {
       this.isDropdownMenuVisible = false;
+    },
+    goToCart() {
+      console.log('Перехід до кошика');
+      this.$router.push({ name: 'CartPage' });
     },
   },
   created() {
@@ -453,7 +467,6 @@ export default {
   margin-right: 10px;
   display: inline-block;
   margin-top: 3px;
-  /* Опускає аватар */
 }
 
 .profile-info .name {
@@ -461,7 +474,6 @@ export default {
   font-weight: 600;
   color: #333;
   transform: translateY(-3px);
-  /* Піднімає текст на 3px */
 }
 
 .profile-dropdown-menu ul li:last-child {

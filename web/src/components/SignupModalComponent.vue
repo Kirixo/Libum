@@ -8,8 +8,7 @@
         <div class="form-group">
           <label for="username">
             Логін
-            <input type="text" id="username" v-model="username"
-             required placeholder="Введіть ваш логін"
+            <input type="text" id="username" v-model="username" required placeholder="Введіть ваш логін"
               @blur="validateUsername" />
           </label>
           <p v-if="usernameError" class="error-message">{{ usernameError }}</p>
@@ -27,8 +26,7 @@
         <div class="form-group">
           <label for="password">
             Пароль
-            <input type="password" id="password" v-model="password"
-             required placeholder="Введіть ваш пароль"
+            <input type="password" id="password" v-model="password" required placeholder="Введіть ваш пароль"
               @blur="validatePassword" />
           </label>
           <p v-if="passwordError" class="error-message">{{ passwordError }}</p>
@@ -44,7 +42,7 @@
         </div>
 
         <div class="form-group">
-            Капча может будет, может нет
+          Капча может будет, может нет
         </div>
 
         <div class="extra-options">
@@ -170,7 +168,7 @@ export default {
 
 <style scoped>
 .modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -180,6 +178,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease-in-out;
+  z-index: 9999;
 }
 
 .modal-content {
