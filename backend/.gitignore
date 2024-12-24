@@ -7,6 +7,8 @@ release*/
 include*/
 libs*/
 
+/bookfiles/*
+!/bookfiles/.gitkeep
 
 # Ignore Qt Creator specific files
 *.pro.user

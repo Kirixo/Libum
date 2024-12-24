@@ -36,21 +36,24 @@ public:
     float price() const;
 
 private:
-    qint64 id_;
+    qint64 id_ {-1};
     QString title_;
     QString cover_;
-    float meanScore_;
+    float meanScore_ {-1};
+    qint16 pageCount_ {-1};
     QString description_;
     QList<Genre> genres_;
     QString language_;
-    qint16 year_;
+    qint16 year_ {-0x7FFF};
     QString author_;
-    float price_;
+    float price_ {-1};
 
     // Jsonable interface
 public:
     QJsonObject toJson() const override;
 
+    qint16 pageCount() const;
+    void setPageCount(qint16 newPageCount);
 };
 
 #endif // BOOK_H
