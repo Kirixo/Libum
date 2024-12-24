@@ -45,17 +45,20 @@
       </div>
     </div>
   </div>
+  <Footer />
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
 import bookImage from '@/assets/testBook.jpg';
 import CartItem from '../components/CartComponent.vue';
+import Footer from '../components/FooterComponent.vue';
 
 export default {
   name: 'CartPage',
   components: {
     CartItem,
+    Footer,
   },
   data() {
     return {
