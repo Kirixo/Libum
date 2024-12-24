@@ -115,6 +115,7 @@ class HomeFragment : Fragment() {
         }
 
         initializeBookAdapter()
+        setupRecyclerViewPagination()
     }
 
     override fun onResume() {
@@ -147,6 +148,26 @@ class HomeFragment : Fragment() {
         binding.bookList.adapter = bookAdapter
     }
 
+    private fun setupRecyclerViewPagination() {
+        binding.bookList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+                    ?: return
+
+                val totalItemCount = layoutManager.itemCount
+
+                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
+
+                val visibleThreshold = 5
+
+                if (totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                    loadMoreBooks()
+                }
+            }
+        })
+    }
 
     private fun openBookReaderActivity(book: Book){
         val intent = Intent(context, BookReaderActivity::class.java)
@@ -228,6 +249,10 @@ class HomeFragment : Fragment() {
         while (recyclerView.itemDecorationCount > 0) {
             recyclerView.removeItemDecorationAt(0)
         }
+    }
+
+    private fun loadMoreBooks() {
+        mainActivityModel.loadNextPage(homeViewModel.catalogState.value ?: HomeViewModel.BookCategories.All)
     }
 
 }

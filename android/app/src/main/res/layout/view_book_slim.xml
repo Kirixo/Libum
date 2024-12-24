@@ -14,6 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:src="@color/gray_200"
         app:shapeAppearanceOverlay="@style/roundedImageView.BookView"
+        android:scaleType="fitXY"
         >
     </com.google.android.material.imageview.ShapeableImageView>
 
@@ -51,6 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:maxLines="2"
         android:minLines="2"
+        android:layout_marginTop="4dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:ellipsize="marquee"

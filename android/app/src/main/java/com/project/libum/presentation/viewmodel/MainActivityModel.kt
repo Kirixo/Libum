@@ -27,7 +27,10 @@ class MainActivityModel @Inject constructor(
     private val _books = MutableLiveData<List<Book>>()
     val books: LiveData<List<Book>> = _books
 
-    private val limit: Int = 25
+    private var currentPage = 1
+    private var isLoading = false
+
+    private val limit: Int = 7
     private val startCategory: BookCategories = BookCategories.All
     private var categories: HashMap<BookCategories, Int>? = null
 
@@ -103,6 +106,25 @@ class MainActivityModel @Inject constructor(
         val savedStyle = sharedPreferences.getString("BookDisplayStyle", BookView.BookDisplayStyle.WIDE.name)
         return BookView.BookDisplayStyle.valueOf(savedStyle ?: BookView.BookDisplayStyle.WIDE.name)
     }
+
+    fun loadNextPage(bookCategories: BookCategories) {
+        if (isLoading) return
+
+        isLoading = true
+        viewModelScope.launch {
+            val nextPage = currentPage + 1
+            categories?.get(bookCategories)?.let { categoryId ->
+                val data = bookListUseCases.getBooksList(categoryId, limit, nextPage)
+                _books.postValue((_books.value ?: emptyList()) + data)
+            } ?: run {
+                val data = getAllBooksList(limit, nextPage)
+                _books.postValue((_books.value ?: emptyList()) + data)
+            }
+            currentPage++
+            isLoading = false
+        }
+    }
+
 
     // TODO Saving scroll position after collapse app
 

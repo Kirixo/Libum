@@ -11,6 +11,7 @@ import com.project.libum.databinding.ViewBookWideBinding
 import com.project.libum.presentation.view.custom.BookView
 import android.content.Context
 import android.graphics.drawable.Drawable
+import androidx.recyclerview.widget.DiffUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -32,10 +33,20 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setBooks(newBooks: List<Book>? ) {
-        books = newBooks ?: emptyList()
-        notifyDataSetChanged()
-        Log.d("Books", "setStyle: size set: ${books.size} ")
+    fun setBooks(newBooks: List<Book>) {
+        val diffResult = DiffUtil.calculateDiff(BookDiffCallback(books, newBooks))
+        books = newBooks
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        if (holder is BookViewHolderWide) {
+            Glide.with(holder.itemView.context).clear(holder.binding.bookImage)
+        }
+        if (holder is BookViewHolderSlim) {
+            Glide.with(holder.itemView.context).clear(holder.binding.bookImage)
+        }
+        super.onViewRecycled(holder)
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -53,7 +64,6 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        Log.d("Books", "onCreateViewHolder: book changed/init")
         return when (viewType) {
             BookView.BookDisplayStyle.WIDE.id-> {
                 val binding = ViewBookWideBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -87,7 +97,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemCount(): Int = books.size
 
-    class BookViewHolderWide(private val binding: ViewBookWideBinding) :
+    class BookViewHolderWide(internal val binding: ViewBookWideBinding) :
         RecyclerView.ViewHolder(binding.root),
         BookViewHolder {
 
@@ -125,7 +135,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
 
-    class BookViewHolderSlim(private val binding: ViewBookSlimBinding) :
+    class BookViewHolderSlim(internal val binding: ViewBookSlimBinding) :
         RecyclerView.ViewHolder(binding.root),
         BookViewHolder  {
 
@@ -158,7 +168,6 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 action()
             }
         }
-
     }
 
     companion object{
@@ -170,6 +179,7 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         ) {
             Glide.with(context)
                 .load(url)
+                .placeholder(R.color.gray_blue_700)
                 .into(object : CustomTarget<Drawable>() {
                     override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
                         onSuccess(resource)
@@ -183,6 +193,22 @@ class BookAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         // TODO()
                     }
                 })
+        }
+    }
+
+    class BookDiffCallback(
+        private val oldList: List<Book>,
+        private val newList: List<Book>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldList.size
+        override fun getNewListSize(): Int = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].id == newList[newItemPosition].id // Сравните по уникальному идентификатору
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
         }
     }
 
