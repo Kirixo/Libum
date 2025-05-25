@@ -7,15 +7,15 @@
   <div class="book-page">
     <div class="breadcrumbs-container">
       <div class="breadcrumbs">
-        <span>/ {{ book.genre || 'Жанр не вказано' }} /</span>
+        <span>/ {{ genreNames || 'Жанр не вказано' }} /</span>
         <span class="breadcrumbs-book-title">{{ book.title || 'Назва книги' }}</span>
       </div>
     </div>
     <div class="content-wrapper">
       <div class="book-content">
         <div class="left-section">
-          <div v-if="book.coverImage" class="image-placeholder">
-            <img :src="book.coverImage" alt="Обкладинка книги" />
+          <div v-if="book.cover" class="image-placeholder">
+            <img :src="book.cover" alt="Обкладинка книги" />
           </div>
           <div v-else class="image-placeholder">Обкладинка відсутня</div>
           <RatingStars :rating="book.rating || 0" />
@@ -23,15 +23,16 @@
         <div class="right-section">
           <h1 class="book-title">{{ book.title || 'Назва книги' }}</h1>
           <p class="author">Автор: {{ book.author || '*Автор невідомий*' }}</p>
-          <div class="tags-container">
+          <!-- <div class="tags-container">
             <span v-for="tag in book.tags || []" :key="tag" class="tag">{{ tag }}</span>
-          </div>
-          <p class="pages">Сторінок: {{ book.pages || 'N/A' }}</p>
+          </div> -->
+          <p class="pages">{{ genreNames || 'Жанр не вказано' }}</p>
+          <p class=" pages">Сторінок: {{ book.pages || 'N/A' }}</p>
           <p class="price">{{ book.price ? `${book.price} грн` : 'Ціна не вказана' }}</p>
           <div class="actions">
             <button class="action-button" @click="toggleCart">
               <img :src="require('@/assets/cart-icon.png')" alt="Cart Icon" class="icon" />
-              {{ isInCart ? 'Видалити з кошика' : 'Додати до кошика' }}
+              Додати до кошика
             </button>
             <button class="action-button" @click="toggleFavorite">
               <img :src="isFavorite ? require('@/assets/active_heart.svg') : require('@/assets/inactive_heart.svg')"
@@ -60,6 +61,7 @@
 
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 import RatingStars from '../components/RatingStars.vue';
 import Header from '../components/HeaderComponent.vue';
 import Footer from '../components/FooterComponent.vue';
@@ -77,10 +79,17 @@ export default {
     RatingStars,
     Footer,
   },
+  computed: {
+    ...mapState(['userInfo']),
+    genreNames() {
+      if (!this.book.genres || !this.book.genres.length) return null;
+      return this.book.genres.map((genre) => genre.name).join(', ');
+    },
+  },
   data() {
     return {
       book: {},
-      userId: 'https://libum.yooud.org/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
+      // userId: 'https://libum.yooud.org/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
       isFavorite: false, // Стан кнопки "Додати/Видалити з обраного"
       isInCart: false, // Стан кнопки "Додати/Видалити з кошика"
     };
@@ -109,19 +118,13 @@ export default {
       }
     },
     toggleCart() {
-      if (this.isInCart) {
-        // Видалити з кошика
-        axios.delete()
-          .then((response) => {
-            console.log('Book removed from cart', response.data);
-            this.isInCart = false;
-          })
-          .catch((error) => {
-            console.error('Error removing book from cart', error);
-          });
-      } else {
-        // Додати до кошика
-        axios.post()
+      if (!this.userInfo || !this.userInfo.id) {
+        console.error('Користувач не авторизований');
+        return;
+      }
+
+      if (!this.isInCart) {
+        axios.post(`https://libum.yooud.org/api/cart/add?book_id=${this.id}&user_id=${this.userInfo.id}`)
           .then((response) => {
             console.log('Book added to cart', response.data);
             this.isInCart = true;
@@ -221,11 +224,23 @@ export default {
   gap: 25px;
 }
 
+.image-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .image-placeholder {
+  position: relative;
   width: 100%;
   padding-top: 130%;
   background-color: #d9d9d9;
   border-radius: 20px;
+  overflow: hidden;
 }
 
 .right-section {

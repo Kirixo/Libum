@@ -1,6 +1,6 @@
 <template>
   <div class="cart-item">
-    <img :src="book.image" alt="Book image" class="cart-item-image" />
+    <img :src="book.cover" alt="Book image" class="cart-item-image" />
     <div class="cart-item-details">
       <h3 class="cart-item-title">{{ book.title }}</h3>
       <p class="cart-item-author">{{ book.author }}</p>
