@@ -168,3 +168,57 @@ bool BookStatusRepository::removeStatusForBook(int userId, int bookId)
 
     return true;
 }
+
+bool BookStatusRepository::setFavoritesForBook(int userId, int bookId)
+{
+    QSqlDatabase db = DBController::getDatabase();
+    if (!db.isOpen()) {
+        Logger::instance().log(QString("[%1] Database not open!").arg(__func__), Logger::LogLevel::Warning);
+        return false;
+    }
+
+    QString upsertQueryString = R"(
+        INSERT INTO favorites (user_id, book_id)
+        VALUES (:userId, :bookId)
+    )";
+
+    QSqlQuery query(db);
+    query.prepare(upsertQueryString);
+    query.bindValue(":userId", userId);
+    query.bindValue(":bookId", bookId);
+
+    if (!query.exec()) {
+        Logger::instance().log(QString("[%1] Query failed: %2").arg(__func__, query.lastError().text()), Logger::LogLevel::Warning);
+        return false;
+    }
+
+    return true;
+}
+
+bool BookStatusRepository::removeFavoritesForBook(int userId, int bookId)
+{
+    QSqlDatabase db = DBController::getDatabase();
+    if (!db.isOpen()) {
+        Logger::instance().log(QString("[%1] Database not open!").arg(__func__), Logger::LogLevel::Warning);
+        return false;
+    }
+
+    QString queryString = R"(
+        DELETE FROM favorites
+        WHERE user_id = :userId AND book_id = :bookId
+    )";
+
+    QSqlQuery query(db);
+    query.prepare(queryString);
+    query.bindValue(":userId", userId);
+    query.bindValue(":bookId", bookId);
+
+    if (!query.exec()) {
+        Logger::instance().log(QString("[%1] Query failed: %2").arg(__func__, query.lastError().text()), Logger::LogLevel::Warning);
+        return false;
+    }
+
+    return true;
+}
+
+

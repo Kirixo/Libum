@@ -129,3 +129,42 @@ QHttpServerResponse BookStatusHandler::removeStatusFromBook(const QHttpServerReq
 
     return ResponseFactory::createResponse("Failed to remove status.", QHttpServerResponse::StatusCode::InternalServerError);
 }
+
+QHttpServerResponse BookStatusHandler::addBookToFavorites(const QHttpServerRequest &request)
+{
+    bool okUser, okBook;
+    int userId = request.query().queryItemValue("user_id").toInt(&okUser);
+    int bookId = request.query().queryItemValue("book_id").toInt(&okBook);
+
+    Logger::instance().log(QString("[%1 request]: userId = %2, bookId = %3").arg(__func__).arg(userId).arg(bookId), Logger::LogLevel::Info);
+
+    if (!okUser || !okBook) {
+        return ResponseFactory::createResponse("Invalid input parameters.", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    if (BookStatusRepository::setFavoritesForBook(userId, bookId)) {
+        return ResponseFactory::createResponse("Status updated successfully.", QHttpServerResponse::StatusCode::Ok);
+    }
+
+    return ResponseFactory::createResponse("Failed to update status.", QHttpServerResponse::StatusCode::InternalServerError);
+}
+
+
+QHttpServerResponse BookStatusHandler::removeBookFromFavorites(const QHttpServerRequest &request)
+{
+    bool okUser, okBook;
+    int userId = request.query().queryItemValue("user_id").toInt(&okUser);
+    int bookId = request.query().queryItemValue("book_id").toInt(&okBook);
+
+    Logger::instance().log(QString("[%1 request]: userId = %2, bookId = %3").arg(__func__).arg(userId).arg(bookId), Logger::LogLevel::Info);
+
+    if (!okUser || !okBook) {
+        return ResponseFactory::createResponse("Invalid user ID or book ID.", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    if (BookStatusRepository::removeFavoritesForBook(userId, bookId)) {
+        return ResponseFactory::createResponse("Removed from favorites successfully.", QHttpServerResponse::StatusCode::Ok);
+    }
+
+    return ResponseFactory::createResponse("Failed to remove from favorites.", QHttpServerResponse::StatusCode::InternalServerError);
+}

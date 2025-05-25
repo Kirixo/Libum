@@ -15,6 +15,9 @@ public:
     static bool setStatusForBook(int userId, int bookId, int statusId);
     static bool removeStatusForBook(int userId, int bookId);
 
+    static bool setFavoritesForBook(int userId, int bookId);
+    static bool removeFavoritesForBook(int userId, int bookId);
+
 private:
     BookStatusRepository() = delete; // Prevent instantiation
 };

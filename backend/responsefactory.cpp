@@ -36,6 +36,7 @@ QHttpServerResponse ResponseFactory::createFileResponse(const QByteArray &conten
         response.setHeader("Content-Disposition", "attachment; filename=\"Libum.apk\"");
     }
     response.setHeader("Content-Type", contentType.toUtf8());
+    addCorsHeaders(response);
     return response;
 }
 

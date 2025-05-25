@@ -22,10 +22,11 @@ QJsonObject Book::toJson() const
         genreArray.append(tmpJsonGenre);
     }
     json["genres"] = genreArray;
-    json["page_count"] = pageCount_ < 0 ? QJsonValue(pageCount_) : QJsonValue::Null;;
+    json["year"] = year_ > 0 ? QJsonValue(year_) : QJsonValue::Null;
+    json["page_count"] = pageCount_ > 0 ? QJsonValue(pageCount_) : QJsonValue::Null;
     json["language"] = language_;
     json["author"] = author_;
-    json["mean_score"] = meanScore_ < 0 ? QJsonValue(std::round(meanScore_ * 100) / 100.0) : QJsonValue::Null;
+    json["mean_score"] = meanScore_ > 0 ? QJsonValue(std::round(meanScore_ * 100) / 100.0) : QJsonValue::Null;
     json["price"] = std::round(price_ * 100) / 100.0;
 
     return json;

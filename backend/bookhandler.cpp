@@ -74,6 +74,88 @@ QHttpServerResponse BookHandler::getBookList(const QHttpServerRequest &request)
                                            QHttpServerResponse::StatusCode::NotFound);
 }
 
+QHttpServerResponse BookHandler::getFilteredBookList(const QHttpServerRequest &request)
+{
+    const int defautLimit = 24;
+    const int defaultPage = 1;
+
+    bool isLimitOk;
+    int limit = request.query().queryItemValue("limit").toInt(&isLimitOk);
+    if (!isLimitOk) {
+        limit = defautLimit;
+    }
+
+    bool isPageOk;
+    int page = request.query().queryItemValue("page").toInt(&isPageOk);
+    if (!isPageOk) {
+        page = defaultPage;
+    }
+
+    std::optional<qint64> minPrice;
+    std::optional<qint64> maxPrice;
+    std::optional<QString> searchQuery;
+    std::optional<qint64> userIdForFavorites;
+
+    bool optionalOk;
+    QString minPriceStr = request.query().queryItemValue("min_price");
+    if (!minPriceStr.isEmpty()) {
+        bool ok;
+        int value = minPriceStr.toInt(&ok);
+        if (ok) {
+            minPrice = value;
+        }
+    }
+
+    QString maxPriceStr = request.query().queryItemValue("max_price");
+    if (!maxPriceStr.isEmpty()) {
+        bool ok;
+        int value = maxPriceStr.toInt(&ok);
+        if (ok) {
+            maxPrice = value;
+        }
+    }
+
+    QString searchQueryStr = request.query().queryItemValue("search_query");
+    if (!searchQueryStr.isEmpty()) {
+        searchQuery = searchQueryStr;
+    }
+
+    QString userIdForFavoritesStr = request.query().queryItemValue("user_id_for_fav");
+    if (!userIdForFavoritesStr.isEmpty()) {
+        bool ok;
+        int value = userIdForFavoritesStr.toInt(&ok);
+        if (ok) {
+            userIdForFavorites = value;
+        }
+    }
+
+    Logger::instance().log(QString("[getFilteredBookList request]: limit =  %1, page = %2").arg(limit)
+                               .arg(page), Logger::LogLevel::Info);
+
+    QList<Book> books = BookRepository::fetchFilteredBooks(limit, page, minPrice, maxPrice, searchQuery, userIdForFavorites);
+
+    if (!books.isEmpty()) {
+        QJsonArray bookArray;
+        for (const Book &book : books) {
+            bookArray.append(book.toJson());
+        }
+
+        QJsonObject responseJson;
+        responseJson["total_count"] = BookRepository::getBooksCount();
+        responseJson["books"] = bookArray;
+
+        QByteArray responseData = QJsonDocument(responseJson).toJson(QJsonDocument::Compact);
+
+        return ResponseFactory::createJsonResponse(responseData, QHttpServerResponse::StatusCode::Ok);
+    }
+
+    Logger::instance().log(QString("[getBookList request] Not Found: limit =  %1, page = %2")
+                               .arg(limit).arg(page), Logger::LogLevel::Warning);
+
+    return ResponseFactory::createResponse("Books not found.",
+                                           QHttpServerResponse::StatusCode::NotFound);
+}
+
 QHttpServerResponse BookHandler::getGenresList(const QHttpServerRequest &request)
 {
     QList<Genre> genres = GenreRepository::getAllGenres();

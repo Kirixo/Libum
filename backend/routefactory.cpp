@@ -22,6 +22,8 @@ void RouteFactory::setupBookListRoutes() {
     server_->route("/api/booklists/booklist", QHttpServerRequest::Method::Get, BookStatusHandler::getStatusOfBook);
     server_->route("/api/booklists/add", QHttpServerRequest::Method::Post, BookStatusHandler::setStatusForBook);
     server_->route("/api/booklists/remove", QHttpServerRequest::Method::Delete, BookStatusHandler::removeStatusFromBook);
+    server_->route("/api/favorites/add", QHttpServerRequest::Method::Post, BookStatusHandler::addBookToFavorites);
+    server_->route("/api/fovorites/remove", QHttpServerRequest::Method::Delete, BookStatusHandler::removeBookFromFavorites);
 }
 
 void RouteFactory::setupCartRoutes() {
@@ -46,6 +48,7 @@ void RouteFactory::setupUserRoutes() {
 void RouteFactory::setupBookRoutes() {
     server_->route("/api/books", QHttpServerRequest::Method::Get, BookHandler::getBook);
     server_->route("/api/books/list", QHttpServerRequest::Method::Get, BookHandler::getBookList);
+    server_->route("/api/books/filter/list", QHttpServerRequest::Method::Get, BookHandler::getFilteredBookList);
     server_->route("/api/books/genres", QHttpServerRequest::Method::Get, BookHandler::getGenresList);
     server_->route("/api/books/file/reader", QHttpServerRequest::Method::Get, BookHandler::getFileForReader);
 }

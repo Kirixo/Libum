@@ -14,6 +14,9 @@ public:
     static QHttpServerResponse setStatusForBook(const QHttpServerRequest &request);
     static QHttpServerResponse removeStatusFromBook(const QHttpServerRequest &request);
 
+    static QHttpServerResponse addBookToFavorites(const QHttpServerRequest &request);
+    static QHttpServerResponse removeBookFromFavorites(const QHttpServerRequest &request);
+
     BookStatusHandler();
 };
 
