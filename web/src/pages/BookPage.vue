@@ -7,7 +7,7 @@
   <div class="book-page">
     <div class="breadcrumbs-container">
       <div class="breadcrumbs">
-        <span>/ {{ genreNames || 'Жанр не вказано' }} /</span>
+        <span>/ {{ book.genre || 'Жанр не вказано' }} /</span>
         <span class="breadcrumbs-book-title">{{ book.title || 'Назва книги' }}</span>
       </div>
     </div>
@@ -18,21 +18,21 @@
             <img :src="book.cover" alt="Обкладинка книги" />
           </div>
           <div v-else class="image-placeholder">Обкладинка відсутня</div>
-          <RatingStars :rating="book.rating || 0" />
+          <RatingStars :rating="book.mean_score || 0" />
         </div>
         <div class="right-section">
           <h1 class="book-title">{{ book.title || 'Назва книги' }}</h1>
           <p class="author">Автор: {{ book.author || '*Автор невідомий*' }}</p>
-          <!-- <div class="tags-container">
-            <span v-for="tag in book.tags || []" :key="tag" class="tag">{{ tag }}</span>
-          </div> -->
-          <p class="pages">{{ genreNames || 'Жанр не вказано' }}</p>
-          <p class=" pages">Сторінок: {{ book.pages || 'N/A' }}</p>
+          <div class="tags-container">
+            <span v-for="genre in book.genres" :key="genre" class="tag">{{ genre }}</span>
+          </div>
+          <p class="language" v-if="book.language">Мова: {{ book.language }}</p>
+          <p class="pages">Сторінок: {{ book.page_count > 0 ? book.page_count : 'N/A' }}</p>
           <p class="price">{{ book.price ? `${book.price} грн` : 'Ціна не вказана' }}</p>
           <div class="actions">
             <button class="action-button" @click="toggleCart">
               <img :src="require('@/assets/cart-icon.png')" alt="Cart Icon" class="icon" />
-              Додати до кошика
+              {{ isInCart ? 'Видалити з кошика' : 'Додати до кошика' }}
             </button>
             <button class="action-button" @click="toggleFavorite">
               <img :src="isFavorite ? require('@/assets/active_heart.svg') : require('@/assets/inactive_heart.svg')"
@@ -81,27 +81,25 @@ export default {
   },
   computed: {
     ...mapState(['userInfo']),
-    genreNames() {
-      if (!this.book.genres || !this.book.genres.length) return null;
-      return this.book.genres.map((genre) => genre.name).join(', ');
-    },
   },
   data() {
     return {
       book: {},
-      // userId: 'https://libum.yooud.org/api/users?id={{userId}}', // Замініть на правильний ідентифікатор користувача
-      isFavorite: false, // Стан кнопки "Додати/Видалити з обраного"
-      isInCart: false, // Стан кнопки "Додати/Видалити з кошика"
+      isFavorite: false,
+      isInCart: false,
     };
   },
   mounted() {
     this.getBook(this.id);
-    this.checkCartStatus();
+    if (this.userInfo) {
+      this.checkCartStatus();
+      this.checkFavoriteStatus();
+    }
   },
   methods: {
     async getBook(id) {
       try {
-        const res = await axios.get(`https://libum.yooud.org/api/books?id=${id}`);
+        const res = await axios.get(`/api/books?id=${id}`);
         this.book = res.data;
         console.log(res.data);
       } catch (error) {
@@ -109,46 +107,70 @@ export default {
       }
     },
     async checkCartStatus() {
+      if (!this.userInfo) return;
       try {
-        const res = await axios.get();
-        this.isInCart = res.data.some((item) => item.book_id === this.id);
+        const userId = String(this.userInfo.id).split(':')[0];
+        const res = await axios.get(`/api/cart?user_id=${userId}`);
+        this.isInCart = res.data.books.some((book) => String(book.id) === String(this.id));
         console.log('Cart status checked:', this.isInCart);
       } catch (error) {
         console.error('Error checking cart status:', error);
       }
     },
-    toggleCart() {
+    async checkFavoriteStatus() {
+      if (!this.userInfo) return;
+      try {
+        const res = await axios.get(`/api/favorites/check?book_id=${this.id}&user_id=${this.userInfo.id}`);
+        this.isFavorite = res.data.is_favorite;
+        console.log('Favorite status checked:', this.isFavorite);
+      } catch (error) {
+        console.error('Error checking favorite status:', error);
+      }
+    },
+    async toggleCart() {
       if (!this.userInfo || !this.userInfo.id) {
         console.error('Користувач не авторизований');
+        // TODO: Показати модальне вікно для логіну
         return;
       }
 
-      if (!this.isInCart) {
-        axios.post(`https://libum.yooud.org/api/cart/add?book_id=${this.id}&user_id=${this.userInfo.id}`)
-          .then((response) => {
-            console.log('Book added to cart', response.data);
-            this.isInCart = true;
-          })
-          .catch((error) => {
-            console.error('Error adding book to cart', error);
-          });
+      const userId = String(this.userInfo.id).split(':')[0];
+
+      try {
+        if (this.isInCart) {
+          await axios.delete(`/api/cart?book_id=${this.id}&user_id=${userId}`);
+          console.log('Book removed from cart');
+          this.isInCart = false;
+        } else {
+          await axios.post(`/api/cart/add?book_id=${this.id}&user_id=${userId}`);
+          console.log('Book added to cart');
+          this.isInCart = true;
+        }
+      } catch (error) {
+        console.error('Error updating cart:', error);
       }
     },
     toggleFavorite() {
+      if (!this.userInfo || !this.userInfo.id) {
+        console.error('Користувач не авторизований');
+        // TODO: Показати модальне вікно для логіну
+        return;
+      }
+
       if (this.isFavorite) {
-        axios.post()
+        axios.post(`/api/favorites/remove?book_id=${this.id}&user_id=${this.userInfo.id}`)
           .then((response) => {
             console.log('Book removed from favorites', response.data);
-            this.isFavorite = false; // Зміна статусу на не в обраному
+            this.isFavorite = false;
           })
           .catch((error) => {
             console.error('Error removing book from favorites', error);
           });
       } else {
-        axios.post()
+        axios.post(`/api/favorites/add?book_id=${this.id}&user_id=${this.userInfo.id}`)
           .then((response) => {
             console.log('Book added to favorites', response.data);
-            this.isFavorite = true; // Зміна статусу на в обраному
+            this.isFavorite = true;
           })
           .catch((error) => {
             console.error('Error adding book to favorites', error);
@@ -224,23 +246,22 @@ export default {
   gap: 25px;
 }
 
+.image-placeholder {
+  width: 100%;
+  height: 400px;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
 .image-placeholder img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 20px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.image-placeholder {
-  position: relative;
-  width: 100%;
-  padding-top: 130%;
-  background-color: #d9d9d9;
-  border-radius: 20px;
-  overflow: hidden;
 }
 
 .right-section {
@@ -294,6 +315,7 @@ export default {
   background-color: #36558f;
 }
 
+.language,
 .pages,
 .price {
   font-size: 24px;

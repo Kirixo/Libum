@@ -138,21 +138,30 @@ export default {
     },
     async submitForm() {
       try {
-        // const hashedPassword = md5(this.password);
-        await this.$store.dispatch('postRegisterUser', {
+        const response = await this.$store.dispatch('postRegisterUser', {
           login: this.username,
           email: this.email,
           password: this.password,
         });
-        // console.log('after post', this.$store.state.userInfo);
 
-        if (this.$store.state.userInfo) {
+        if (response && response.id) {
+          this.$emit('close');
           this.$router.push({ name: 'MainPage' });
         }
       } catch (error) {
-        this.usernameError = 'Ошибка авторизации. Проверьте введенные данные.';
-        this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
-        this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
+        console.error('Registration error:', error);
+        if (error.response) {
+          // Handle specific error messages from the server
+          const errorMessage = error.response.data.message || 'Помилка реєстрації. Перевірте введені дані.';
+          this.usernameError = errorMessage;
+          this.emailError = errorMessage;
+          this.passwordError = errorMessage;
+        } else {
+          const networkError = 'Помилка з\'єднання з сервером. Спробуйте пізніше.';
+          this.usernameError = networkError;
+          this.emailError = networkError;
+          this.passwordError = networkError;
+        }
       }
     },
     signInWithGoogle() {

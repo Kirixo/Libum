@@ -82,21 +82,26 @@ export default {
     },
     async submitForm() {
       try {
-        // const hashedPassword = md5(this.password);
-        await this.$store.dispatch('postUserInfo', {
+        const response = await this.$store.dispatch('postUserInfo', {
           email: this.email,
           password: this.password,
-        }).then(() => {
-          // console.log(this.$store.state.userInfo);
-          if (this.$store.state.userInfo) {
-            this.$router.push({ name: 'MainPage' });
-            // this.$router.push({ name: 'CartPage' });
-          }
         });
+
+        if (response && response.id) {
+          this.$emit('close');
+          this.$router.push({ name: 'MainPage' });
+        }
       } catch (error) {
-        console.log(error);
-        this.emailError = 'Ошибка авторизации. Проверьте введенные данные.';
-        this.passwordError = 'Ошибка авторизации. Проверьте введенные данные.';
+        console.error('Login error:', error);
+        if (error.response) {
+          // Handle specific error messages from the server
+          const errorMessage = error.response.data.message || 'Помилка авторизації. Перевірте введені дані.';
+          this.emailError = errorMessage;
+          this.passwordError = errorMessage;
+        } else {
+          this.emailError = 'Помилка з\'єднання з сервером. Спробуйте пізніше.';
+          this.passwordError = 'Помилка з\'єднання з сервером. Спробуйте пізніше.';
+        }
       }
     },
     signInWithGoogle() {

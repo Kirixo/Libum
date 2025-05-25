@@ -1,127 +1,123 @@
 <template>
-  <div class="cart-page">
-    <div class="user-info">
-      <div class="profile-picture">
-        <img :src="user.avatar" alt="User Avatar" />
-      </div>
-      <div class="user-details">
-        <h3>{{ user.name }}</h3>
-        <p>Мій кошик</p>
-      </div>
-    </div>
-
-    <div class="cart-content">
-      <!-- Первый столбец (список товаров) -->
-      <div v-if="isCartEmpty" class="empty-cart-message">
-        Ваш кошик порожній. Будь ласка, додайте книжки, аби оформити замовлення!
-      </div>
-      <div v-else>
-        <div class="cart-items">
-          <CartItem v-for="book in books" :key="book.id" :book="book" @remove="removeCurrentBook(book.id)" />
+  <div>
+    <Header />
+    <div class="cart-page">
+      <div class="user-info">
+        <div class="profile-picture">
+          <img :src="userInfo?.avatar || ''" alt="User Avatar" />
+        </div>
+        <div class="user-details">
+          <h3>{{ userInfo?.login || 'Користувач' }}</h3>
+          <p>Мій кошик</p>
         </div>
       </div>
 
-      <!-- Второй столбец (итоги, кнопки, подписка) -->
-      <div class="cart-summary-and-subscription">
-        <div class="cart-summary">
-          <div class="total">
-            <p>Загальна вартість</p>
-            <p>{{ totalPrice }} грн</p>
+      <div class="cart-content">
+        <div v-if="isCartEmpty" class="empty-cart-message">
+          Ваш кошик порожній. Будь ласка, додайте книжки, аби оформити замовлення!
+        </div>
+        <div v-else class="cart-container">
+          <div class="cart-items">
+            <CartItem
+              v-for="book in books"
+              :key="book.id"
+              :book="book"
+              @remove="removeCurrentBook"
+            />
           </div>
 
-          <div class="actions">
-            <button @click="checkout" class="checkout-button">Перейти до оплати</button>
-          </div>
-        </div>
-        <div class="actions">
-          <button @click="continueShopping" class="continue-button">Продовжити покупки</button>
-        </div>
+          <div class="cart-summary-and-subscription">
+            <div class="cart-summary">
+              <div class="total">
+                <p>Загальна вартість</p>
+                <p>{{ totalPrice }} грн</p>
+              </div>
 
-        <div class="subscription">
-          <p>Читайте без обмежень з підпискою</p>
-          <p class="subscription-price">80 грн за місяць</p>
-          <button @click="subscribe" class="subscribe-button">Підписатися</button>
+              <div class="actions">
+                <button @click="checkout" class="checkout-button">Перейти до оплати</button>
+              </div>
+            </div>
+            <div class="actions">
+              <button @click="continueShopping" class="continue-button">Продовжити покупки</button>
+            </div>
+
+            <div class="subscription">
+              <p>Читайте без обмежень з підпискою</p>
+              <p class="subscription-price">80 грн за місяць</p>
+              <button @click="subscribe" class="subscribe-button">Підписатися</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <Footer />
   </div>
-  <Footer />
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import bookImage from '@/assets/testBook.jpg';
 import CartItem from '../components/CartComponent.vue';
+import Header from '../components/HeaderComponent.vue';
 import Footer from '../components/FooterComponent.vue';
 
 export default {
   name: 'CartPage',
   components: {
     CartItem,
+    Header,
     Footer,
   },
-  data() {
-    return {
-      user: {
-        name: 'Ім’я користувача',
-        avatar: bookImage,
-      },
-      // books: [
-      //   {
-      //     id: 1, title: 'Знаюча', author: 'Наталі Папелл', price: 7, image: bookImage,
-      //   },
-      //   {
-      //     id: 2, title: 'Назва', author: 'Автор', price: 70, image: bookImage,
-      //   },
-      //   {
-      //     id: 3, title: 'Назва2', author: 'Автор2', price: 170, image: bookImage,
-      //   },
-      //   {
-      //     id: 4, title: 'Назва3', author: 'Автор3', price: 1170, image: bookImage,
-      //   },
-      // ],
-    };
-  },
   computed: {
-    ...mapState({
-      books: (state) => state.cartBooks || [], // Получаем книги из Vuex
-    }),
-    // Проверяем, пуста ли корзина
+    ...mapState(['cartBooks', 'userInfo']),
+    books() {
+      return this.cartBooks || [];
+    },
     isCartEmpty() {
-      return this.$store.state.cartBooks.length === 0;
+      return !this.books.length;
     },
     totalPrice() {
-      return this.books.length ? this.books.reduce((total, book) => total + book.price, 0).toFixed(2) : 0;
+      return this.books.length ? this.books.reduce((total, book) => total + (book.price || 0), 0).toFixed(2) : '0.00';
     },
   },
   methods: {
     ...mapActions(['fetchCartBooks', 'removeBook']),
     async removeCurrentBook(bookId) {
-      await this.removeBook(bookId); // Удаление книги через Vuex
-      this.fetchCartBooks();
+      if (!this.userInfo?.id) {
+        console.error('Користувач не авторизований');
+        return;
+      }
+      try {
+        await this.removeBook(bookId);
+        await this.fetchCartBooks();
+      } catch (error) {
+        console.error('Error removing book:', error);
+      }
     },
-    // removeBook(bookId) {
-    //   this.books = this.books.filter((book) => book.id !== bookId);
-    // },
     checkout() {
+      // TODO: Implement checkout logic
       alert('Переходимо до оплати...');
     },
     continueShopping() {
       this.$router.push({ name: 'MainPage' });
     },
     subscribe() {
-      alert('Переходимо до оформленя...');
+      // TODO: Implement subscription logic
+      alert('Переходимо до оформлення підписки...');
     },
   },
   created() {
-    this.fetchCartBooks(); // Загружаем книги корзины при инициализации
+    if (this.userInfo?.id) {
+      this.fetchCartBooks();
+    }
   },
 };
 </script>
 
 <style scoped>
 .cart-page {
-  padding: 100px 200px;
+  padding: 20px 50px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .user-info {
@@ -138,6 +134,7 @@ export default {
   height: 50px;
   border-radius: 50%;
   margin-right: 15px;
+  object-fit: cover;
 }
 
 .user-details h3 {
@@ -152,103 +149,106 @@ export default {
 
 .cart-content {
   display: flex;
-  justify-content: flex-start;
-  justify-content: center;
+  flex-direction: column;
+}
+
+.cart-container {
+  display: flex;
   gap: 30px;
 }
 
+.empty-cart-message {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  padding: 40px;
+  background: #DDE4F0;
+  border-radius: 8px;
+}
+
 .cart-items {
-  width: 70%;
+  flex: 1;
+  min-width: 0;
 }
 
 .cart-summary-and-subscription {
-  width: 30%;
-  display: flex;
-  flex-direction: column;
-  min-width: 300px;
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .cart-summary {
   background-color: #DDE4F0;
   padding: 20px;
   border-radius: 8px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
-.cart-summary .total p {
-  font-size: 20px;
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.total p {
+  font-size: 18px;
   font-weight: bold;
+  margin: 0;
 }
 
-.actions button {
-  padding: 10px 20px;
-  margin-left: 10px;
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkout-button,
+.continue-button,
+.subscribe-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
   font-size: 16px;
-  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .checkout-button {
-  background-color: #ffffff;
-  color: rgb(0, 0, 0);
+  background-color: #3F5C8A;
+  color: white;
 }
 
 .continue-button {
-  margin-bottom: 20px;
-  background-color: #6E85B7;
-  color: #ffffff;
-  border: 1px solid #6E85B7;
-}
-
-.actions button:hover {
-  opacity: 0.8;
+  background-color: white;
+  border: 1px solid #3F5C8A;
+  color: #3F5C8A;
 }
 
 .subscription {
-  background-color: #f3f6fa;
+  background-color: #DDE4F0;
   padding: 20px;
   border-radius: 8px;
+  text-align: center;
 }
 
 .subscription-price {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
+  margin: 10px 0;
 }
 
 .subscribe-button {
-  background-color: #6c5ce7;
+  background-color: #3F5C8A;
   color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
 }
 
+.checkout-button:hover,
 .subscribe-button:hover {
-  background-color: #5e47d3;
+  background-color: #2F4C7A;
 }
 
-/* Медиазапросы для адаптивного дизайна */
-@media (max-width: 1250px) {
-  .cart-content {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .cart-items {
-    width: 100%;
-  }
-
-  .cart-summary-and-subscription {
-    width: 100%;
-    min-width: 540px;
-  }
-}
-
-.empty-cart-message {
-  color: #6E85B7;
-  font-size: 24px;
-  margin: 20px;
+.continue-button:hover {
+  background-color: #F5F5F5;
 }
 </style>

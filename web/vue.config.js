@@ -10,6 +10,7 @@ module.exports = {
       '/api': {
         target: 'https://libum.yooud.org/',
         changeOrigin: true,
+        secure: false, // Accept invalid certificates
         pathRewrite: { '^/api': '/api' },
         logLevel: 'debug',
         // headers: {

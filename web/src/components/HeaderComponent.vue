@@ -8,13 +8,32 @@
       <img :src="require('@/assets/Logo.svg')" alt="Logo" class="logo-image" />
     </div>
     <nav class="navigation">
-      <button class="books-button" @click="toggleDropdownMenu" ref="booksButton">Книги ↓</button>
-      <!-- Використовуємо позиціонування під кнопкою -->
+      <button class="books-button" @click="toggleDropdownMenu" ref="booksButton" :class="{ active: isDropdownMenuVisible }">
+        {{ selectedGenreText }}
+      </button>
       <div v-if="isDropdownMenuVisible" class="dropdown-menu" :style="dropdownMenuPosition">
         <ul>
-          <li>Книга 1</li>
-          <li>Книга 2</li>
-          <li>Книга 3</li>
+          <li>Жанри</li>
+          <li
+            @click="selectGenre(null)"
+            @keydown.enter="selectGenre(null)"
+            :class="{ active: !$store.state.selectedGenreId }"
+            tabindex="0"
+            role="button"
+          >
+            Всі жанри
+          </li>
+          <li
+            v-for="genre in $store.state.genres"
+            :key="genre.id"
+            @click="selectGenre(genre.id)"
+            @keydown.enter="selectGenre(genre.id)"
+            :class="{ active: $store.state.selectedGenreId === genre.id }"
+            tabindex="0"
+            role="button"
+          >
+            {{ genre.name }}
+          </li>
         </ul>
       </div>
       <button class="library-button">Бібліотека</button>
@@ -22,10 +41,22 @@
     <div class="search-profile">
       <div class="search-container">
         <div class="search-wrapper">
-          <input id="search-input" type="text" class="search-input" placeholder="Пошук"
-            aria-label="Введіть текст для пошуку" @focus="onSearchFocus" @blur="onSearchBlur" />
-          <img :src="isSearchActive ? require('@/assets/active_search.svg') : require('@/assets/inactive_search.svg')"
-            alt="Іконка" class="search-icon" />
+          <input
+            id="search-input"
+            type="text"
+            class="search-input"
+            placeholder="Пошук"
+            v-model="searchQuery"
+            @input="onSearchInput"
+            aria-label="Введіть текст для пошуку"
+            @focus="onSearchFocus"
+            @blur="onSearchBlur"
+          />
+          <img
+            :src="isSearchActive ? require('@/assets/active_search.svg') : require('@/assets/inactive_search.svg')"
+            alt="Іконка"
+            class="search-icon"
+          />
         </div>
       </div>
     </div>
@@ -76,6 +107,7 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from 'vuex';
 import LoginModal from './LoginModalComponent.vue';
 import Signup from './SignupModalComponent.vue';
 
@@ -92,13 +124,27 @@ export default {
       isSignupModalVisible: false,
       isRestorPasswordModalVisible: false,
       isSearchActive: false,
-      isDropdownMenuVisible: false, // Переменная для управления дропдаун меню
-      dropdownMenuPosition: { top: '0px', left: '0px' }, // Стиль для позиціонування меню
-      isProfileDropdownVisible: false, // Для управління видимістю меню профілю
-      profileDropdownPosition: { top: '0px', left: '0px' }, // Стиль для позиціонування меню профілю
+      isDropdownMenuVisible: false,
+      dropdownMenuPosition: { top: '0px', left: '0px' },
+      isProfileDropdownVisible: false,
+      profileDropdownPosition: { top: '0px', left: '0px' },
+      searchQuery: '',
     };
   },
+  computed: {
+    ...mapState(['selectedGenreId']),
+    ...mapGetters(['selectedGenreName']),
+    selectedGenreText() {
+      return this.selectedGenreName || 'Книги';
+    },
+  },
   methods: {
+    ...mapActions(['fetchGenres', 'selectGenre']),
+    selectGenre(genreId) {
+      this.$store.dispatch('selectGenre', genreId);
+      this.isDropdownMenuVisible = false;
+      this.$router.push({ name: 'MainPage', query: { genre: genreId || undefined } });
+    },
     goToHomePage() {
       this.$router.push('/');
     },
@@ -140,8 +186,8 @@ export default {
       this.isSearchActive = false;
     },
     logout() {
-      console.log('Вихід з профілю');
-      this.$router.push({ name: 'LogoutPage' });
+      this.$store.dispatch('logout');
+      this.$router.push({ name: 'MainPage' });
     },
     goToProfile() {
       console.log('Перехід до профілю');
@@ -170,9 +216,13 @@ export default {
       console.log('Перехід до кошика');
       this.$router.push({ name: 'CartPage' });
     },
+    onSearchInput() {
+      // Емітимо подію пошуку до батьківського компонента
+      this.$parent.updateSearchQuery(this.searchQuery);
+    },
   },
-  created() {
-    this.fetchUserId();
+  async created() {
+    await this.fetchGenres();
   },
 };
 </script>
@@ -357,11 +407,12 @@ export default {
 .dropdown-menu {
   position: absolute;
   background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  width: 200px;
+  border: 1px solid #dde4f0;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 250px;
   z-index: 9999;
+  padding: 10px 0;
 }
 
 .dropdown-menu ul {
@@ -371,21 +422,35 @@ export default {
 }
 
 .dropdown-menu ul li {
-  padding: 10px;
+  padding: 12px 20px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu ul li:first-child {
+  font-weight: 600;
+  border-bottom: 1px solid #dde4f0;
+  margin-bottom: 5px;
 }
 
 .dropdown-menu ul li:hover {
-  background-color: #f0f0f0;
+  background-color: #f5f7fa;
 }
 
-.dropdown-menu ul li:last-child {
-  border-bottom: none;
+.dropdown-menu ul li.active {
+  background-color: #dde4f0;
+  color: #333;
 }
 
-.books-button,
-.library-button {
+.dropdown-menu ul li.active:hover {
+  background-color: #d0d7e3;
+}
+
+.books-button {
   padding: 10px 20px;
   background-color: transparent;
   color: #333;
@@ -394,6 +459,19 @@ export default {
   border: none;
   position: relative;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.books-button::after {
+  content: '↓';
+  margin-left: 5px;
+  transition: transform 0.3s;
+}
+
+.books-button.active::after {
+  transform: rotate(180deg);
 }
 
 .profile-menu {
